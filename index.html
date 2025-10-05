@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUM Platform - Legal Tech SaaS</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="NEXUM Labs: La plataforma SaaS con IA para automatizar estudios jurídicos en Latinoamérica. Reduce tiempo administrativo y potencia tu captación de clientes.">
+    <meta name="keywords" content="legal tech, ia para abogados, software para estudios juridicos, automatizacion legal, nexum labs, argentina">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nexumlabs.ai/">
+    <meta property="og:title" content="NEXUM Platform - Legal Tech SaaS">
+    <meta property="og:description" content="La plataforma SaaS con IA para automatizar estudios jurídicos en Latinoamérica.">
+    <meta property="og:image" content="https://i.ibb.co/fVJqkRjm/logo-Saa-S-1.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://nexumlabs.ai/">
+    <meta property="twitter:title" content="NEXUM Platform - Legal Tech SaaS">
+    <meta property="twitter:description" content="La plataforma SaaS con IA para automatizar estudios jurídicos en Latinoamérica.">
+    <meta property="twitter:image" content="https://i.ibb.co/fVJqkRjm/logo-Saa-S-1.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+      /* --- NEXUM PREMIUM DESIGN SYSTEM V4.0 --- */
+      
+      /* 1. COLOR PALETTE & GRADIENTS */
+      :root {
+        --nexum-primary: #6366F1;
+        --nexum-secondary: #8B5CF6;
+        --nexum-accent: #06B6D4;
+        --nexum-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --nexum-gradient-start: #667eea;
+        --nexum-gradient-end: #764ba2;
+        --nexum-success: #10B981;
+        --nexum-warning: #F59E0B;
+        --nexum-error: #EF4444;
+        --nexum-info: #3B82F6;
+      }
+
+      /* 2. LIGHT/DARK MODE THEME MAPPING */
+      :root.light {
+        --bg-primary: #F9FAFB;
+        --bg-secondary: #FFFFFF;
+        --bg-surface: #FFFFFF;
+        --text-primary: #111827;
+        --text-secondary: #6B7280;
+        --text-muted: #9CA3AF;
+        --border-color: #E5E7EB;
+        --accent-color: var(--nexum-primary);
+        --nexum-dark: #020617; /* For components that need dark bg in light mode */
+      }
+      :root.dark {
+        --bg-primary: #020617;
+        --bg-secondary: #0F172A;
+        --bg-surface: #1E293B;
+        --text-primary: #F9FAFB;
+        --text-secondary: #CBD5E1;
+        --text-muted: #9ca3af;
+        --border-color: rgba(255, 255, 255, 0.1);
+        --accent-color: var(--nexum-primary);
+        --nexum-dark: #020617;
+      }
+
+      /* 3. BASE & TYPOGRAPHY */
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      * {
+        transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1), color 250ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* 4. PREMIUM COMPONENT STYLES */
+
+      /* Buttons */
+      .btn-primary-premium {
+        background: var(--nexum-gradient-primary);
+        color: white;
+        font-weight: 600;
+        padding: 12px 24px;
+        border-radius: 12px;
+        border: none;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+      }
+      .btn-primary-premium:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(99, 102, 241, 0.4);
+      }
+      .btn-primary-premium:disabled { background: #334155; box-shadow: none; cursor: not-allowed; opacity: 0.6; }
+
+      .btn-secondary-premium {
+        background: transparent;
+        color: var(--text-primary);
+        font-weight: 600;
+        padding: 10px 22px;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+      .btn-secondary-premium:hover { border-color: var(--nexum-primary); color: var(--nexum-primary); background-color: color-mix(in srgb, var(--nexum-primary) 10%, transparent)}
+
+      /* Cards */
+      .card-premium {
+        background: var(--bg-surface);
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        position: relative;
+      }
+      .card-premium::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: var(--nexum-gradient-primary);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .card-premium:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+        border-color: rgba(99, 102, 241, 0.3);
+      }
+      .card-premium:hover::before { opacity: 1; }
+
+      .glass-card {
+        background: rgba(30, 41, 59, 0.5);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .light .glass-card { background: rgba(255, 255, 255, 0.6); border-color: rgba(0,0,0,0.1); }
+      .glass-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
+      }
+      
+      /* Inputs */
+      .input-premium {
+        width: 100%; min-height: 44px; padding: 12px 16px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: 8px; color: var(--text-primary);
+        font-size: 14px; transition: all 0.3s ease; outline: none;
+      }
+      .input-premium:focus {
+        border-color: var(--nexum-primary);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--nexum-primary) 15%, transparent);
+      }
+
+      /* Sidebar */
+      .sidebar-premium {
+        width: 280px;
+        background: var(--bg-secondary);
+        border-right: 1px solid var(--border-color);
+        height: 100%;
+        display: flex; flex-direction: column;
+      }
+      .dark .sidebar-premium { background: linear-gradient(180deg, #0F172A 0%, #020617 100%); }
+      
+      .sidebar-item {
+        display: flex; align-items: center;
+        padding: 10px 16px; margin: 4px 8px; border-radius: 8px;
+        color: var(--text-secondary); text-decoration: none;
+        transition: all 0.2s ease;
+      }
+      .sidebar-item:hover {
+        background: color-mix(in srgb, var(--nexum-primary) 10%, transparent);
+        color: var(--text-primary);
+        transform: translateX(4px);
+      }
+      .sidebar-item.active {
+        background: var(--nexum-gradient-primary);
+        color: white; font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .sidebar-item .icon { margin-right: 12px; width: 20px; height: 20px; }
+
+      /* Tables */
+      .table-premium { width: 100%; background: var(--bg-surface); border-radius: 12px; overflow: hidden; }
+      .table-premium thead { background: var(--bg-secondary); }
+      .dark .table-premium thead { background: var(--nexum-bg-secondary-dark); }
+      .table-premium th { padding: 16px; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--text-secondary); }
+      .table-premium tbody tr { border-bottom: 1px solid var(--border-color); transition: all 0.2s ease; }
+      .table-premium tbody tr:last-child { border-bottom: none; }
+      .table-premium tbody tr:hover { background-color: color-mix(in srgb, var(--nexum-primary) 5%, transparent); }
+      .table-premium td { padding: 16px; color: var(--text-secondary); }
+      .table-premium td .font-bold { color: var(--text-primary); }
+
+      /* KPI Cards */
+      .kpi-value {
+        font-size: 2.25rem; font-weight: 700;
+        background: var(--nexum-gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .kpi-trend { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font-size: 0.875rem; font-weight: 600; }
+      .kpi-trend.up { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+      .kpi-trend.down { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+
+      /* 5. ANIMATIONS & EFFECTS */
+
+      @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      .animate-fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
+      
+      @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+      .shimmer {
+        background: linear-gradient(90deg, transparent 25%, color-mix(in srgb, var(--text-primary) 5%, transparent) 50%, transparent 75%);
+        background-size: 200% 100%; animation: shimmer 3s infinite;
+      }
+
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      .spinner-premium {
+        width: 40px; height: 40px;
+        border: 4px solid var(--bg-surface);
+        border-top: 4px solid var(--nexum-primary);
+        border-radius: 50%;
+        animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+      }
+      
+      /* Hero Section */
+      .hero-section {
+        position: relative; overflow: hidden;
+      }
+      .hero-title {
+        background: var(--nexum-gradient-primary);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: glow-text 3s ease-in-out infinite;
+      }
+       @keyframes glow-text {
+        0%, 100% { text-shadow: 0 0 20px color-mix(in srgb, var(--nexum-primary) 50%, transparent); }
+        50% { text-shadow: 0 0 30px color-mix(in srgb, var(--nexum-primary) 70%, transparent); }
+      }
+      .particle {
+        position: absolute; width: 4px; height: 4px; background: var(--nexum-primary);
+        border-radius: 50%; animation: float-up 20s linear infinite;
+      }
+      @keyframes float-up {
+        from { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+        10% { opacity: 1; } 90% { opacity: 1; }
+        to { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+      }
+    </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'whatsapp-green': '#25D366',
+            'nexum-primary': 'var(--nexum-primary)',
+            'nexum-secondary': 'var(--nexum-secondary)',
+            'nexum-accent': 'var(--nexum-accent)',
+            'nexum-dark': 'var(--nexum-dark)',
+          }
+        }
+      }
+    }
+  </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.1",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.544.0",
+    "recharts": "https://aistudiocdn.com/recharts@^3.2.1",
+    "tailwindcss": "https://aistudiocdn.com/tailwindcss@^4.1.13",
+    "react-hot-toast": "https://aistudiocdn.com/react-hot-toast@^2.6.0",
+    "zustand/": "https://aistudiocdn.com/zustand@^5.0.8/",
+    "zustand": "https://aistudiocdn.com/zustand@^5.0.8",
+    "axios": "https://aistudiocdn.com/axios@^1.12.2",
+    "@mercadopago/sdk-react": "https://aistudiocdn.com/@mercadopago/sdk-react@^1.0.6",
+    "prettier": "https://aistudiocdn.com/prettier@^3.5.1",
+    "react-router": "https://aistudiocdn.com/react-router@^7.9.1",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^11.3.19",
+    "@radix-ui/react-tooltip": "https://aistudiocdn.com/@radix-ui/react-tooltip@^1.1.2",
+    "@radix-ui/react-dialog": "https://aistudiocdn.com/@radix-ui/react-dialog@^1.1.1",
+    "@radix-ui/react-progress": "https://aistudiocdn.com/@radix-ui/react-progress@^1.1.0",
+    "clsx": "https://aistudiocdn.com/clsx@^2.1.1",
+    "tailwind-merge": "https://aistudiocdn.com/tailwind-merge@^2.4.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
