@@ -1,4 +1,3 @@
-
 export const JURISPREDICT_MOCK_DATA = {
   casos_analizados: [
     {

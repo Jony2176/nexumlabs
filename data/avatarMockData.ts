@@ -1,4 +1,3 @@
-
 export const AVATAR_MOCK_DATA = {
   metrics: {
     consultas_mes: 456,

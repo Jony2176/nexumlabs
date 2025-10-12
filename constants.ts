@@ -84,18 +84,14 @@ export const SIDEBAR_CONFIG_BY_ROLE: { [key: string]: NavItemExpanded[] } = {
     { id: 'jurispredict_ai', label: 'JurisPredict AI', icon: BrainCircuit, path: '/app/jurispredict' },
     { id: 'elias_avatar_partner', label: 'Avatar Partner', icon: User, path: '/app/avatar' },
     { id: 'subscription', label: 'Suscripción y Pagos', icon: CreditCard, path: '/app/subscription' },
-    { id: 'integrations', label: 'Integraciones', icon: LinkIcon, path: '/app/integraciones' },
     { id: 'settings', label: 'Configuración', icon: Settings, path: '/app/configuracion' },
-    { id: 'support', label: 'Soporte', icon: HelpCircle, path: '/app/soporte' },
   ],
   user: [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/app/dashboard' },
     { id: 'modules', label: 'Módulos', icon: Puzzle, path: '/app/modules' },
     { id: 'jurispredict_ai', label: 'JurisPredict AI', icon: BrainCircuit, path: '/app/jurispredict' },
     { id: 'elias_avatar_partner', label: 'Avatar Partner', icon: User, path: '/app/avatar' },
-    { id: 'integrations', label: 'Integraciones', icon: LinkIcon, path: '/app/integraciones' },
     { id: 'settings', label: 'Configuración', icon: Settings, path: '/app/configuracion' },
-    { id: 'support', label: 'Soporte', icon: HelpCircle, path: '/app/soporte' },
   ],
   affiliate: [
     { id: 'portal_dashboard', label: 'Dashboard', path: '/portal/dashboard', icon: LayoutDashboard },

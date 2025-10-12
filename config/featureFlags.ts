@@ -1,6 +1,6 @@
 
 
-export type ModuleId = 'elias_whatsapp' | 'elias_llamadas' | 'dashboard_premium' | 'jurispredict_ai' | 'elias_avatar_partner' | 'integrations' | 'support' | string;
+export type ModuleId = 'elias_whatsapp' | 'elias_llamadas' | 'dashboard_premium' | 'jurispredict_ai' | 'elias_avatar_partner' | string;
 
 export type ModuleStatus = 'available' | 'waitlist' | 'hidden' | 'secret';
 
@@ -97,17 +97,5 @@ export const FEATURE_FLAGS: FeatureFlagConfig = {
         earlyBirdDiscount: 0,
         initialCount: 0,
     }
-  },
-  'integrations': {
-    id: 'integrations',
-    name: 'Integraciones',
-    status: 'available',
-    launchDate: '2025-09-23T00:00:00Z',
-  },
-  'support': {
-    id: 'support',
-    name: 'Soporte',
-    status: 'available',
-    launchDate: '2025-09-23T00:00:00Z',
   }
 };

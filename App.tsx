@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, Navigate, HashRouter } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
@@ -51,8 +52,6 @@ import EliasWhatsappManagementPage from './pages/whatsapp/EliasWhatsappManagemen
 import EliasCallsManagementPage from './pages/calls/EliasCallsManagementPage';
 import JurispredictManagementPage from './pages/jurispredict/JurispredictManagementPage';
 import AvatarPartnerManagementPage from './pages/avatar/AvatarPartnerManagementPage';
-import IntegrationsPage from './pages/IntegrationsPage';
-import SupportPage from './pages/SupportPage';
 
 
 // Admin Pages
@@ -159,8 +158,6 @@ const App: React.FC = () => {
             <Route path="calls" element={<EliasCallsManagementPage />} />
             <Route path="jurispredict" element={<JurispredictManagementPage />} />
             <Route path="avatar" element={<AvatarPartnerManagementPage />} />
-            <Route path="integraciones" element={<IntegrationsPage />} />
-            <Route path="soporte" element={<SupportPage />} />
             <Route path="subscription" element={
                 <ProtectedRoute allowedRoles={['owner']}>
                     <MySubscriptionPage />

@@ -1,3 +1,5 @@
+
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
@@ -12,34 +14,32 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    {/* FIX: Wrapped App and Toaster in a React.Fragment to provide a single child to ThemeProvider, resolving the type error. */}
+    {/* FIX: Removed unnecessary React.Fragment wrapper to resolve a 'children' prop error. ThemeProvider accepts multiple children directly. */}
     <ThemeProvider>
-      <React.Fragment>
-        <App />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: 'var(--bg-card)',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--border-color)',
+      <App />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: 'var(--bg-card)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--border-color)',
+          },
+          success: {
+            iconTheme: {
+              primary: '#10B981',
+              secondary: 'var(--bg-card)',
             },
-            success: {
-              iconTheme: {
-                primary: '#10B981',
-                secondary: 'var(--bg-card)',
-              },
+          },
+          error: {
+            iconTheme: {
+              primary: '#EF4444',
+              secondary: 'var(--bg-card)',
             },
-            error: {
-              iconTheme: {
-                primary: '#EF4444',
-                secondary: 'var(--bg-card)',
-              },
-            },
-          }}
-        />
-      </React.Fragment>
+          },
+        }}
+      />
     </ThemeProvider>
   </React.StrictMode>
 );

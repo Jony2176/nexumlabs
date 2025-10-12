@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, Send } from 'lucide-react';
 import Card from '../ui/Card';

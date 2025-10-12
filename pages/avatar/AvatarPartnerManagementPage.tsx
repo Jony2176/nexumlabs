@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Bot, MessageSquare, Star, User, Zap, Clock } from 'lucide-react';
 import MetricCard from '../../components/jurispredict/MetricCard';

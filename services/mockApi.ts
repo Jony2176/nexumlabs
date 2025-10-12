@@ -35,7 +35,8 @@ class MockAPI {
   async register(data: any) {
     await this.delay();
     
-    if (this.users.find(u => u.email === data.email)) {
+    const isHardcodedEmail = ['demo@nexum.com', 'superadmin@nexum.com', 'affiliate@nexum.com'].includes(data.email);
+    if (isHardcodedEmail || this.users.find(u => u.email === data.email)) {
       throw new Error('El email ya está registrado');
     }
 
@@ -89,35 +90,41 @@ class MockAPI {
   async login(email: string, password: string) {
     await this.delay();
 
-    // 1. Check for hardcoded users first
-    if (email === 'demo@nexum.com' && password === 'demo123') {
-      return {
-        token: `mock_token_demo_${Date.now()}`,
-        user: { id: 'usr_demo', orgId: 'org_demo', email: 'demo@nexum.com', firstName: 'Usuario', lastName: 'Demo', role: 'owner', onboardingCompleted: true },
-        organization: { id: 'org_demo', name: 'Estudio Demo', slug: 'estudio-demo', email: 'demo@nexum.com', phone: '123456789', modules: {}, subscription_status: 'trialing', trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() }
-      };
+    // 1. Handle hardcoded demo users as special cases
+    if (email === 'demo@nexum.com') {
+        if (password === 'demo123') {
+            return {
+                token: `mock_token_demo_${Date.now()}`,
+                user: { id: 'usr_demo', orgId: 'org_demo', email: 'demo@nexum.com', firstName: 'Usuario', lastName: 'Demo', role: 'owner', onboardingCompleted: true },
+                organization: { id: 'org_demo', name: 'Estudio Demo', slug: 'estudio-demo', email: 'demo@nexum.com', phone: '123456789', modules: {}, subscription_status: 'trialing', trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() }
+            };
+        } else {
+            throw new Error('Credenciales incorrectas');
+        }
     }
 
-    if (email === 'superadmin@nexum.com' && password === 'demo123') {
-      return {
-        token: `mock_token_superadmin_${Date.now()}`,
-        user: { id: 'usr_superadmin', orgId: 'org_admin', email: 'superadmin@nexum.com', firstName: 'Super', lastName: 'Admin', role: 'super_admin', onboardingCompleted: true },
-        organization: { id: 'org_admin', name: 'NEXUM Labs HQ', slug: 'nexum-labs-hq', email: 'superadmin@nexum.com', phone: '111222333', modules: {}, subscription_status: 'active', trial_ends_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() }
-      };
+    if (email === 'superadmin@nexum.com') {
+        if (password === 'demo123') {
+            return {
+                token: `mock_token_superadmin_${Date.now()}`,
+                user: { id: 'usr_superadmin', orgId: 'org_admin', email: 'superadmin@nexum.com', firstName: 'Super', lastName: 'Admin', role: 'super_admin', onboardingCompleted: true },
+                organization: { id: 'org_admin', name: 'NEXUM Labs HQ', slug: 'nexum-labs-hq', email: 'superadmin@nexum.com', phone: '111222333', modules: {}, subscription_status: 'active', trial_ends_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() }
+            };
+        } else {
+            throw new Error('Credenciales incorrectas');
+        }
     }
-
-    if (email === 'affiliate@nexum.com' && password === 'demo123') {
-      return {
-        token: `mock_token_affiliate_${Date.now()}`,
-        user: { id: 'usr_affiliate_1', orgId: 'org_affiliate', email: 'affiliate@nexum.com', firstName: 'Juan', lastName: 'Afiliado', role: 'affiliate', onboardingCompleted: true },
-        organization: { id: 'org_affiliate', name: 'Marketing Pro', slug: 'marketing-pro', email: 'affiliate@nexum.com', phone: '987654321', modules: {}, subscription_status: 'active', trial_ends_at: new Date().toISOString() }
-      };
-    }
-
-    // If the email is a hardcoded one but the password was wrong, we should throw an error immediately.
-    const isHardcodedEmail = ['demo@nexum.com', 'superadmin@nexum.com', 'affiliate@nexum.com'].includes(email);
-    if (isHardcodedEmail) {
-      throw new Error('Credenciales incorrectas');
+    
+    if (email === 'affiliate@nexum.com') {
+        if (password === 'demo123') {
+            return {
+                token: `mock_token_affiliate_${Date.now()}`,
+                user: { id: 'usr_affiliate_1', orgId: 'org_affiliate', email: 'affiliate@nexum.com', firstName: 'Juan', lastName: 'Afiliado', role: 'affiliate', onboardingCompleted: true },
+                organization: { id: 'org_affiliate', name: 'Marketing Pro', slug: 'marketing-pro', email: 'affiliate@nexum.com', phone: '987654321', modules: {}, subscription_status: 'active', trial_ends_at: new Date().toISOString() }
+            };
+        } else {
+            throw new Error('Credenciales incorrectas');
+        }
     }
 
     // 2. Check for registered users from localStorage
@@ -139,7 +146,7 @@ class MockAPI {
       };
     }
     
-    // 3. If no user is found in either list, or if a registered user has the wrong password
+    // 3. If no user is found, or password was wrong for a localStorage user
     throw new Error('Credenciales incorrectas');
   }
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Card from '../ui/Card';
 import { History } from 'lucide-react';

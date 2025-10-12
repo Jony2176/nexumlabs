@@ -1,4 +1,3 @@
-
 import React from 'react';
 import IntegrationFilters from '../components/integrations/IntegrationFilters';
 import IntegrationCard from '../components/integrations/IntegrationCard';

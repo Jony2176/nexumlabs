@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { PlusCircle, Download, Users, DollarSign, Clock, Percent } from 'lucide-react';
