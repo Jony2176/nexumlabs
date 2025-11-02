@@ -44,7 +44,8 @@ const useThemeHook = () => {
 };
 
 // Proveedor de contexto para el tema
-export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+// FIX: Changed component prop type from `{ children: ReactNode }` to `React.PropsWithChildren` to resolve a persistent 'missing children' prop error.
+export const ThemeProvider = ({ children }: React.PropsWithChildren) => {
   const themeValue = useThemeHook();
   
   return (

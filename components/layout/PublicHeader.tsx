@@ -1,11 +1,13 @@
 
+
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import Logo from '../ui/Logo';
 import Button from '../ui/Button';
 import { useAuthStore } from '../../store/authStore';
 import { ThemeContext } from '../../context/ThemeContext';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
+import { cn } from '../../utils/cn';
 
 const ThemeToggle = () => {
   const context = React.useContext(ThemeContext);
@@ -19,20 +21,28 @@ const ThemeToggle = () => {
       aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
     >
       {theme === 'dark' ? (
-        <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        <Sun className="w-5 h-5 text-yellow-400" />
       ) : (
-        <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd"></path></svg>
+        <Moon className="w-5 h-5 text-yellow-400" />
       )}
     </button>
   );
 };
 
 
-const PublicHeader: React.FC = () => {
+const PublicHeader: React.FC<{ onLoginClick: () => void }> = ({ onLoginClick }) => {
     const { isAuthenticated, user } = useAuthStore();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const navLinkClass = "text-sm font-medium text-gray-300 hover:text-white transition-colors";
-    const dashboardPath = user?.role === 'affiliate' ? '/portal/dashboard' : '/app/dashboard';
+    
+    const navLinkBaseClass = "relative px-3 py-2 text-sm font-medium text-gray-300 transition-transform duration-200 ease-in-out hover:scale-110";
+    const navLinkActiveClass = "text-white";
+    const navLinkInactiveClass = "hover:text-white";
+
+    const navLinkClass = ({isActive}: {isActive: boolean}) => 
+        cn(navLinkBaseClass, isActive ? navLinkActiveClass : navLinkInactiveClass);
+
+
+    const dashboardPath = user?.role === 'affiliate' ? '/portal' : '/app';
 
     const navItems = [
         { name: 'Productos', path: '/productos' },
@@ -45,20 +55,20 @@ const PublicHeader: React.FC = () => {
 
     return (
         <header className="sticky top-0 z-40 w-full bg-gray-900 border-b border-gray-700 dark">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-20">
-                    <div className="flex items-center">
+            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-20 md:h-24">
+                    <div className="flex items-center gap-8">
                         <Link to="/" className="flex-shrink-0">
-                            <Logo className="h-16 w-auto" />
+                            <Logo className="w-[calc(var(--logo-base-width,150px)*0.8)] md:w-[var(--logo-base-width,150px)] h-auto transition-all duration-300 ease-in-out" variant="white" />
                         </Link>
+                        <nav className="hidden md:flex items-center space-x-1">
+                            {navItems.map(item => (
+                                <NavLink key={item.name} to={item.path} className={navLinkClass}>
+                                    {item.name}
+                                </NavLink>
+                            ))}
+                        </nav>
                     </div>
-                    <nav className="hidden md:flex items-center space-x-8">
-                        {navItems.map(item => (
-                            <NavLink key={item.name} to={item.path} className={({isActive}) => `${navLinkClass} ${isActive ? 'text-white' : ''}`}>
-                                {item.name}
-                            </NavLink>
-                        ))}
-                    </nav>
                     <div className="flex items-center space-x-2">
                         <ThemeToggle />
 
@@ -70,9 +80,9 @@ const PublicHeader: React.FC = () => {
                                 </Link>
                             ) : (
                                 <>
-                                    <Link to="/login">
-                                        <Button variant="ghost" className="text-gray-300 hover:text-white">Iniciar Sesión</Button>
-                                    </Link>
+                                    <Button variant="ghost" className="btn-login-ghost" onClick={onLoginClick}>
+                                        Iniciar Sesión
+                                    </Button>
                                     <Link to="/register">
                                         <Button>Registrarse</Button>
                                     </Link>
@@ -87,9 +97,7 @@ const PublicHeader: React.FC = () => {
                                     <Button size="sm">Dashboard</Button>
                                 </Link>
                             ) : (
-                                <Link to="/login">
-                                    <Button size="sm">Acceder</Button>
-                                </Link>
+                                <Button size="sm" onClick={onLoginClick}>Acceder</Button>
                             )}
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -123,6 +131,9 @@ const PublicHeader: React.FC = () => {
                     {!isAuthenticated && (
                         <div className="pt-4 pb-3 border-t border-gray-700">
                             <div className="px-2 space-y-2">
+                                <Button className="w-full" variant="outline" onClick={() => { onLoginClick(); setIsMenuOpen(false); }}>
+                                    Iniciar Sesión
+                                </Button>
                                 <Link to="/register" onClick={() => setIsMenuOpen(false)}>
                                     <Button className="w-full">Registrarse Gratis</Button>
                                 </Link>

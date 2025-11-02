@@ -45,7 +45,7 @@ const ClientToolbar: React.FC<ClientToolbarProps> = ({
   }
 
   return (
-    <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div className="bg-bg-surface border theme-border rounded-xl p-4 flex flex-col md:flex-row justify-between items-center gap-4">
       <div className="relative w-full md:w-1/3">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
         <input
@@ -53,14 +53,14 @@ const ClientToolbar: React.FC<ClientToolbarProps> = ({
           placeholder="Buscar empresa o contacto..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="bg-gray-900/50 border border-gray-600 rounded-lg pl-9 pr-3 py-2 text-sm w-full"
+          className="bg-gray-900/50 border border-gray-600 rounded-lg pl-9 pr-3 py-2 text-sm w-full text-white placeholder:text-gray-200 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
       <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
         <select
           value={filters.plan}
           onChange={(e) => onFilterChange({ ...filters, plan: e.target.value })}
-          className="bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
+          className="bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-sm w-full sm:w-auto text-gray-200 focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="all">Todos los Planes</option>
           <option value="Lite">Lite</option>
@@ -70,7 +70,7 @@ const ClientToolbar: React.FC<ClientToolbarProps> = ({
         <select
           value={filters.status}
           onChange={(e) => onFilterChange({ ...filters, status: e.target.value })}
-          className="bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-sm w-full sm:w-auto"
+          className="bg-gray-900/50 border border-gray-600 rounded-lg px-3 py-2 text-sm w-full sm:w-auto text-gray-200 focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="all">Todos los Estados</option>
           <option value="active">Activo</option>

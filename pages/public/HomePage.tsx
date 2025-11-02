@@ -1,4 +1,6 @@
-import React from 'react';
+
+
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Bot, Phone, LayoutDashboard, Zap } from 'lucide-react';
 import { useFeatureFlags } from '../../providers/FeatureFlagProvider';
@@ -7,6 +9,9 @@ import WaitlistCard from '../../components/features/WaitlistCard';
 import { EXTERNAL_ASSETS } from '../../config/assets.config';
 // FIX: Imported the Button component to resolve 'Cannot find name' errors.
 import Button from '../../components/ui/Button';
+import { useAuthStore } from '../../store/authStore';
+import { useRoleBasedNavigation } from '../../hooks/useRoleBasedNavigation';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 const Particles: React.FC = () => (
     <div className="particles absolute inset-0 -z-10">
@@ -30,6 +35,7 @@ const Particles: React.FC = () => (
 const HomePage: React.FC = () => {
     const { isAvailable, getModuleConfig } = useFeatureFlags();
 
+
     const testimonials = [
         {
             quote: "Implementamos ELIAS WhatsApp y la satisfacción de nuestros clientes aumentó un 50% por la respuesta inmediata 24/7.",
@@ -37,7 +43,7 @@ const HomePage: React.FC = () => {
             firm: "Martínez & Asociados, Buenos Aires"
         },
         {
-            quote: "El Dashboard Premium nos dio una visión 360°. Aumentamos nuestra rentabilidad un 20% en el primer año.",
+            quote: "El Panel Premium nos dio una visión 360°. Aumentamos nuestra rentabilidad un 20% en el primer año.",
             name: "Dr. Miguel Fernández",
             firm: "Estudio Corporativo, CABA"
         }
@@ -54,6 +60,11 @@ const HomePage: React.FC = () => {
     
     const launchedProducts = MODULES.filter(m => isAvailable(m.id));
     const upcomingProducts = MODULES.map(m => getModuleConfig(m.id)).filter(mc => mc && mc.status === 'waitlist');
+
+    const getProductPath = (id: string) => {
+        if (id === 'dashboard_premium') return 'panel-premium';
+        return id.replace('elias_', '').replace('_premium', '');
+    }
 
     return (
         <div className="theme-bg-secondary text-text-primary">
@@ -72,7 +83,7 @@ const HomePage: React.FC = () => {
                             </Button>
                         </Link>
                          <Link to="/contacto">
-                            <Button size="lg" variant="outline">
+                            <Button size="lg" variant="outline" className="demo-live-btn">
                                 Ver Demo en Vivo
                             </Button>
                         </Link>
@@ -82,7 +93,7 @@ const HomePage: React.FC = () => {
 
             {/* Trust Bar */}
             <section className="py-8">
-                <div className="max-w-6xl mx-auto px-6">
+                <div className="max-w-screen-2xl mx-auto px-6">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                         <div>
                             <p className="text-3xl font-bold text-primary">25+</p>
@@ -106,11 +117,11 @@ const HomePage: React.FC = () => {
 
             {/* Products Section */}
             <section className="py-16">
-                 <div className="max-w-6xl mx-auto px-6">
+                 <div className="max-w-screen-2xl mx-auto px-6">
                     <h2 className="text-4xl font-bold text-center mb-12">Una Plataforma, Todas las Soluciones</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {launchedProducts.map(product => (
-                             <Link to={`/productos/${product.id.replace('elias_', '')}`} key={product.id} className="block group">
+                             <Link to={`/productos/${getProductPath(product.id)}`} key={product.id} className="block group">
                                 <div className="card-premium p-6 h-full">
                                     <product.icon className="h-10 w-10 text-nexum-primary mb-4"/>
                                     <h3 className="text-xl font-bold mb-2">{product.title}</h3>
@@ -127,7 +138,7 @@ const HomePage: React.FC = () => {
 
              {/* Benefits Section */}
             <section className="py-16 bg-nexum-dark dark border-y border-gray-700">
-                <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+                <div className="max-w-screen-2xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
                     <div className="text-white">
                         <h2 className="text-4xl font-bold mb-6">Resultados, no promesas.</h2>
                         <p className="opacity-90 mb-6">NEXUM no es solo software, es tu socio estratégico para el crecimiento. Nuestros clientes experimentan mejoras medibles desde el primer mes.</p>
@@ -146,7 +157,7 @@ const HomePage: React.FC = () => {
             
             {/* Testimonials */}
             <section className="py-16">
-                 <div className="max-w-4xl mx-auto px-6 text-center">
+                 <div className="max-w-5xl mx-auto px-6 text-center">
                      <h2 className="text-4xl font-bold mb-12">Lo que dicen nuestros clientes</h2>
                      <div className="space-y-8">
                          {testimonials.map((t, i) => (
@@ -161,7 +172,7 @@ const HomePage: React.FC = () => {
             
              {/* Integrations */}
             <section className="py-16">
-                <div className="max-w-6xl mx-auto px-6 text-center">
+                <div className="max-w-screen-2xl mx-auto px-6 text-center">
                     <h2 className="text-4xl font-bold mb-4">Se Integra con tus Herramientas</h2>
                     <p className="text-text-secondary mb-8">NEXUM se conecta con el software que ya usas.</p>
                     <div className="flex flex-wrap justify-center items-center gap-8">
@@ -173,7 +184,7 @@ const HomePage: React.FC = () => {
 
             {/* Final CTA */}
             <section className="py-16">
-                <div className="max-w-4xl mx-auto px-6">
+                <div className="max-w-5xl mx-auto px-6">
                     <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white p-8 rounded-xl text-center shadow-2xl">
                         <h2 className="text-3xl font-bold">Comienza Hoy y Ahorra 50%</h2>
                         <p className="opacity-90 mt-2 mb-6">Oferta por tiempo limitado para early adopters. Transforma tu estudio jurídico ahora.</p>

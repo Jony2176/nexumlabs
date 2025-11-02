@@ -1,3 +1,7 @@
+
+
+
+
 // FIX: Imported 'React' to resolve 'Cannot find name' error.
 import React from 'react';
 import { 
@@ -46,9 +50,9 @@ export const MODULES = [
     {
         id: 'dashboard_premium',
         icon: LayoutDashboard,
-        title: 'Dashboard Premium',
+        title: 'Panel Premium',
         description: 'Tome decisiones estratégicas basadas en datos para impulsar el crecimiento y la rentabilidad.',
-        ssoLink: '/app/dashboard',
+        ssoLink: '/app/panel-control',
     },
     {
         id: 'elias_avatar_partner',
@@ -68,7 +72,7 @@ export const MODULES = [
 
 export const SIDEBAR_CONFIG_BY_ROLE: { [key: string]: NavItemExpanded[] } = {
   super_admin: [
-    { id: 'admin_dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
+    { id: 'admin_dashboard', label: 'Panel de Administración', icon: LayoutDashboard, path: '/admin/panel' },
     { id: 'admin_clients', label: 'Clientes', icon: Building, path: '/admin/clients' },
     { id: 'admin_affiliates', label: 'Afiliados', icon: UserPlus, path: '/admin/affiliates' },
     { id: 'admin_financial', label: 'Finanzas', icon: DollarSign, path: '/admin/financial' },
@@ -79,22 +83,36 @@ export const SIDEBAR_CONFIG_BY_ROLE: { [key: string]: NavItemExpanded[] } = {
     { id: 'admin_settings', label: 'Configuración Global', icon: Settings, path: '/admin/settings' },
   ],
   owner: [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/app/dashboard' },
+    { id: 'dashboard', label: 'Panel de Control', icon: LayoutDashboard, path: '/app/panel-control' },
     { id: 'modules', label: 'Módulos', icon: Puzzle, path: '/app/modules' },
     { id: 'jurispredict_ai', label: 'JurisPredict AI', icon: BrainCircuit, path: '/app/jurispredict' },
     { id: 'elias_avatar_partner', label: 'Avatar Partner', icon: User, path: '/app/avatar' },
+    { id: 'integrations', label: 'Integraciones', icon: LinkIcon, path: '/app/integrations' },
+    { id: 'support', label: 'Soporte', icon: HelpCircle, path: '/app/support' },
+    { id: 'subscription', label: 'Suscripción y Pagos', icon: CreditCard, path: '/app/subscription' },
+    { id: 'settings', label: 'Configuración', icon: Settings, path: '/app/configuracion' },
+  ],
+  admin: [
+    { id: 'dashboard', label: 'Panel de Control', icon: LayoutDashboard, path: '/app/panel-control' },
+    { id: 'modules', label: 'Módulos', icon: Puzzle, path: '/app/modules' },
+    { id: 'jurispredict_ai', label: 'JurisPredict AI', icon: BrainCircuit, path: '/app/jurispredict' },
+    { id: 'elias_avatar_partner', label: 'Avatar Partner', icon: User, path: '/app/avatar' },
+    { id: 'integrations', label: 'Integraciones', icon: LinkIcon, path: '/app/integrations' },
+    { id: 'support', label: 'Soporte', icon: HelpCircle, path: '/app/support' },
     { id: 'subscription', label: 'Suscripción y Pagos', icon: CreditCard, path: '/app/subscription' },
     { id: 'settings', label: 'Configuración', icon: Settings, path: '/app/configuracion' },
   ],
   user: [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/app/dashboard' },
+    { id: 'dashboard', label: 'Panel de Control', icon: LayoutDashboard, path: '/app/panel-control' },
     { id: 'modules', label: 'Módulos', icon: Puzzle, path: '/app/modules' },
     { id: 'jurispredict_ai', label: 'JurisPredict AI', icon: BrainCircuit, path: '/app/jurispredict' },
     { id: 'elias_avatar_partner', label: 'Avatar Partner', icon: User, path: '/app/avatar' },
+    { id: 'integrations', label: 'Integraciones', icon: LinkIcon, path: '/app/integrations' },
+    { id: 'support', label: 'Soporte', icon: HelpCircle, path: '/app/support' },
     { id: 'settings', label: 'Configuración', icon: Settings, path: '/app/configuracion' },
   ],
   affiliate: [
-    { id: 'portal_dashboard', label: 'Dashboard', path: '/portal/dashboard', icon: LayoutDashboard },
+    { id: 'portal_dashboard', label: 'Panel Principal', path: '/portal/panel', icon: LayoutDashboard },
     { id: 'portal_urls', label: 'URLs y Enlaces', path: '/portal/urls', icon: LinkIcon },
     { id: 'portal_wallet', label: 'Mi Billetera', path: '/portal/wallet', icon: Wallet },
     { id: 'portal_referrals', label: 'Referidos', path: '/portal/referrals', icon: UsersIcon },

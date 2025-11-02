@@ -12,9 +12,9 @@ const TimeDisplay: React.FC = () => {
   }, []);
 
   return (
-    <div className="text-xs theme-text-secondary hidden sm:block">
+    <div className="text-xs text-text-secondary hidden sm:block">
       <span>{currentTime}</span>
-      <span className="font-semibold theme-text-muted"> (ARG)</span>
+      <span className="font-semibold text-text-muted"> (ARG)</span>
     </div>
   );
 };

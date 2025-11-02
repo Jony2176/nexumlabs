@@ -27,4 +27,4 @@ const AnimatedNumber = ({ value, prefix = "", suffix = "", isCurrency = false })
   );
 };
 
-export default React.memo(AnimatedNumber);
+export default AnimatedNumber;

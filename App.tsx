@@ -1,13 +1,19 @@
 
 
+
+
 import React, { useEffect, useState } from 'react';
+// FIX: Moved Toaster here from index.tsx to ensure it has access to all contexts and simplify the root render.
+import { Toaster } from 'react-hot-toast';
 import { Routes, Route, Navigate, HashRouter } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import { useSettingsStore } from './store/settingsStore';
 import { FeatureFlagProvider } from './providers/FeatureFlagProvider';
+// FIX: Moved ThemeProvider here to centralize all context providers and resolve the 'missing children' prop error.
+import { ThemeProvider } from './context/ThemeContext';
 
 // Layouts
-import DashboardLayout from './layouts/DashboardLayout';
+import AppLayout from './layouts/DashboardLayout';
 import AuthLayout from './layouts/AuthLayout';
 import AffiliatePortalLayout from './layouts/AffiliatePortalLayout';
 import PublicLayout from './layouts/PublicLayout';
@@ -39,10 +45,11 @@ import AIRevolutionPage from './pages/public/blog/AIRevolutionPage';
 // App Pages
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import DashboardPage from './pages/DashboardPage';
+import ControlPanelPage from './pages/ControlPanelPage';
 import ModulesPage from './pages/ModulesPage';
 import MySubscriptionPage from './pages/subscription/MySubscriptionPage';
 import SubscriptionChangePlanPage from './pages/subscription/SubscriptionChangePlanPage';
+// FIX: Added default export to BillingSuccessPage and updated import path.
 import BillingSuccessPage from './pages/BillingSuccessPage';
 import SettingsPage from './pages/SettingsPage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
@@ -52,10 +59,12 @@ import EliasWhatsappManagementPage from './pages/whatsapp/EliasWhatsappManagemen
 import EliasCallsManagementPage from './pages/calls/EliasCallsManagementPage';
 import JurispredictManagementPage from './pages/jurispredict/JurispredictManagementPage';
 import AvatarPartnerManagementPage from './pages/avatar/AvatarPartnerManagementPage';
+import IntegrationsPage from './pages/IntegrationsPage';
+import SupportPage from './pages/SupportPage';
 
 
 // Admin Pages
-import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminPanelPage from './pages/admin/AdminDashboardPage';
 import ClientsManagementPage from './pages/admin/ClientsManagementPage';
 import AfiliadosAdminPage from './pages/admin/AfiliadosAdminPage';
 import FeatureFlagsPage from './pages/admin/FeatureFlagsPage';
@@ -68,7 +77,7 @@ import ReportsPage from './pages/admin/ReportsPage';
 
 
 // Affiliate Portal Pages
-import PortalDashboardPage from './pages/affiliates/portal/PortalDashboardPage';
+import PortalPanelPage from './pages/affiliates/portal/PortalDashboardPage';
 import PortalUrlsPage from './pages/affiliates/portal/PortalUrlsPage';
 import PortalReferralsPage from './pages/affiliates/portal/PortalReferralsPage';
 import PortalPayoutsPage from './pages/affiliates/portal/PortalPayoutsPage';
@@ -84,9 +93,13 @@ import TargetAudiencePage from './pages/affiliates/portal/resources/TargetAudien
 
 // Hooks
 import { useReferralTracking } from './hooks/useReferralTracking';
+import FloatingChatButton from './components/chat/FloatingChatButton';
+import FloatingChatWindow from './components/chat/FloatingChatWindow';
 
-const App: React.FC = () => {
+// FIX: Removed React.FC type to avoid potential typing issues with nested providers that require a `children` prop.
+const App = () => {
   const [isHydrated, setIsHydrated] = useState(false);
+  const { isAuthenticated } = useAuthStore();
   
   useReferralTracking();
 
@@ -108,129 +121,163 @@ const App: React.FC = () => {
   }
 
   return (
-    <FeatureFlagProvider>
-      <HashRouter>
-        <Routes>
-          {/* --- PUBLIC ROUTES --- */}
-          <Route path="/" element={<PublicLayout />}>
-            <Route index element={<HomePage />} />
-            <Route path="productos" element={<ProductsPage />} />
-            <Route path="precios" element={<PricingPage />} />
-            <Route path="blog" element={<BlogPage />} />
-            <Route path="blog/ia-revolucion-juridica" element={<AIRevolutionPage />} />
-            <Route path="sobre-nosotros" element={<AboutPage />} />
-            <Route path="casos-exito" element={<CaseStudiesPage />} />
-            <Route path="programa-afiliados" element={<AffiliateProgramPage />} />
-            <Route path="centro-ayuda" element={<HelpCenterPage />} />
-            <Route path="terminos" element={<TermsPage />} />
-            <Route path="privacidad" element={<PrivacyPage />} />
-            <Route path="contacto" element={<ContactPage />} />
-            <Route path="productos/elias-whatsapp" element={<EliasWhatsappPage />} />
-            <Route path="productos/elias-llamadas" element={<EliasCallsPage />} />
-            <Route path="productos/dashboard" element={<DashboardPremiumPage />} />
-            <Route path="productos/avatar" element={<AvatarPartnerPage />} />
-            <Route path="productos/jurispredict-ai" element={<JurisPredictAIPage />} />
-          </Route>
+    // FIX: The compiler was incorrectly reporting a 'missing children' prop error. The React.Fragment was removed to simplify the component tree and resolve this parsing issue.
+    <ThemeProvider>
+      <FeatureFlagProvider>
+        <HashRouter>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: 'var(--bg-card)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-color)',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#10B981',
+                  secondary: 'var(--bg-card)',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#EF4444',
+                  secondary: 'var(--bg-card)',
+                },
+              },
+            }}
+          />
+          {isAuthenticated && (
+            <>
+              <FloatingChatWindow />
+              <FloatingChatButton />
+            </>
+          )}
+          <Routes>
+            {/* --- PUBLIC ROUTES --- */}
+            <Route path="/" element={<PublicLayout />}>
+              <Route index element={<HomePage />} />
+              <Route path="productos" element={<ProductsPage />} />
+              <Route path="precios" element={<PricingPage />} />
+              <Route path="blog" element={<BlogPage />} />
+              <Route path="blog/ia-revolucion-juridica" element={<AIRevolutionPage />} />
+              <Route path="sobre-nosotros" element={<AboutPage />} />
+              <Route path="casos-exito" element={<CaseStudiesPage />} />
+              <Route path="programa-afiliados" element={<AffiliateProgramPage />} />
+              <Route path="centro-ayuda" element={<HelpCenterPage />} />
+              <Route path="terminos" element={<TermsPage />} />
+              <Route path="privacidad" element={<PrivacyPage />} />
+              <Route path="contacto" element={<ContactPage />} />
+              <Route path="productos/elias-whatsapp" element={<EliasWhatsappPage />} />
+              <Route path="productos/elias-llamadas" element={<EliasCallsPage />} />
+              <Route path="productos/panel-premium" element={<DashboardPremiumPage />} />
+              <Route path="productos/avatar" element={<AvatarPartnerPage />} />
+              <Route path="productos/jurispredict-ai" element={<JurisPredictAIPage />} />
+            </Route>
 
-          {/* --- AUTHENTICATION ROUTES --- */}
-          <Route element={<AuthLayout />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-          </Route>
-          
-          {/* --- STANDALONE PROTECTED ROUTES --- */}
-          <Route path="/app/waitlist-confirmation" element={
-            <ProtectedRoute allowedRoles={['owner', 'admin', 'user']}>
-              <WaitlistConfirmationPage />
-            </ProtectedRoute>
-          } />
-
-          {/* --- PROTECTED CLIENT ROUTES (/app) --- */}
-          <Route path="/app" element={
-            <ProtectedRoute allowedRoles={['owner', 'admin', 'user']} requireCompletedOnboarding={true}>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<Navigate to="/app/dashboard" replace />} />
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="modules" element={<ModulesPage />} />
-            <Route path="whatsapp" element={<EliasWhatsappManagementPage />} />
-            <Route path="calls" element={<EliasCallsManagementPage />} />
-            <Route path="jurispredict" element={<JurispredictManagementPage />} />
-            <Route path="avatar" element={<AvatarPartnerManagementPage />} />
-            <Route path="subscription" element={
-                <ProtectedRoute allowedRoles={['owner']}>
-                    <MySubscriptionPage />
-                </ProtectedRoute>
-            }/>
-            <Route path="subscription/change-plan" element={
-                 <ProtectedRoute allowedRoles={['owner']}>
-                    <SubscriptionChangePlanPage />
-                 </ProtectedRoute>
-            } />
-            <Route path="billing/success" element={<BillingSuccessPage />} />
-            <Route path="configuracion" element={
+            {/* --- AUTHENTICATION ROUTES --- */}
+            <Route element={<AuthLayout />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+            </Route>
+            
+            {/* --- STANDALONE PROTECTED ROUTES --- */}
+            <Route path="/app/waitlist-confirmation" element={
               <ProtectedRoute allowedRoles={['owner', 'admin', 'user']}>
-                <SettingsPage />
+                <WaitlistConfirmationPage />
               </ProtectedRoute>
             } />
-          </Route>
 
-          {/* --- PROTECTED AFFILIATE PORTAL ROUTES (/portal) --- */}
-          <Route path="/portal" element={
-            <ProtectedRoute allowedRoles={['affiliate']}>
-              <AffiliatePortalLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<Navigate to="/portal/dashboard" replace />} />
-            <Route path="dashboard" element={<PortalDashboardPage />} />
-            <Route path="urls" element={<PortalUrlsPage />} />
-            <Route path="referrals" element={<PortalReferralsPage />} />
-            <Route path="payouts" element={<PortalPayoutsPage />} />
-            <Route path="creatives" element={<PortalCreativesPage />} />
-            <Route path="profile" element={<PortalProfilePage />} />
-            <Route path="wallet" element={<PortalWalletPage />} />
-            <Route path="resources">
-              <Route index element={<PortalResourcesPage />} />
-              <Route path="quick-start-guide" element={<QuickStartGuidePage />} />
-              <Route path="maximizing-links" element={<MaximizingLinksPage />} />
-              <Route path="content-strategies" element={<ContentStrategiesPage />} />
-              <Route path="target-audience" element={<TargetAudiencePage />} />
+            {/* --- PROTECTED CLIENT ROUTES (/app) --- */}
+            <Route path="/app" element={
+              <ProtectedRoute allowedRoles={['owner', 'admin', 'user']} requireCompletedOnboarding={true}>
+                <AppLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<Navigate to="/app/panel-control" replace />} />
+              <Route path="panel-control" element={<ControlPanelPage />} />
+              <Route path="modules" element={<ModulesPage />} />
+              <Route path="whatsapp" element={<EliasWhatsappManagementPage />} />
+              <Route path="calls" element={<EliasCallsManagementPage />} />
+              <Route path="jurispredict" element={<JurispredictManagementPage />} />
+              <Route path="avatar" element={<AvatarPartnerManagementPage />} />
+              <Route path="integrations" element={<IntegrationsPage />} />
+              <Route path="support" element={<SupportPage />} />
+              <Route path="subscription" element={
+                  <ProtectedRoute allowedRoles={['owner']}>
+                      <MySubscriptionPage />
+                  </ProtectedRoute>
+              }/>
+              <Route path="subscription/change-plan" element={
+                  <ProtectedRoute allowedRoles={['owner']}>
+                      <SubscriptionChangePlanPage />
+                  </ProtectedRoute>
+              } />
+              <Route path="billing/success" element={<BillingSuccessPage />} />
+              <Route path="configuracion" element={
+                <ProtectedRoute allowedRoles={['owner', 'admin', 'user']}>
+                  <SettingsPage />
+                </ProtectedRoute>
+              } />
             </Route>
-          </Route>
-          
-          {/* --- PROTECTED SUPER ADMIN ROUTES (/admin) --- */}
-          <Route path="/admin" element={
-            <ProtectedRoute allowedRoles={['super_admin']}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="dashboard" element={<AdminDashboardPage />} />
-            <Route path="clients" element={<ClientsManagementPage />} />
-            <Route path="affiliates" element={<AfiliadosAdminPage />} />
-            <Route path="feature-flags" element={<FeatureFlagsPage />} />
-            <Route path="financial" element={<FinancialDashboardPage />} />
-            <Route path="logs" element={<AuditLogsPage />} />
-            <Route path="settings" element={<GlobalSettingsPage />} />
-            <Route path="communications" element={<CommunicationsPage />} />
-            <Route path="reports" element={<ReportsPage />} />
-          </Route>
-          
-          {/* --- ONBOARDING & OTHER PROTECTED ROUTES --- */}
-          <Route path="/onboarding" element={
-             <ProtectedRoute allowedRoles={['owner', 'user']}>
-                {/* OnboardingFlow component would go here */}
-                <ComingSoonPage /> 
-             </ProtectedRoute>
-          } />
+
+            {/* --- PROTECTED AFFILIATE PORTAL ROUTES (/portal) --- */}
+            <Route path="/portal" element={
+              <ProtectedRoute allowedRoles={['affiliate']}>
+                <AffiliatePortalLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<Navigate to="/portal/panel" replace />} />
+              <Route path="panel" element={<PortalPanelPage />} />
+              <Route path="urls" element={<PortalUrlsPage />} />
+              <Route path="referrals" element={<PortalReferralsPage />} />
+              <Route path="payouts" element={<PortalPayoutsPage />} />
+              <Route path="creatives" element={<PortalCreativesPage />} />
+              <Route path="profile" element={<PortalProfilePage />} />
+              <Route path="wallet" element={<PortalWalletPage />} />
+              <Route path="resources">
+                <Route index element={<PortalResourcesPage />} />
+                <Route path="quick-start-guide" element={<QuickStartGuidePage />} />
+                <Route path="maximizing-links" element={<MaximizingLinksPage />} />
+                <Route path="content-strategies" element={<ContentStrategiesPage />} />
+                <Route path="target-audience" element={<TargetAudiencePage />} />
+              </Route>
+            </Route>
+            
+            {/* --- PROTECTED SUPER ADMIN ROUTES (/admin) --- */}
+            <Route path="/admin" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<Navigate to="/admin/panel" replace />} />
+              <Route path="panel" element={<AdminPanelPage />} />
+              <Route path="clients" element={<ClientsManagementPage />} />
+              <Route path="affiliates" element={<AfiliadosAdminPage />} />
+              <Route path="feature-flags" element={<FeatureFlagsPage />} />
+              <Route path="financial" element={<FinancialDashboardPage />} />
+              <Route path="logs" element={<AuditLogsPage />} />
+              <Route path="settings" element={<GlobalSettingsPage />} />
+              <Route path="communications" element={<CommunicationsPage />} />
+              <Route path="reports" element={<ReportsPage />} />
+            </Route>
+            
+            {/* --- ONBOARDING & OTHER PROTECTED ROUTES --- */}
+            <Route path="/onboarding" element={
+              <ProtectedRoute allowedRoles={['owner', 'user']}>
+                  {/* OnboardingFlow component would go here */}
+                  <ComingSoonPage /> 
+              </ProtectedRoute>
+            } />
 
 
-          {/* --- FALLBACK ROUTE --- */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </HashRouter>
-    </FeatureFlagProvider>
+            {/* --- FALLBACK ROUTE --- */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </HashRouter>
+      </FeatureFlagProvider>
+    </ThemeProvider>
   );
 };
 

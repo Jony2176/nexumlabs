@@ -73,7 +73,7 @@ const AffiliateDashboardPage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold theme-text-primary">Dashboard de Afiliados</h1>
+        <h1 className="text-3xl font-bold theme-text-primary">Panel de Afiliados</h1>
         <p className="theme-text-secondary mt-1">Visión general del rendimiento de tu programa de afiliados.</p>
       </div>
 

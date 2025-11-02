@@ -1,23 +1,49 @@
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
-// This store is kept for potential future settings.
-// Image assets are now hardcoded in constants.ts
 interface SettingsState {
-  // Future settings can be added here.
+  logoUrl: string | null;
+  setLogoUrl: (url: string | null) => void;
+  logoSize: number;
+  setLogoSize: (size: number) => void;
+  globalLogoUrl: string | null;
+  setGlobalLogoUrl: (url: string | null) => void;
+  globalLogoSize: number;
+  setGlobalLogoSize: (size: number) => void;
+  useRetinaLogo: boolean;
+  setUseRetinaLogo: (use: boolean) => void;
+  retinaLogoUrl: string | null;
+  setRetinaLogoUrl: (url: string | null) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
-      // Future state setters can be added here.
+      logoUrl: null,
+      setLogoUrl: (url) => set({ logoUrl: url }),
+      logoSize: 60,
+      setLogoSize: (size) => set({ logoSize: size }),
+      globalLogoUrl: null,
+      setGlobalLogoUrl: (url) => set({ globalLogoUrl: url }),
+      globalLogoSize: 150,
+      setGlobalLogoSize: (size) => set({ globalLogoSize: size }),
+      useRetinaLogo: false,
+      setUseRetinaLogo: (use) => set({ useRetinaLogo: use }),
+      retinaLogoUrl: null,
+      setRetinaLogoUrl: (url) => set({ retinaLogoUrl: url }),
     }),
     {
       name: 'nexum-settings-storage',
-      // FIX: Only persist the data properties, excluding the functions.
-      // This was the root cause of the persistence failure.
-      partialize: (state) => ({ ...state }),
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ 
+        logoUrl: state.logoUrl,
+        logoSize: state.logoSize,
+        globalLogoUrl: state.globalLogoUrl,
+        globalLogoSize: state.globalLogoSize,
+        useRetinaLogo: state.useRetinaLogo,
+        retinaLogoUrl: state.retinaLogoUrl,
+      }),
     }
   )
 );

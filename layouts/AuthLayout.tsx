@@ -1,3 +1,5 @@
+
+
 import React, { useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import Logo from '../components/ui/Logo';
@@ -25,7 +27,7 @@ const AuthLayout: React.FC = () => {
         <div className="hidden lg:flex flex-col items-center justify-center p-12 text-white">
             <div className="max-w-md w-full">
                 <Link to="/" className="block mb-12">
-                     <Logo className="h-20 w-auto" />
+                     <Logo className="w-[calc(var(--logo-base-width,150px)*1.5)] h-auto" />
                 </Link>
                 <h1 className="text-4xl font-bold leading-tight mb-6">
                     El Futuro de la <span className="text-gradient">Gestión Legal</span> ya está aquí.
@@ -61,7 +63,7 @@ const AuthLayout: React.FC = () => {
           <div className="w-full max-w-md">
             <div className="mb-8 flex justify-center lg:hidden">
               <Link to="/" aria-label="Ir a la página de inicio">
-                <Logo className="h-16 w-auto" />
+                <Logo className="w-[var(--logo-base-width,150px)] h-auto" />
               </Link>
             </div>
             <Outlet />

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Wallet, PaymentConfiguration, Transaction } from '../../../types';
-import * as walletApi from '../../../services/walletApi';
+import api from '../../../services/api';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import WithdrawButton from '../../../components/affiliates/portal/wallet/WithdrawButton';
 import PaymentConfigComponent from '../../../components/affiliates/portal/wallet/PaymentConfiguration';
@@ -20,9 +20,9 @@ const PortalWalletPage: React.FC = () => {
   const loadData = async () => {
     try {
       const [walletData, transactionsData, configData] = await Promise.all([
-        walletApi.getWallet(),
-        walletApi.getTransactions(),
-        walletApi.getPaymentConfig(),
+        api.getWallet(),
+        api.getTransactions(),
+        api.getPaymentConfig(),
       ]);
       setWallet(walletData);
       setTransactions(transactionsData);
@@ -45,7 +45,7 @@ const PortalWalletPage: React.FC = () => {
     const toastId = toast.loading('Iniciando retiro automático...');
 
     try {
-      const response = await walletApi.requestWithdrawal({
+      const response = await api.requestWithdrawal({
         usd_amount: wallet.balance_usd,
         ars_amount: wallet.balance_ars,
         exchange_rate: wallet.exchange_rate,

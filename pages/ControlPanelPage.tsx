@@ -6,7 +6,7 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useFeatureFlags } from '../providers/FeatureFlagProvider';
 import { useModules } from '../hooks/useModules';
 
-const DashboardPage: React.FC = () => {
+const ControlPanelPage: React.FC = () => {
   const { isAvailable } = useFeatureFlags();
   const { mergedModules, isLoading: modulesLoading } = useModules();
 
@@ -33,4 +33,4 @@ const DashboardPage: React.FC = () => {
   return <DashboardBasico />;
 };
 
-export default DashboardPage;
+export default ControlPanelPage;

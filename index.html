@@ -47,13 +47,13 @@
 
       /* 2. LIGHT/DARK MODE THEME MAPPING */
       :root.light {
-        --bg-primary: #F9FAFB;
+        --bg-primary: #F3F4F6; /* gray-100 */
         --bg-secondary: #FFFFFF;
         --bg-surface: #FFFFFF;
-        --text-primary: #111827;
-        --text-secondary: #6B7280;
-        --text-muted: #9CA3AF;
-        --border-color: #E5E7EB;
+        --text-primary: #1F2937; /* gray-800 */
+        --text-secondary: #4B5563; /* gray-600 */
+        --text-muted: #6B7280; /* gray-500 */
+        --border-color: #E5E7EB; /* gray-200 */
         --accent-color: var(--nexum-primary);
         --nexum-dark: #020617; /* For components that need dark bg in light mode */
       }
@@ -169,12 +169,15 @@
       /* Sidebar */
       .sidebar-premium {
         width: 280px;
-        background: var(--bg-secondary);
+        background: linear-gradient(180deg, #0F172A 0%, #020617 100%);
         border-right: 1px solid var(--border-color);
         height: 100%;
         display: flex; flex-direction: column;
       }
-      .dark .sidebar-premium { background: linear-gradient(180deg, #0F172A 0%, #020617 100%); }
+      .light .sidebar-premium {
+        --text-primary: #F9FAFB;
+        --text-secondary: #CBD5E1;
+      }
       
       .sidebar-item {
         display: flex; align-items: center;
@@ -260,6 +263,26 @@
         10% { opacity: 1; } 90% { opacity: 1; }
         to { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
       }
+
+      .dark .demo-live-btn {
+        border-color: var(--nexum-success);
+        color: var(--nexum-success);
+        background-color: color-mix(in srgb, var(--nexum-success) 10%, transparent);
+      }
+      .dark .demo-live-btn:hover {
+        border-color: var(--nexum-success);
+        background-color: var(--nexum-success);
+        color: white;
+      }
+      .dark .btn-login-ghost {
+        color: white;
+        border: 1px solid transparent;
+      }
+      .dark .btn-login-ghost:hover {
+        color: white;
+        background-color: transparent;
+        border-color: #a3e635;
+      }
     </style>
   <script>
     tailwind.config = {
@@ -271,6 +294,11 @@
             'nexum-secondary': 'var(--nexum-secondary)',
             'nexum-accent': 'var(--nexum-accent)',
             'nexum-dark': 'var(--nexum-dark)',
+            'text-primary': 'var(--text-primary)',
+            'text-secondary': 'var(--text-secondary)',
+            'text-muted': 'var(--text-muted)',
+            'border-color': 'var(--border-color)',
+            'primary': 'var(--accent-color)',
           }
         }
       }

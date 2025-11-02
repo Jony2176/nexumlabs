@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Calendar, RefreshCw, Download, ChevronDown } from 'lucide-react';
@@ -9,7 +8,7 @@ const FinancialDashboardHeader: React.FC = () => {
     return (
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div>
-                <h1 className="text-3xl font-bold text-white">Dashboard Financiero</h1>
+                <h1 className="text-3xl font-bold text-white">Panel Financiero</h1>
                 <p className="text-gray-400 mt-1">Visión general de la salud financiera del negocio.</p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">

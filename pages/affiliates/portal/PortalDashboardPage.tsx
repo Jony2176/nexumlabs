@@ -71,7 +71,7 @@ const ResourceCard: React.FC<(typeof mockResources)[0]> = ({ icon: Icon, type, t
     );
 };
 
-const PortalDashboardPage: React.FC = () => {
+const PortalPanelPage: React.FC = () => {
     const stats = {
         visits: 1254,
         conversions: '45 (3.6%)',
@@ -102,7 +102,7 @@ const PortalDashboardPage: React.FC = () => {
     return (
         <div className="space-y-8">
             <div>
-                <h1 className="text-3xl font-bold text-text-primary">Dashboard</h1>
+                <h1 className="text-3xl font-bold text-text-primary">Panel Principal</h1>
                 <p className="text-text-secondary mt-1">Bienvenido a tu portal de afiliados.</p>
             </div>
             
@@ -182,4 +182,4 @@ const PortalDashboardPage: React.FC = () => {
     );
 }
 
-export default PortalDashboardPage;
+export default PortalPanelPage;

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { kpis, mrrData, revenueByProduct, clientsData, quickActions, alerts, topAffiliates } from '../../data/adminDashboardMockData';
 import KPICard from '../../components/admin/dashboard/KPICard';
@@ -11,7 +12,7 @@ import TopAffiliates from '../../components/affiliates/admin/TopAffiliates';
 import DashboardSkeleton from '../../components/admin/dashboard/DashboardSkeleton';
 import { DollarSign, FileText, Filter, Calendar } from 'lucide-react';
 
-const AdminDashboardPage: React.FC = () => {
+const AdminPanelPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -32,19 +33,19 @@ const AdminDashboardPage: React.FC = () => {
             <div>
                 <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-white">Master Admin Dashboard</h1>
+                        <h1 className="text-3xl font-bold text-text-primary">Panel de Administración Principal</h1>
                         <p className="text-gray-400 mt-1">Visión general del negocio en tiempo real.</p>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button className="flex items-center gap-2 px-4 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700">
+                        <button className="flex items-center gap-2 px-4 py-2 text-sm theme-text-primary bg-bg-surface border theme-border rounded-lg hover:bg-bg-secondary">
                             <Calendar className="h-4 w-4" />
                             <span>Este Mes</span>
                         </button>
-                         <button className="flex items-center gap-2 px-4 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700">
+                         <button className="flex items-center gap-2 px-4 py-2 text-sm theme-text-primary bg-bg-surface border theme-border rounded-lg hover:bg-bg-secondary">
                             <Filter className="h-4 w-4" />
                             <span>Filtros</span>
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700">
+                        <button className="flex items-center gap-2 px-4 py-2 text-sm theme-text-primary bg-bg-surface border theme-border rounded-lg hover:bg-bg-secondary">
                            <FileText className="h-4 w-4" />
                             <span>Exportar</span>
                         </button>
@@ -88,4 +89,4 @@ const AdminDashboardPage: React.FC = () => {
     );
 };
 
-export default AdminDashboardPage;
+export default AdminPanelPage;

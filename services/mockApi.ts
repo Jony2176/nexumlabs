@@ -1,4 +1,5 @@
 
+
 import { User, Organization, Subscription, Addon, PaymentMethod, Invoice, Plan } from '../types';
 import { MOCK_WALLET, MOCK_PAYMENT_CONFIG, MOCK_TRANSACTIONS } from '../data/walletMockData';
 import { MOCK_ADDONS, MOCK_PAYMENT_METHODS, MOCK_INVOICES } from '../data/subscriptionMockData';
@@ -347,6 +348,21 @@ class MockAPI {
     return MOCK_TRANSACTIONS.filter(t => t.type === (filter === 'earnings' ? 'earning' : 'withdrawal'));
   }
   
+  async chatWithData(message: string) {
+      await this.delay(1500); // Simulate network delay
+      const lowerMessage = message.toLowerCase();
+      let responseText = "No he entendido tu pregunta. ¿Puedes reformularla? Mis capacidades actuales incluyen: resumir el MRR, listar clientes activos o mostrar el afiliado con más ingresos.";
+      
+      if (lowerMessage.includes('mrr')) {
+          responseText = "El MRR actual es de $15,234 USD. Ha habido un crecimiento del 12.5% este mes.";
+      } else if (lowerMessage.includes('clientes activos')) {
+          responseText = "Actualmente tienes 25 clientes activos. 3 de ellos son nuevos este mes.";
+      } else if (lowerMessage.includes('afiliado')) {
+          responseText = "El afiliado con mayores ingresos este mes es 'Marketing Digital Pro' con $1,200 USD.";
+      }
+      
+      return { success: true, data: { response: responseText } };
+  }
 }
 
 // Export a single instance

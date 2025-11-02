@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertData } from '../../../types';
 import { AlertCircle, CheckCircle, Info, Bell } from 'lucide-react';
+import Card from '../../ui/Card';
 
 interface AlertsPanelProps {
   alerts: AlertData[];
@@ -15,8 +16,8 @@ const alertConfig = {
 
 const AlertsPanel: React.FC<AlertsPanelProps> = ({ alerts }) => {
   return (
-    <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6 shadow-lg h-full">
-      <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2"><Bell size={18}/> Alertas y Notificaciones</h3>
+    <Card className="p-6 shadow-lg h-full">
+      <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2"><Bell size={18}/> Alertas y Notificaciones</h3>
       <div className="space-y-4">
         {alerts.map((alert, index) => {
           const { icon: Icon, color } = alertConfig[alert.type];
@@ -24,8 +25,8 @@ const AlertsPanel: React.FC<AlertsPanelProps> = ({ alerts }) => {
             <div key={index} className="flex items-start gap-3">
               <Icon className={`w-5 h-5 mt-1 flex-shrink-0 ${color}`} />
               <div>
-                <p className="font-semibold text-white">{alert.title}</p>
-                <p className="text-sm text-gray-400">{alert.description}</p>
+                <p className="font-semibold text-text-primary">{alert.title}</p>
+                <p className="text-sm text-text-secondary">{alert.description}</p>
                 {alert.action && (
                   <button className="text-xs text-blue-400 hover:underline mt-1">{alert.action.label}</button>
                 )}
@@ -34,7 +35,7 @@ const AlertsPanel: React.FC<AlertsPanelProps> = ({ alerts }) => {
           );
         })}
       </div>
-    </div>
+    </Card>
   );
 };
 

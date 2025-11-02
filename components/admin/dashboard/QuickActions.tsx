@@ -3,18 +3,19 @@ import React from 'react';
 import { LucideIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import Card from '../../ui/Card';
 
 interface QuickActionsProps {
   actions: { icon: LucideIcon; label: string; color: string; key: string }[];
 }
 
 const colorClasses: { [key: string]: string } = {
-    green: 'bg-green-500/20 text-green-300 hover:bg-green-500/30',
-    blue: 'bg-blue-500/20 text-blue-300 hover:bg-blue-500/30',
-    purple: 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30',
-    gray: 'bg-gray-500/20 text-gray-300 hover:bg-gray-500/30',
-    orange: 'bg-orange-500/20 text-orange-300 hover:bg-orange-500/30',
-    slate: 'bg-slate-500/20 text-slate-300 hover:bg-slate-500/30',
+    green: 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-500/30',
+    blue: 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-500/30',
+    purple: 'bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-500/30',
+    gray: 'bg-gray-100 dark:bg-gray-500/20 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500/30',
+    orange: 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 hover:bg-orange-200 dark:hover:bg-orange-500/30',
+    slate: 'bg-slate-100 dark:bg-slate-500/20 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-500/30',
 }
 
 const QuickActions: React.FC<QuickActionsProps> = ({ actions }) => {
@@ -50,8 +51,8 @@ const QuickActions: React.FC<QuickActionsProps> = ({ actions }) => {
   };
     
   return (
-    <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6 shadow-lg h-full">
-      <h3 className="text-lg font-semibold text-white mb-4">Acciones Rápidas</h3>
+    <Card className="p-6 shadow-lg h-full">
+      <h3 className="text-lg font-semibold text-text-primary mb-4">Acciones Rápidas</h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {actions.map((action, index) => (
           <button 
@@ -63,7 +64,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ actions }) => {
           </button>
         ))}
       </div>
-    </div>
+    </Card>
   );
 };
 

@@ -5,7 +5,8 @@ import { homePaths } from '../../hooks/useRoleBasedNavigation';
 import toast from 'react-hot-toast';
 
 interface ProtectedRouteProps {
-  children: React.ReactElement;
+  // FIX: Changed type from React.ReactElement to React.ReactNode to allow for more flexible children, such as comments or multiple elements.
+  children: React.ReactNode;
   allowedRoles: Array<keyof typeof homePaths>;
   requireCompletedOnboarding?: boolean;
 }
@@ -30,7 +31,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles,
       return <Navigate to="/onboarding" replace />;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

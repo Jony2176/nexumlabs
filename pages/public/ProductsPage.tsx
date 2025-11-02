@@ -17,7 +17,12 @@ const ProductsPage: React.FC = () => {
           return;
         }
         
-        const productPath = module.id.replace('elias_', '').replace('_premium', '');
+        const getProductPath = (id: string) => {
+            if (id === 'dashboard_premium') return 'panel-premium';
+            return id.replace('elias_', '').replace('_premium', '');
+        }
+        
+        const productPath = getProductPath(module.id);
         navigate(`/productos/${productPath}`);
     };
 
@@ -31,7 +36,7 @@ const ProductsPage: React.FC = () => {
 
     return (
         <div className="py-16">
-            <div className="max-w-6xl mx-auto px-6 space-y-12">
+            <div className="max-w-screen-2xl mx-auto px-6 space-y-12">
                 <div className="text-center">
                     <h1 className="text-4xl font-bold text-text-primary">Nuestros Productos</h1>
                     <p className="text-text-secondary mt-2 max-w-2xl mx-auto">

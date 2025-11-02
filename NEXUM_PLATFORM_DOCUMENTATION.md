@@ -50,8 +50,8 @@ La aplicación está estructurada en torno a varios layouts clave para mantener 
 
 - `PublicLayout`: Para páginas de marketing, incluye `PublicHeader` y `PublicFooter`.
 - `AuthLayout`: Un layout dedicado de dos paneles para las páginas de inicio de sesión/registro, con un tema oscuro forzado.
-- `DashboardLayout`: El layout principal para el cliente, que incluye el `Sidebar` y el `Header`.
-- `AdminLayout`: Una versión especializada del layout del dashboard para superadministradores.
+- `AppLayout`: El layout principal para el cliente, que incluye el `Sidebar` y el `Header`.
+- `AdminLayout`: Una versión especializada del layout principal para superadministradores.
 - `AffiliatePortalLayout`: El layout para la sección específica de afiliados de la aplicación.
 
 ---
@@ -101,7 +101,7 @@ El proyecto sigue una estructura de carpetas basada en funcionalidades, promovie
 - **Estructura:**
     - **Rutas Públicas (`/`):** Encapsuladas en `PublicLayout`. Abiertas para todos.
     - **Rutas de Autenticación (`/login`, `/register`):** Encapsuladas en `AuthLayout`. Para usuarios no autenticados.
-    - **Rutas de Cliente Protegidas (`/app/*`):** Área principal de la aplicación, protegida por `ProtectedRoute` que verifica los roles `owner`, `admin`, `user`. Usa `DashboardLayout`.
+    - **Rutas de Cliente Protegidas (`/app/*`):** Área principal de la aplicación, protegida por `ProtectedRoute` que verifica los roles `owner`, `admin`, `user`. Usa `AppLayout`.
     - **Rutas de Afiliado Protegidas (`/portal/*`):** Área específica para afiliados, protegida por `ProtectedRoute` para el rol `affiliate`. Usa `AffiliatePortalLayout`.
     - **Rutas de Admin Protegidas (`/admin/*`):** Área de superadministrador, protegida por `ProtectedRoute` para el rol `super_admin`. Usa `AdminLayout`.
 - **Autorización:** El componente `ProtectedRoute` es crucial. Verifica el estado de autenticación y valida el rol del usuario contra una lista de `allowedRoles`. También maneja las redirecciones para accesos no autorizados.
@@ -120,6 +120,15 @@ Zustand se utiliza para una gestión de estado global simple y potente.
 - **Estrategia de Simulación (Mocking):** Una bandera global `USE_MOCK` controla si la aplicación se comunica con un backend real o con el archivo `mockApi.ts`. Esto es extremadamente útil para el desarrollo rápido del frontend sin un backend funcional.
 - **Autenticación:** El método `getHeaders` adjunta automáticamente el JWT de `useAuthStore` a las solicitudes autorizadas.
 - **Manejo de Errores:** `handleResponse` centraliza el manejo de errores, incluyendo un manejador global para errores `401 Unauthorized` que cierra la sesión del usuario.
+
+#### 3.4.1. Integración con Google Sheets (Nueva)
+
+Para cumplir con los nuevos requisitos de base de datos, se ha implementado una capa de servicio para leer datos directamente desde una hoja de cálculo de Google Sheets, actuando como una base de datos en tiempo real para ciertas entidades como Clientes y Afiliados.
+
+- **Nuevo Servicio (`services/googleSheetApi.ts`):** Este archivo encapsula la lógica para interactuar con la API v4 de Google Sheets. Utiliza una clave de API proporcionada a través de la variable de entorno `process.env.API_KEY`.
+- **Transformación de Datos:** Incluye una función de utilidad `sheetValuesToObjects` que convierte la respuesta de la API (un arreglo de arreglos) en un arreglo de objetos JSON, utilizando la primera fila de la hoja como encabezados para las claves. Realiza una coerción de tipos básica para números y booleanos.
+- **Sincronización de Datos:** Cuando `USE_MOCK` es `false`, los servicios existentes (`api.ts` y `affiliateApi.ts`) ahora invocan a `fetchSheetData` para obtener datos en vivo de las hojas de cálculo `Clients` y `Affiliates`.
+- **Limitación Actual:** La integración actual, utilizando una clave de API simple, es de **solo lectura**. Las operaciones de escritura (crear, actualizar, eliminar) no modificarán la hoja de cálculo de Google Sheets. Para habilitar la escritura, se requeriría una implementación más compleja con OAuth2 o un servicio de backend intermediario.
 
 ---
 
@@ -155,21 +164,21 @@ Un mercado completo de dos lados para afiliados y administradores.
 
 - **Seguimiento de Referidos (`hooks/useReferralTracking.ts`):** Un hook simple que verifica la URL en busca de un parámetro `ref=` al cargar la página y establece una cookie (`nexum_ref`) que persiste durante 30 días.
 - **Portal de Afiliados (`/portal/*`):** Una sección dedicada para afiliados registrados.
-    - **Dashboard:** KPIs sobre visitas, conversiones, comisiones pendientes.
+    - **Panel Principal:** KPIs sobre visitas, conversiones, comisiones pendientes.
     - **Generador de URL:** Crea enlaces de seguimiento únicos con parámetros de campaña.
     - **Billetera (`PortalWalletPage`):** Una billetera virtual que muestra las ganancias en USD y ARS (usando `dollarBlueService`). Los afiliados pueden gestionar métodos de pago y solicitar retiros.
     - **Recursos:** Una sección con guías y materiales de marketing.
 - **Gestión de Administrador (`/admin/affiliates`):**
-    - **Dashboard:** Resumen de alto nivel del rendimiento de todo el programa de afiliados.
+    - **Panel de Admin de Afiliados:** Resumen de alto nivel del rendimiento de todo el programa de afiliados.
     - **Tabla de Afiliados (`AffiliatesTable`):** Una tabla completa para ver, filtrar, buscar y gestionar a todos los afiliados. Los administradores pueden aprobar/rechazar afiliados pendientes, editar tasas de comisión y procesar pagos.
 
 ### 4.4. Portal de Superadministrador (`/admin/*`)
 
 El sistema nervioso central para gestionar toda la plataforma.
 
-- **Dashboard Maestro:** Agrega KPIs de todas las áreas: finanzas, clientes y afiliados.
+- **Panel de Administración Principal:** Agrega KPIs de todas las áreas: finanzas, clientes y afiliados.
 - **Gestión de Clientes:** Una tabla detallada de todas las organizaciones de clientes con puntuaciones de salud, métricas de uso y acciones rápidas.
-- **Dashboard Financiero:** Métricas financieras detalladas, evolución del MRR, gráficos de flujo de caja y desgloses de costos.
+- **Panel Financiero:** Métricas financieras detalladas, evolución del MRR, gráficos de flujo de caja y desgloses de costos.
 - **Gestión de Feature Flags:** Una UI para cambiar dinámicamente la configuración de los feature flags almacenada en Zustand, permitiendo un control en tiempo real sobre la disponibilidad de los módulos para todos los usuarios.
 - **Registros de Auditoría:** Un flujo de registros en tiempo real que muestra eventos importantes del sistema y del usuario.
 
@@ -188,12 +197,12 @@ Para replicar este proyecto, sigue estos pasos:
 4.  **Estructura del Proyecto:** Crea la estructura de carpetas como se detalla en la sección 3.1.
 5.  **Sistemas Centrales:**
     - Implementa `ThemeContext` para el modo claro/oscuro.
-    - Configura el enrutamiento principal en `App.tsx` con todos los layouts (`PublicLayout`, `DashboardLayout`, etc.).
+    - Configura el enrutamiento principal en `App.tsx` con todos los layouts (`PublicLayout`, `AppLayout`, etc.).
     - Crea los almacenes de Zustand (`authStore`, `featureFlagStore`).
 6.  **Construir Funcionalidades (de abajo hacia arriba):**
     - Comienza con componentes de UI simples en `/components/ui`.
     - Implementa el flujo de Autenticación (páginas de Login/Register, `ProtectedRoute`).
-    - Construye el `DashboardLayout` principal con el `Sidebar` y el `Header`.
+    - Construye el `AppLayout` principal con el `Sidebar` y el `Header`.
     - Implementa el sistema de Feature Flags (`featureFlags.ts`, `FeatureFlagProvider`). Esto es fundamental.
     - Crea la `ModulesPage` que utiliza el sistema de feature flags para mostrar los módulos.
     - Construye cada área funcional principal (Suscripción, Portal de Afiliados, Portal de Admin) página por página, creando componentes reutilizables a medida que avanzas.

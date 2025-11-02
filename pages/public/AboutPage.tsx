@@ -32,7 +32,7 @@ const AboutPage: React.FC = () => {
     <div className="theme-bg-secondary">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
+        <div className="max-w-5xl mx-auto px-6 text-center">
           <h1 className="text-5xl font-bold mb-6">Transformando el Futuro Legal de Latinoamérica</h1>
           <p className="text-xl opacity-90 max-w-3xl mx-auto">
             Somos pioneros en automatización legal con inteligencia artificial, redefiniendo la eficiencia y competitividad de los estudios jurídicos.
@@ -40,7 +40,7 @@ const AboutPage: React.FC = () => {
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-6 py-20">
+      <div className="max-w-screen-2xl mx-auto px-6 py-20">
         {/* Our Story & Timeline */}
         <section className="mb-20">
           <h2 className="text-4xl font-bold theme-text-primary mb-12 text-center">Nuestra Historia</h2>

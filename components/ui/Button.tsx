@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({
     default: "btn-primary-premium",
     destructive: "bg-red-500 text-white hover:bg-red-600",
     outline: "btn-secondary-premium",
-    secondary: "bg-gray-100 text-text-primary hover:bg-gray-200 dark:bg-gray-800 dark:text-text-primary dark:hover:bg-gray-700",
+    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700",
     ghost: "hover:bg-gray-100 dark:hover:bg-gray-800/50",
     link: "text-nexum-primary underline-offset-4 hover:underline",
   };

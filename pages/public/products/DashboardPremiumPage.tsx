@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { LayoutDashboard, BarChart3, DollarSign, FolderKanban, Users, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -16,10 +17,10 @@ const DashboardPremiumPage = () => {
       <section className="py-20 theme-bg-card border-b theme-border">
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <span className="text-sm font-bold uppercase theme-accent">DASHBOARD PREMIUM</span>
+            <span className="text-sm font-bold uppercase theme-accent">PANEL PREMIUM</span>
             <h1 className="text-4xl md:text-5xl font-bold theme-text-primary mt-4 mb-6">La Inteligencia de Negocio para su Estudio Jurídico</h1>
             <p className="text-lg theme-text-secondary mb-8">
-              Tome decisiones estratégicas basadas en datos. Nuestro Dashboard Premium transforma la información de su estudio en insights accionables para impulsar el crecimiento y la rentabilidad.
+              Tome decisiones estratégicas basadas en datos. Nuestro Panel Premium transforma la información de su estudio en insights accionables para impulsar el crecimiento y la rentabilidad.
             </p>
             <Link to="/contacto">
               <button className="bg-gradient-to-r from-blue-600 to-purple-700 text-white px-8 py-3 rounded-lg text-lg font-bold hover:shadow-xl transition-all inline-flex items-center">

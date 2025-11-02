@@ -5,7 +5,7 @@ import SupportOption from '../components/support/SupportOption';
 const SupportPage: React.FC = () => {
   return (
       <div className="min-h-full theme-bg-secondary p-6">
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="mx-auto space-y-8">
           
           <div className="text-center">
             <h1 className="text-3xl font-bold theme-text-primary">

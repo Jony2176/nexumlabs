@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../ui/Logo';
@@ -14,11 +15,11 @@ const PublicFooter: React.FC = () => {
 
   return (
     <footer className="bg-gray-900 text-white py-12">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-screen-2xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Logo y descripción */}
           <div className="md:col-span-2">
-            <Logo className="h-14 mb-4" />
+            <Logo className="w-[calc(var(--logo-base-width,150px)*0.8)] h-auto mb-4" />
             <p className="text-gray-300 text-sm max-w-xs">
               Automatizando la inteligencia legal en Latinoamérica
             </p>
@@ -34,7 +35,7 @@ const PublicFooter: React.FC = () => {
               <li><Link to="/productos/jurispredict-ai" className="hover:text-white font-bold">JurisPredict AI</Link></li>
               <li><Link to="/productos/elias-whatsapp" className="hover:text-white">ELIAS WhatsApp</Link></li>
               <li><Link to="/productos/elias-llamadas" className="hover:text-white">ELIAS Llamadas</Link></li>
-              <li><Link to="/productos/dashboard" className="hover:text-white">Dashboard Premium</Link></li>
+              <li><Link to="/productos/panel-premium" className="hover:text-white">Panel Premium</Link></li>
               <li><Link to="/productos/avatar" className="hover:text-white">Avatar Partner</Link></li>
             </ul>
           </div>

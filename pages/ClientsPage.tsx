@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import Card from '../components/ui/Card';
 
@@ -6,7 +7,7 @@ const ClientsPage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold theme-text-primary">Clientes</h1>
+        <h1 className="text-3xl font-bold text-text-primary">Clientes</h1>
         <p className="theme-text-secondary mt-1">Gestiona los suscriptores de tu plataforma.</p>
       </div>
       <Card>

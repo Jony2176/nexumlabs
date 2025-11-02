@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -52,25 +51,25 @@ const activities = [
     "hace 2h: Email 'Novedades de Octubre' enviado a 342 contactos",
     "hace 5h: Juan Pérez abrió 'Recordatorio de pago'",
     "hace 1d: Nueva suscripción al newsletter: maria@estudio.com",
-    "hace 2d: Campaña 'Nuevo Feature' - 45% tasa apertura"
+    "hace 2d: Campaña 'Nueva Feature' - 45% tasa apertura"
 ];
 
 // --- SUB-COMPONENTS ---
 
 const CommunicationsKPICard = ({ title, mainValue, secondaryValue, change, trend, badge, sparklineData }: any) => {
-    const trendColor = trend === 'up' ? 'text-green-400' : 'text-red-400';
-    const badgeColor = badge?.color === 'green' ? 'bg-green-500/20 text-green-300' : 'bg-yellow-500/20 text-yellow-300';
+    const trendColor = trend === 'up' ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400';
+    const badgeColor = badge?.color === 'green' ? 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-300';
 
     return (
         <Card className="h-full flex flex-col justify-between">
             <div>
-                <p className="text-sm text-gray-400">{title}</p>
-                <p className="text-2xl font-bold text-white mt-1">{mainValue}</p>
-                <p className="text-xs text-gray-500 truncate">{secondaryValue}</p>
+                <p className="text-sm text-text-secondary">{title}</p>
+                <p className="text-2xl font-bold text-text-primary mt-1">{mainValue}</p>
+                <p className="text-xs text-text-secondary truncate">{secondaryValue}</p>
             </div>
             <div className="mt-2">
                 {change && trend && (
-                    <div className={`flex items-center text-xs font-semibold ${trendColor}`}>
+                    <div className={cn("flex items-center text-xs font-semibold", trendColor)}>
                         {trend === 'up' ? <ArrowUp size={12} className="mr-1" /> : <ArrowDown size={12} className="mr-1" />}
                         {change}% vs mes anterior
                     </div>
@@ -83,7 +82,7 @@ const CommunicationsKPICard = ({ title, mainValue, secondaryValue, change, trend
                                 <defs>
                                     <linearGradient id="sparkline" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.4} />
-                                        <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0} />
+                                        <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0}/>
                                     </linearGradient>
                                 </defs>
                                 <Area type="monotone" dataKey="value" stroke="#8B5CF6" fill="url(#sparkline)" strokeWidth={2} />
@@ -127,15 +126,13 @@ const EmailComposer = ({ onSelectTemplate }: { onSelectTemplate: (content: strin
 
     return (
         <Card className="h-full flex flex-col">
-            <div className="p-4 border-b border-gray-700">
-                <h2 className="text-xl font-bold">Crear Comunicación</h2>
-            </div>
+            <div className="p-4 border-b theme-border"><h2 className="text-xl font-bold text-text-primary">Crear Comunicación</h2></div>
             <div className="flex-grow p-4 grid grid-cols-1 lg:grid-cols-2 gap-4 overflow-y-auto">
                 {/* Editor Column */}
                 <div className="flex flex-col gap-4">
                     <div>
-                        <label className="text-sm font-medium text-gray-300">Audiencia</label>
-                        <select className="w-full mt-1 bg-gray-900 border border-gray-600 rounded-md p-2 text-sm">
+                        <label className="text-sm font-medium text-text-primary">Audiencia</label>
+                        <select className="w-full mt-1 theme-bg-secondary border theme-border rounded-md p-2 text-sm text-text-primary">
                             <option>Todos los contactos (354)</option>
                             <option>Solo clientes activos (25)</option>
                             <option>Solo afiliados (89)</option>
@@ -143,46 +140,46 @@ const EmailComposer = ({ onSelectTemplate }: { onSelectTemplate: (content: strin
                         </select>
                     </div>
                     <div>
-                        <label className="text-sm font-medium text-gray-300">Asunto</label>
-                        <input type="text" value={subject} onChange={e => setSubject(e.target.value)} maxLength={150} className="w-full mt-1 bg-gray-900 border border-gray-600 rounded-md p-2 text-sm" />
+                        <label className="text-sm font-medium text-text-primary">Asunto</label>
+                        <input type="text" value={subject} onChange={e => setSubject(e.target.value)} maxLength={150} className="w-full mt-1 theme-bg-secondary border theme-border rounded-md p-2 text-sm text-text-primary" />
                     </div>
                     <div>
-                        <div className="bg-gray-700 rounded-t-lg p-2 flex flex-wrap gap-2 border-b border-gray-600">
-                           <button onClick={() => handleFormat('bold')} className="p-1 hover:bg-gray-600 rounded"><Bold size={16}/></button>
-                           <button onClick={() => handleFormat('italic')} className="p-1 hover:bg-gray-600 rounded"><Italic size={16}/></button>
-                           <button onClick={() => handleFormat('underline')} className="p-1 hover:bg-gray-600 rounded"><Underline size={16}/></button>
-                           <button onClick={() => handleFormat('insertUnorderedList')} className="p-1 hover:bg-gray-600 rounded"><List size={16}/></button>
-                           <button onClick={() => handleFormat('insertOrderedList')} className="p-1 hover:bg-gray-600 rounded"><ListOrdered size={16}/></button>
+                        <div className="theme-bg-secondary rounded-t-lg p-2 flex flex-wrap gap-2 border-b theme-border text-text-primary">
+                           <button onClick={() => handleFormat('bold')} className="p-1 hover:bg-bg-surface rounded"><Bold size={16}/></button>
+                           <button onClick={() => handleFormat('italic')} className="p-1 hover:bg-bg-surface rounded"><Italic size={16}/></button>
+                           <button onClick={() => handleFormat('underline')} className="p-1 hover:bg-bg-surface rounded"><Underline size={16}/></button>
+                           <button onClick={() => handleFormat('insertUnorderedList')} className="p-1 hover:bg-bg-surface rounded"><List size={16}/></button>
+                           <button onClick={() => handleFormat('insertOrderedList')} className="p-1 hover:bg-bg-surface rounded"><ListOrdered size={16}/></button>
                         </div>
-                        <div ref={editorRef} contentEditable onInput={e => setContent((e.target as HTMLDivElement).innerHTML)} className="w-full h-64 bg-gray-900 p-3 rounded-b-lg border border-t-0 border-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 overflow-y-auto" />
+                        <div ref={editorRef} contentEditable onInput={e => setContent((e.target as HTMLDivElement).innerHTML)} className="w-full h-64 theme-bg-secondary text-text-primary p-3 rounded-b-lg border border-t-0 theme-border focus:outline-none focus:ring-1 focus:ring-blue-500 overflow-y-auto" />
                     </div>
                      <div>
-                        <label className="text-sm font-medium text-gray-300">Variables Dinámicas</label>
+                        <label className="text-sm font-medium text-text-primary">Variables Dinámicas</label>
                         <div className="flex flex-wrap gap-2 mt-2">
                            {['{{nombre}}', '{{empresa}}', '{{plan_actual}}', '{{link_referido}}'].map(v => 
-                               <button key={v} onClick={() => insertVariable(v)} className="text-xs bg-gray-700 px-2 py-1 rounded hover:bg-gray-600">{v}</button>
+                               <button key={v} onClick={() => insertVariable(v)} className="text-xs theme-bg-secondary text-text-primary px-2 py-1 rounded hover:bg-bg-surface">{v}</button>
                            )}
                         </div>
                     </div>
                 </div>
                 {/* Preview Column */}
                 <div className="flex flex-col">
-                    <div className="flex justify-center gap-2 mb-2 p-1 bg-gray-700 rounded-lg">
-                        <button onClick={() => setPreviewMode('desktop')} className={cn('px-3 py-1 text-sm rounded-md', previewMode === 'desktop' && 'bg-gray-600')}>Desktop</button>
-                        <button onClick={() => setPreviewMode('mobile')} className={cn('px-3 py-1 text-sm rounded-md', previewMode === 'mobile' && 'bg-gray-600')}>Mobile</button>
+                    <div className="flex justify-center gap-2 mb-2 p-1 theme-bg-secondary rounded-lg">
+                        <button onClick={() => setPreviewMode('desktop')} className={cn('px-3 py-1 text-sm rounded-md text-text-primary', previewMode === 'desktop' && 'bg-bg-surface')}>Desktop</button>
+                        <button onClick={() => setPreviewMode('mobile')} className={cn('px-3 py-1 text-sm rounded-md text-text-primary', previewMode === 'mobile' && 'bg-bg-surface')}>Mobile</button>
                     </div>
-                    <div className="flex-grow bg-gray-900/50 rounded-lg p-4 flex items-center justify-center">
+                    <div className="flex-grow bg-bg-secondary/50 rounded-lg p-4 flex items-center justify-center">
                         <div className={cn("bg-white text-black overflow-y-auto transition-all duration-300 rounded-md shadow-lg", previewMode === 'desktop' ? 'w-full h-full' : 'w-[320px] h-[568px]')}>
                              <div className="p-4" dangerouslySetInnerHTML={{ __html: content }} />
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="p-4 border-t border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="p-4 border-t theme-border flex flex-col sm:flex-row justify-between items-center gap-4">
                  <div className="flex items-center gap-2">
-                    <input type="checkbox" id="test-email-check" className="bg-gray-700 border-gray-600" />
-                    <label htmlFor="test-email-check" className="text-sm">Enviar prueba a:</label>
-                    <input type="email" placeholder="admin@nexum.com" className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm w-48"/>
+                    <input type="checkbox" id="test-email-check" className="theme-bg-secondary theme-border" />
+                    <label htmlFor="test-email-check" className="text-sm text-text-primary">Enviar prueba a:</label>
+                    <input type="email" placeholder="admin@nexum.com" className="theme-bg-secondary border theme-border rounded px-2 py-1 text-sm w-48 text-text-primary"/>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="secondary" onClick={() => handleSend('draft')}>Guardar Borrador</Button>
@@ -195,13 +192,13 @@ const EmailComposer = ({ onSelectTemplate }: { onSelectTemplate: (content: strin
 
 const TemplateGallery = ({ onSelect }: { onSelect: (content: string) => void }) => (
     <Card>
-        <div className="p-4 border-b border-gray-700"><h3 className="font-semibold">Plantillas</h3></div>
+        <div className="p-4 border-b theme-border"><h3 className="font-semibold text-text-primary">Plantillas</h3></div>
         <div className="p-4 space-y-2 max-h-60 overflow-y-auto">
             {templates.map(t => (
-                <div key={t.name} className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-800">
+                <div key={t.name} className="flex justify-between items-center p-2 rounded-lg hover:bg-bg-secondary">
                     <div>
-                        <p className="text-sm font-medium">{t.name}</p>
-                        <p className="text-xs text-gray-400">Apertura: {t.openRate}%</p>
+                        <p className="text-sm font-medium text-text-primary">{t.name}</p>
+                        <p className="text-xs text-text-secondary">Apertura: {t.openRate}%</p>
                     </div>
                     <Button size="sm" variant="outline" onClick={() => onSelect(`Contenido de plantilla: ${t.name}`)}>Usar</Button>
                 </div>
@@ -212,10 +209,10 @@ const TemplateGallery = ({ onSelect }: { onSelect: (content: string) => void }) 
 
 const CampaignHistoryTable = () => (
     <Card className="mt-6">
-        <div className="p-4 border-b border-gray-700"><h3 className="font-semibold">Historial de Campañas</h3></div>
+        <div className="p-4 border-b theme-border"><h3 className="font-semibold text-text-primary">Historial de Campañas</h3></div>
         <div className="overflow-x-auto">
             <table className="w-full text-sm">
-                <thead className="bg-gray-700/50 text-xs text-gray-400 uppercase">
+                <thead className="bg-bg-secondary text-xs text-text-secondary uppercase">
                     <tr>
                         <th className="p-3 text-left">Asunto</th>
                         <th className="p-3 text-left">Audiencia</th>
@@ -227,12 +224,18 @@ const CampaignHistoryTable = () => (
                 </thead>
                 <tbody>
                     {campaigns.slice(0, 5).map((c, i) => (
-                        <tr key={i} className="border-b border-gray-700">
-                            <td className="p-3 font-medium">{c.subject}</td>
-                            <td className="p-3 text-gray-400">{c.audience}</td>
-                            <td className="p-3 text-center hidden md:table-cell">{c.sent || '-'}</td>
-                            <td className="p-3 text-center hidden lg:table-cell">{c.opened > 0 ? `${c.opened}%` : '-'}</td>
-                            <td className="p-3 text-center"><span className={cn('px-2 py-0.5 text-xs rounded-full', c.status === 'Enviado' ? 'bg-green-500/20 text-green-300' : c.status === 'Programado' ? 'bg-blue-500/20 text-blue-300' : 'bg-gray-500/20 text-gray-300')}>{c.status}</span></td>
+                        <tr key={i} className="border-b theme-border last:border-b-0 hover:bg-bg-secondary/50">
+                            <td className="p-3 font-medium text-text-primary">{c.subject}</td>
+                            <td className="p-3 text-text-secondary">{c.audience}</td>
+                            <td className="p-3 text-center hidden md:table-cell text-text-primary">{c.sent || '-'}</td>
+                            <td className="p-3 text-center hidden lg:table-cell text-text-primary">{c.opened > 0 ? `${c.opened}%` : '-'}</td>
+                            <td className="p-3 text-center">
+                                <span className={cn('px-2 py-0.5 text-xs rounded-full', 
+                                    c.status === 'Enviado' ? 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300' : 
+                                    c.status === 'Programado' ? 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-300' : 
+                                    'bg-gray-100 text-gray-800 dark:bg-gray-500/20 dark:text-gray-300'
+                                )}>{c.status}</span>
+                            </td>
                             <td className="p-3 text-center"><div className="flex gap-1 justify-center"><Button size="icon" variant="ghost"><Eye size={14}/></Button><Button size="icon" variant="ghost"><Copy size={14}/></Button></div></td>
                         </tr>
                     ))}
@@ -254,8 +257,8 @@ const CommunicationsPage: React.FC = () => {
             transition={{ duration: 0.5 }}
         >
             <div>
-                <h1 className="text-3xl font-bold">Centro de Comunicaciones</h1>
-                <p className="text-gray-400 mt-1">Gestiona emails masivos, newsletters y campañas.</p>
+                <h1 className="text-3xl font-bold text-text-primary">Centro de Comunicaciones</h1>
+                <p className="text-text-secondary mt-1">Gestiona emails masivos, newsletters y campañas.</p>
             </div>
             {/* KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -274,8 +277,8 @@ const CommunicationsPage: React.FC = () => {
                     <TemplateGallery onSelect={setEmailContent} />
                     {/* Activity Feed */}
                     <Card>
-                        <div className="p-4 border-b border-gray-700"><h3 className="font-semibold">Actividad Reciente</h3></div>
-                        <div className="p-4 space-y-2 text-xs text-gray-400 max-h-40 overflow-y-auto">
+                        <div className="p-4 border-b theme-border"><h3 className="font-semibold text-text-primary">Actividad Reciente</h3></div>
+                        <div className="p-4 space-y-2 text-xs text-text-secondary max-h-40 overflow-y-auto">
                             {activities.map((act, i) => <p key={i}>- {act}</p>)}
                         </div>
                     </Card>
@@ -289,22 +292,22 @@ const CommunicationsPage: React.FC = () => {
                 </div>
                 <div className="space-y-6">
                      <Card>
-                        <div className="p-4 border-b border-gray-700"><h3 className="font-semibold">Audiencias y Segmentos</h3></div>
+                        <div className="p-4 border-b theme-border"><h3 className="font-semibold text-text-primary">Audiencias y Segmentos</h3></div>
                         <div className="p-4 space-y-2">
-                            {segments.map(s => <div key={s.name} className="flex justify-between text-sm p-2 rounded-md bg-gray-800"><span>{s.name}</span><span className="text-gray-400">{s.count} contactos</span></div>)}
+                            {segments.map(s => <div key={s.name} className="flex justify-between text-sm p-2 rounded-md theme-bg-secondary text-text-primary"><span>{s.name}</span><span className="text-text-secondary">{s.count} contactos</span></div>)}
                             <Button variant="outline" className="w-full mt-2">Crear Segmento</Button>
                         </div>
                     </Card>
                     <Card>
-                        <div className="p-4 border-b border-gray-700"><h3 className="font-semibold">Automatizaciones Activas</h3></div>
+                        <div className="p-4 border-b theme-border"><h3 className="font-semibold text-text-primary">Automatizaciones Activas</h3></div>
                         <div className="p-4 space-y-3">
                             {automations.map(a => (
-                                <div key={a.name} className="p-2 bg-gray-800 rounded-md">
+                                <div key={a.name} className="p-2 theme-bg-secondary rounded-md text-text-primary">
                                     <div className="flex justify-between items-center">
                                         <p className="font-semibold">{a.name}</p>
-                                        <span className={cn('text-xs font-bold px-2 py-0.5 rounded-full', a.status === 'Activo' ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300')}>{a.status}</span>
+                                        <span className={cn('text-xs font-bold px-2 py-0.5 rounded-full', a.status === 'Activo' ? 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300' : 'bg-gray-100 text-gray-800 dark:bg-gray-500/20 dark:text-gray-300')}>{a.status}</span>
                                     </div>
-                                    <div className="text-xs text-gray-400 mt-1 flex justify-between"><span>{a.details}</span><button className="hover:text-white">Ver Métricas</button></div>
+                                    <div className="text-xs text-text-secondary mt-1 flex justify-between"><span>{a.details}</span><button className="hover:text-text-primary">Ver Métricas</button></div>
                                 </div>
                             ))}
                         </div>

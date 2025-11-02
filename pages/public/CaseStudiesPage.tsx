@@ -86,7 +86,7 @@ const CaseStudiesPage: React.FC = () => {
     <div className="theme-bg-secondary">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
-        <div className="max-w-4xl mx-auto px-6 text-center">
+        <div className="max-w-5xl mx-auto px-6 text-center">
           <h1 className="text-5xl font-bold mb-6">Resultados Reales para Estudios Reales</h1>
           <p className="text-xl opacity-90">
             Descubre cómo estudios jurídicos de toda Argentina han transformado 
@@ -95,7 +95,7 @@ const CaseStudiesPage: React.FC = () => {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-6 py-16">
+      <div className="max-w-screen-2xl mx-auto px-6 py-16">
         {/* General Stats */}
         <section className="mb-20">
           <div className="grid md:grid-cols-4 gap-8 text-center">

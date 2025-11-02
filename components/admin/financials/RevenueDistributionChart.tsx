@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { formatCurrency } from '../../../utils/formatters';
+import Card from '../../ui/Card';
 
 interface RevenueDistributionChartProps {
   data: { name: string; value: number; fill: string }[];
@@ -12,10 +12,17 @@ const CustomTooltip = ({ active, payload }: any) => {
       const data = payload[0];
       const percent = ((data.value / data.payload.total) * 100).toFixed(1);
       return (
-        <div className="bg-gray-900/80 border border-gray-700 rounded-lg p-3 text-sm backdrop-blur-sm">
-          <p className="font-bold text-white mb-1">{data.name}</p>
+        <div style={{
+            backgroundColor: 'var(--bg-surface)', 
+            border: '1px solid var(--border-color)', 
+            padding: '12px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            fontSize: '12px',
+        }}>
+          <p style={{ fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '4px' }}>{data.name}</p>
           <p style={{ color: data.payload.fill }}>
-            Ingresos: <span className="font-semibold">{formatCurrency(data.value)} ({percent}%)</span>
+            Ingresos: <span style={{ fontWeight: 600 }}>{formatCurrency(data.value)} ({percent}%)</span>
           </p>
         </div>
       );
@@ -28,9 +35,9 @@ const RevenueDistributionChart: React.FC<RevenueDistributionChartProps> = ({ dat
   const chartData = data.map(item => ({...item, total: totalRevenue}));
 
   return (
-    <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6 shadow-lg h-full flex flex-col">
-      <h3 className="text-lg font-semibold text-white">De Dónde Vienen tus Ingresos</h3>
-      <p className="text-sm text-gray-400 mb-4">Desglose de ingresos por producto.</p>
+    <Card className="p-6 shadow-lg h-full flex flex-col">
+      <h3 className="text-lg font-semibold text-text-primary">De Dónde Vienen tus Ingresos</h3>
+      <p className="text-sm text-text-secondary mb-4">Desglose de ingresos por producto.</p>
       <div className="flex-grow h-80">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -57,11 +64,11 @@ const RevenueDistributionChart: React.FC<RevenueDistributionChartProps> = ({ dat
             {data.map((entry, index) => (
                 <div key={index} className="flex items-center text-xs">
                     <div className="w-2.5 h-2.5 rounded-full mr-2" style={{ backgroundColor: entry.fill }}></div>
-                    <span className="text-gray-400">{entry.name}</span>
+                    <span className="text-text-secondary">{entry.name}</span>
                 </div>
             ))}
         </div>
-    </div>
+    </Card>
   );
 };
 

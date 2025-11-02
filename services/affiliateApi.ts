@@ -1,30 +1,31 @@
 
+
+
 import api from './api';
 import { Affiliate, Referral, Visit, Payout } from '../types';
 import { MOCK_AFFILIATES, MOCK_REFERRALS, MOCK_VISITS, MOCK_PAYOUTS } from '../data/affiliateMockData';
+import toast from 'react-hot-toast';
 
 // --- ADMIN ENDPOINTS ---
 
 export const getAffiliates = async (filters: any = {}): Promise<Affiliate[]> => {
-  console.log('Fetching affiliates with filters:', filters);
-  // SIMULATION: In a real app, you would use the api instance.
-  // const response = await api.get('/api/affiliates', { params: filters });
-  // return response.data;
-
-  // Mocked response
-  return new Promise(resolve => setTimeout(() => resolve(MOCK_AFFILIATES), 500));
+  // FIX: Delegated affiliate data fetching to the main API service to resolve API key errors
+  // and centralize data access logic, removing the direct Google Sheets dependency.
+  return api.getAffiliates(filters);
 };
 
 export const getAffiliateById = async (id: string): Promise<Affiliate | undefined> => {
-  // const response = await api.get(`/api/affiliates/${id}`);
-  // return response.data;
+  // This would also need to be adapted if individual fetching is required
   return new Promise(resolve => setTimeout(() => resolve(MOCK_AFFILIATES.find(a => a.id === id)), 300));
 };
 
 export const updateAffiliate = async (affiliateId: string, data: Partial<Affiliate>): Promise<{ status: 'success' }> => {
-    console.log(`UPDATING AFFILIATE ${affiliateId} to n8n with data:`, data);
-    // In a real app, this would be: await api.patch(`/api/affiliates/${affiliateId}`, data);
-    return new Promise(resolve => setTimeout(() => resolve({ status: 'success' }), 1000));
+    // NOTE: The Google Sheets API v4 with a simple API key is READ-ONLY.
+    // To enable write operations, OAuth2 or a backend service (like the existing n8n) would be required.
+    // This function will log the intended action but will not modify the sheet.
+    console.log(`INTENDED UPDATE (read-only): Updating affiliate ${affiliateId} with data:`, data);
+    toast.info('La escritura en Google Sheets no está habilitada en este modo.');
+    return new Promise(resolve => resolve({ status: 'success' }));
 };
 
 export const processAffiliatePayout = async (affiliateId: string, amount: number): Promise<{ status: 'success' }> => {

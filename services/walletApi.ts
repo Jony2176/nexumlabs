@@ -10,7 +10,7 @@ export const getWallet = async (): Promise<Wallet> => {
         return mockApi.getWallet(affiliateId);
     }
     // Real API call
-    const response = await api.performRequest(`/api/affiliate/wallet/${affiliateId}`, { method: 'GET' });
+    const response = await api.performRequest(`/affiliate/wallet/${affiliateId}`, { method: 'GET' });
     return response.data;
 };
 
@@ -18,7 +18,7 @@ export const getTransactions = async (filter: string = 'all'): Promise<Transacti
      if(api.useMock) {
         return mockApi.getTransactions(affiliateId, filter);
     }
-    const response = await api.performRequest(`/api/affiliate/transactions/${affiliateId}?filter=${filter}`, { method: 'GET' });
+    const response = await api.performRequest(`/affiliate/transactions/${affiliateId}?filter=${filter}`, { method: 'GET' });
     return response.data;
 };
 
@@ -26,7 +26,7 @@ export const getPaymentConfig = async (): Promise<PaymentConfiguration> => {
      if(api.useMock) {
         return mockApi.getPaymentConfig(affiliateId);
     }
-    const response = await api.performRequest(`/api/affiliate/payment-config`, { method: 'GET' });
+    const response = await api.performRequest(`/affiliate/payment-config`, { method: 'GET' });
     return response.data;
 };
 
@@ -34,7 +34,7 @@ export const updatePaymentConfig = async (config: PaymentConfiguration): Promise
      if(api.useMock) {
         return mockApi.updatePaymentConfig(affiliateId, config);
     }
-    const response = await api.performRequest('/api/affiliate/payment-config', {
+    const response = await api.performRequest('/affiliate/payment-config', {
         method: 'PUT',
         body: JSON.stringify(config)
     });
@@ -45,7 +45,7 @@ export const requestWithdrawal = async (data: { usd_amount: number, ars_amount: 
     if(api.useMock) {
         return mockApi.requestWithdrawal(data);
     }
-    const response = await api.performRequest('/api/affiliate/withdraw', {
+    const response = await api.performRequest('/affiliate/withdraw', {
         method: 'POST',
         body: JSON.stringify({ ...data, automatic: true })
     });

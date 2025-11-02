@@ -25,11 +25,11 @@ const AdminLayout: React.FC = () => {
                     <Sidebar onLinkClick={handleSidebarClose} />
                 </div>
 
-                <div className="flex-1 flex flex-col overflow-hidden pl-0 lg:pl-[280px]">
+                <div className="flex-1 flex flex-col overflow-hidden">
                     <Header onMenuClick={() => setSidebarOpen(true)} />
                     {USE_MOCK && <DemoBanner />}
                     <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
-                        <div className="max-w-7xl mx-auto">
+                        <div className="mx-auto">
                             <Outlet />
                         </div>
                     </main>

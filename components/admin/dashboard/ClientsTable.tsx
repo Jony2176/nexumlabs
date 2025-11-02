@@ -4,6 +4,7 @@ import { formatCurrency } from '../../../utils/formatters';
 import ProgressBar from '../../ui/ProgressBar';
 import HealthIndicator from './HealthIndicator';
 import { MoreVertical, Eye, Edit, Tag, Mail, AlertCircle, FileText, Search } from 'lucide-react';
+import Card from '../../ui/Card';
 
 interface ClientsTableProps {
   data: ClientData[];
@@ -21,17 +22,17 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ data }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   return (
-    <div className="bg-gray-800/50 border border-gray-700 rounded-xl shadow-lg overflow-hidden">
-        <div className="p-4 flex justify-between items-center border-b border-gray-700">
-            <h3 className="text-lg font-semibold text-white">Clientes</h3>
+    <Card className="shadow-lg overflow-hidden">
+        <div className="p-4 flex justify-between items-center border-b border-border-color">
+            <h3 className="text-lg font-semibold text-text-primary">Clientes</h3>
             <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input type="text" placeholder="Buscar cliente..." className="bg-gray-900/50 border border-gray-600 rounded-lg pl-9 pr-3 py-1.5 text-sm w-64" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+                <input type="text" placeholder="Buscar cliente..." className="bg-[var(--bg-secondary)] border border-border-color rounded-lg pl-9 pr-3 py-1.5 text-sm w-64" />
             </div>
         </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
-          <thead className="text-xs text-gray-400 uppercase bg-gray-900/50">
+          <thead className="text-xs text-text-secondary uppercase bg-[var(--bg-secondary)]">
             <tr>
               <th scope="col" className="px-6 py-3">Cliente</th>
               <th scope="col" className="px-6 py-3">Plan / Ingreso Mensual</th>
@@ -43,15 +44,15 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ data }) => {
           </thead>
           <tbody>
             {data.map(client => (
-              <tr key={client.id} className="border-b border-gray-700 hover:bg-gray-800/60">
+              <tr key={client.id} className="border-b border-border-color hover:bg-[var(--bg-surface)]">
                 <td className="px-6 py-4">
-                  <div className="font-bold text-white">{client.empresa}</div>
-                  <div className="text-xs text-gray-400">{client.contacto}</div>
+                  <div className="font-bold text-text-primary">{client.empresa}</div>
+                  <div className="text-xs text-text-secondary">{client.contacto}</div>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <span className={`px-2 py-0.5 text-xs font-semibold rounded-full border ${planBadgeColors[client.plan]}`}>{client.plan}</span>
-                    <div className="font-mono text-white">{formatCurrency(client.mrr)}</div>
+                    <div className="font-mono text-text-primary">{formatCurrency(client.mrr)}</div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
@@ -63,9 +64,9 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ data }) => {
                 <td className="px-6 py-4 text-center"><HealthIndicator score={client.healthScore} /></td>
                 <td className="px-6 py-4 text-center">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${
-                      client.estado === 'active' ? 'bg-green-500/20 text-green-300' :
-                      client.estado === 'trial' ? 'bg-yellow-500/20 text-yellow-300' :
-                      'bg-red-500/20 text-red-300'
+                      client.estado === 'active' ? 'bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300' :
+                      client.estado === 'trial' ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300' :
+                      'bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-300'
                     }`}>
                         {client.estado}
                     </span>
@@ -76,14 +77,14 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ data }) => {
                       <MoreVertical size={16} />
                     </button>
                     {activeDropdown === client.id && (
-                        <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-md shadow-lg z-10">
+                        <div className="absolute right-0 mt-2 w-48 bg-[var(--bg-surface)] border border-border-color rounded-md shadow-lg z-10">
                             <div className="py-1">
-                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"><Eye size={14}/> Ver detalles</a>
-                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"><Edit size={14}/> Cambiar plan</a>
-                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"><Tag size={14}/> Aplicar descuento</a>
-                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"><Mail size={14}/> Enviar email</a>
-                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-gray-800"><AlertCircle size={14}/> Suspender</a>
-                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"><FileText size={14}/> Ver logs</a>
+                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-[var(--bg-secondary)]"><Eye size={14}/> Ver detalles</a>
+                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-[var(--bg-secondary)]"><Edit size={14}/> Cambiar plan</a>
+                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-[var(--bg-secondary)]"><Tag size={14}/> Aplicar descuento</a>
+                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-[var(--bg-secondary)]"><Mail size={14}/> Enviar email</a>
+                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-[var(--bg-secondary)]"><AlertCircle size={14}/> Suspender</a>
+                                <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm text-text-secondary hover:bg-[var(--bg-secondary)]"><FileText size={14}/> Ver logs</a>
                             </div>
                         </div>
                     )}
@@ -94,7 +95,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ data }) => {
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
   );
 };
 

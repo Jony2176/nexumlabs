@@ -48,7 +48,7 @@ const FinancialOverview: React.FC = () => {
     return (
         <motion.section variants={itemVariants}>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                <h2 className="text-2xl font-bold text-white">📊 Panel Financiero Premium</h2>
+                <h2 className="text-2xl font-bold text-white">📊 Panel Financiero</h2>
                 <div className="flex items-center gap-2 p-1 bg-gray-800/50 rounded-lg mt-4 md:mt-0">
                     {['Hoy', 'Esta Semana', 'Este Mes', 'Trimestre'].map(p => (
                         <button key={p} onClick={() => setPeriod(p)} className={cn('px-3 py-1.5 text-sm rounded-md transition-colors', period === p ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700/50')}>
@@ -164,11 +164,11 @@ const ChannelPerformance: React.FC = () => (
         <div className="h-64 mt-4">
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={mockData.monthlyConversations}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="name" tick={{ fill: '#9ca3af', fontSize: 12 }} />
-                    <YAxis tick={{ fill: '#9ca3af', fontSize: 12 }} />
-                    <Tooltip contentStyle={{ backgroundColor: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(5px)' }} />
-                    <Legend wrapperStyle={{fontSize: "12px"}}/>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
+                    <XAxis dataKey="name" tick={{ fill: 'var(--text-muted)', fontSize: 12 }} />
+                    <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 12 }} />
+                    <Tooltip contentStyle={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-color)', backdropFilter: 'blur(5px)' }} />
+                    <Legend wrapperStyle={{fontSize: "12px", color: 'var(--text-secondary)'}}/>
                     <Bar dataKey="WhatsApp" stackId="a" fill="#25D366" />
                     <Bar dataKey="Llamadas" stackId="a" fill="#8B5CF6" />
                 </BarChart>

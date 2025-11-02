@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Zap, BarChart3, DollarSign, BrainCircuit, ClipboardList } from 'lucide-react';
@@ -14,7 +15,7 @@ const UpsellBanner = () => {
         return (
              <div className="relative rounded-xl p-8 overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-700 text-white shadow-2xl shadow-purple-500/20">
                 <div className="text-center">
-                    <h2 className="text-3xl font-bold mb-3">Dashboard Premium - Próximamente</h2>
+                    <h2 className="text-3xl font-bold mb-3">Panel Premium - Próximamente</h2>
                     <p className="text-purple-200 mb-6">
                         Análisis predictivo, métricas avanzadas y más. Lanzamiento el 1 de Enero de 2026.
                     </p>
@@ -39,7 +40,7 @@ const UpsellBanner = () => {
                 <div>
                     <h2 className="text-3xl font-bold mb-3 flex items-center gap-2">
                         <span className="text-yellow-300">🔓</span>
-                        Desbloquea el Dashboard Premium
+                        Desbloquea el Panel Premium
                     </h2>
                     <p className="text-purple-200 mb-6">
                         Analytics avanzados que aumentan tu conversión 40%.

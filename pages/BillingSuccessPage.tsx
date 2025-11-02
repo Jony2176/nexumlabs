@@ -97,35 +97,41 @@ const BillingSuccessPage: React.FC = () => {
                             <ModuleCardPremium
                                 key={module.id}
                                 module={module}
-                                onAction={() => {}}
+                                onAction={() => navigate('/app/modules')}
                                 index={index}
                             />
                         ))}
                     </div>
                 </div>
                 <div className="lg:col-span-1">
-                    <h2 className="text-2xl font-bold text-text-primary mb-6">Logs de Activación</h2>
+                    <h2 className="text-2xl font-bold text-text-primary mb-6">Consola del Sistema</h2>
                     <SystemConsole status={status} />
-
-                    {status === 'active' && (
-                        <MotionButton
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.5 }}
-                            onClick={() => navigate('/app/dashboard')}
-                            className="w-full mt-6 bg-gradient-to-r from-nexum-gradient-start to-nexum-gradient-end text-white py-3 px-6 rounded-lg font-bold text-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
-                        >
-                            Ir al Dashboard
-                            <ArrowRight className="w-5 h-5" />
-                        </MotionButton>
-                    )}
                 </div>
             </div>
         </MotionDiv>
-
+        
+        <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, type: 'spring' }}
+            className="mt-16 text-center"
+        >
+            <MotionButton
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/app/panel-control')}
+                disabled={status !== 'active'}
+                className="bg-gradient-to-r from-nexum-gradient-start to-nexum-gradient-end text-white font-bold py-4 px-8 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                <span className="flex items-center justify-center gap-2">
+                    {status === 'active' ? 'Ir a mi Panel de Control' : 'Activación en progreso...'}
+                    {status === 'active' && <ArrowRight className="w-5 h-5" />}
+                </span>
+            </MotionButton>
+        </MotionDiv>
       </div>
     </div>
   );
 };
-
+// FIX: Added a default export to the component.
 export default BillingSuccessPage;

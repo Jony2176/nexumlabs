@@ -1,8 +1,9 @@
 
+
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { PaymentConfiguration } from '../../../../types';
-import { updatePaymentConfig } from '../../../../services/walletApi';
+import api from '../../../../services/api';
 import Card from '../../../ui/Card';
 import Input from '../../../ui/Input';
 import Button from '../../../ui/Button';
@@ -31,7 +32,7 @@ const PaymentConfigComponent: React.FC<PaymentConfigProps> = ({ initialConfig, o
     setIsSaving(true);
     const toastId = toast.loading('Guardando configuración...');
     try {
-      await updatePaymentConfig(config);
+      await api.updatePaymentConfig(config);
       toast.success('Configuración guardada.', { id: toastId });
       setIsEditing(false);
       onSave();

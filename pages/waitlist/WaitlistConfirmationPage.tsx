@@ -1,3 +1,5 @@
+
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import ReferralSystem from '../../components/waitlist/ReferralSystem';
@@ -18,7 +20,7 @@ const WaitlistConfirmationPage: React.FC = () => {
             <PremiumBackground />
             <div className="absolute top-6 left-6 z-10">
                 <Link to="/app/modules">
-                    <Logo className="h-12 w-auto" />
+                    <Logo className="w-[var(--logo-base-width,150px)] h-auto" />
                 </Link>
             </div>
             <div className="relative z-10 w-full">

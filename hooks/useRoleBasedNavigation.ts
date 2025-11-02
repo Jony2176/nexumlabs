@@ -2,11 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { User } from '../types';
 
 export const homePaths: { [key in User['role']]: string } = {
-  super_admin: '/admin/dashboard',
-  owner: '/app/dashboard',
-  admin: '/app/dashboard',
+  super_admin: '/admin/panel',
+  owner: '/app/panel-control',
+  admin: '/app/panel-control',
   user: '/app/modules', // As per spec, 'user' has a more restricted default view
-  affiliate: '/portal/dashboard',
+  affiliate: '/portal/panel',
 };
 
 export const useRoleBasedNavigation = () => {

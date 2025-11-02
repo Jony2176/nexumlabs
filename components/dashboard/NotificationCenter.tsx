@@ -61,7 +61,7 @@ const NotificationCenter: React.FC = () => {
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        <Bell className="w-5 h-5 theme-text-secondary" />
+        <Bell className="w-5 h-5 text-text-secondary" />
         {unreadCount > 0 && (
            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-800"></span>
         )}

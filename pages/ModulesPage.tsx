@@ -28,7 +28,7 @@ const ModulesPage: React.FC = () => {
                 break;
             case 'dashboard_premium':
                  // When active, it will navigate to the main dashboard
-                navigate('/app/dashboard');
+                navigate('/app/panel-control');
                 break;
             default:
                 // For modules like JurisPredict or AvatarPartner that don't have a dedicated page yet

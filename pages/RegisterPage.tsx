@@ -6,6 +6,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Card from '../components/ui/Card';
 import { useAuthStore } from '../store/authStore';
+import { CheckCircle } from 'lucide-react';
 
 const RegisterPage: React.FC = () => {
   const [orgName, setOrgName] = useState('');
@@ -15,6 +16,8 @@ const RegisterPage: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [shouldNavigateToDashboard, setShouldNavigateToDashboard] = useState(false);
   const navigate = useNavigate();
   const { setAuth } = useAuthStore();
 
@@ -22,7 +25,7 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await api.register({
+      const responseData = await api.register({
         organizationName: orgName,
         firstName,
         lastName,
@@ -31,9 +34,42 @@ const RegisterPage: React.FC = () => {
         password,
       });
 
-      setAuth(response);
-      toast.success('¡Organización registrada con éxito!');
-      navigate('/dashboard', { replace: true });
+      // Check for auto-login data
+      if (responseData && responseData.id && responseData.api_key) {
+        // We can auto-login, construct the auth object
+        const authData = {
+          token: responseData.api_key,
+          user: {
+            id: responseData.id,
+            email: responseData.email,
+            firstName: responseData.name || firstName,
+            lastName: responseData.last_name || lastName,
+            phone: responseData.phone,
+            role: responseData.role || 'owner',
+            orgId: responseData.org_id || responseData.id,
+            onboardingCompleted: responseData.onboarding_completed ?? false,
+          },
+          organization: {
+            id: responseData.org_id || responseData.id,
+            name: responseData.organization_name || orgName,
+            slug: responseData.slug || responseData.name,
+            email: responseData.email,
+            phone: responseData.phone,
+            modules: responseData.modules || {},
+            subscription_status: responseData.subscription_status || 'trialing',
+            trial_ends_at: responseData.trial_ends_at || new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+          }
+        };
+        setAuth(authData);
+        setShouldNavigateToDashboard(true);
+        toast.success(`¡Bienvenido, ${authData.user.firstName}! Tu cuenta ha sido creada.`);
+      } else {
+        // Registration was successful but no auto-login data.
+        console.warn("Registro exitoso, pero la respuesta del backend no contenía datos para el inicio de sesión automático:", responseData);
+        toast.success("¡Registro exitoso! Ahora puedes iniciar sesión.");
+      }
+
+      setIsSuccess(true);
 
     } catch (error: any) {
       toast.error(error.message || 'Error en el registro');
@@ -42,6 +78,22 @@ const RegisterPage: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  if (isSuccess) {
+    return (
+      <Card>
+        <div className="p-6 sm:p-8 text-center">
+            <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
+            <h1 className="text-2xl font-bold theme-text-primary mb-2">¡Registro Exitoso!</h1>
+            <p className="theme-text-secondary mb-4">Te hemos enviado un email de bienvenida a <strong>{email}</strong> con los detalles de tu cuenta.</p>
+            <p className="theme-text-secondary mb-6">Por favor, revisa tu correo (incluida la carpeta de spam).</p>
+            <Button onClick={() => navigate(shouldNavigateToDashboard ? '/app/panel-control' : '/login', { replace: true })}>
+              {shouldNavigateToDashboard ? 'Ir al Panel' : 'Ir a Iniciar Sesión'}
+            </Button>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card>

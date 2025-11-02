@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -49,7 +50,7 @@ const FeatureFlagsPage: React.FC = () => {
             <div className="space-y-8">
                 <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold theme-text-primary">Panel de Control de Feature Flags</h1>
+                        <h1 className="text-3xl font-bold text-text-primary">Panel de Control de Feature Flags</h1>
                         <p className="theme-text-secondary mt-1">Gestiona la visibilidad y el lanzamiento de módulos en tiempo real.</p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -78,7 +79,7 @@ const FeatureFlagsPage: React.FC = () => {
                                             <select
                                                 value={flag.status}
                                                 onChange={(e) => handleFlagChange(flag.id, 'status', e.target.value)}
-                                                className="theme-bg-card border theme-border rounded p-1 capitalize"
+                                                className="bg-gray-700 border-gray-600 text-white rounded p-1 capitalize"
                                             >
                                                 <option value="available">Available</option>
                                                 <option value="waitlist">Waitlist</option>
@@ -91,7 +92,7 @@ const FeatureFlagsPage: React.FC = () => {
                                                 type="date"
                                                 value={flag.launchDate.split('T')[0]}
                                                 onChange={(e) => handleFlagChange(flag.id, 'launchDate', `${e.target.value}T00:00:00Z`)}
-                                                className="theme-bg-card border theme-border rounded p-1"
+                                                className="bg-gray-700 border-gray-600 text-white rounded p-1"
                                             />
                                         </td>
                                         <td className="px-6 py-4">
@@ -99,7 +100,7 @@ const FeatureFlagsPage: React.FC = () => {
                                                 type="date"
                                                 value={flag.revealDate ? flag.revealDate.split('T')[0] : ''}
                                                 onChange={(e) => handleFlagChange(flag.id, 'revealDate', `${e.target.value}T00:00:00Z`)}
-                                                className="theme-bg-card border theme-border rounded p-1"
+                                                className="bg-gray-700 border-gray-600 text-white rounded p-1"
                                                 disabled={!flag.revealDate}
                                             />
                                         </td>

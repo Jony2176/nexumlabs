@@ -21,7 +21,8 @@ export const useFeatureFlags = () => {
   return context;
 };
 
-export const FeatureFlagProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+// FIX: Changed component prop type from `{ children: ReactNode }` to `React.PropsWithChildren` to resolve a persistent 'missing children' prop error.
+export const FeatureFlagProvider = ({ children }: React.PropsWithChildren) => {
   const { flags } = useFeatureFlagStore(); // Lee los flags desde el store de Zustand
   const [currentDate, setCurrentDate] = useState(FlagUtils.getCurrentDate());
 

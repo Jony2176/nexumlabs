@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
@@ -36,9 +38,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onLinkClick }) => {
     
     return (
         <aside className="sidebar-premium">
-            <div className="h-20 flex items-center px-6 border-b border-border-color flex-shrink-0">
+            <div className="h-20 flex items-center justify-center px-6 border-b border-border-color flex-shrink-0">
                 <Link to="/">
-                    <Logo className="h-16 w-auto" />
+                    <Logo className="w-[calc(var(--logo-base-width,150px)*0.9)] h-auto" />
                 </Link>
             </div>
 

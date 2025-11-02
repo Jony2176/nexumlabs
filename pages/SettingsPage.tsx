@@ -1,7 +1,11 @@
+
+
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Settings, Users, Puzzle, Link as LinkIcon, Bell, Shield, Save, PlusCircle, MoreVertical, Check, X, UploadCloud } from 'lucide-react';
+import { Settings, Users, Puzzle, Link as LinkIcon, Bell, Shield, User as UserIcon, Save, PlusCircle, MoreVertical, Check, X, UploadCloud, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { cn } from '../utils/cn';
 import Card from '../components/ui/Card';
@@ -10,6 +14,8 @@ import Input from '../components/ui/Input';
 import ConfirmationModal from '../components/ui/ConfirmationModal';
 import InviteUserModal from '../components/users/InviteUserModal';
 import { User } from '../types';
+import { useSettingsStore } from '../store/settingsStore';
+import { EXTERNAL_ASSETS } from '../config/assets.config';
 
 // Mock user data, now used as initial state for the user management tab
 const initialUsers: User[] = [
@@ -21,19 +27,94 @@ const initialUsers: User[] = [
 
 const ROLES: Array<User['role']> = ['owner', 'admin', 'user'];
 
-const tabs = [
-    { id: 'general', label: 'Información General', icon: Settings },
-    { id: 'usuarios', label: 'Usuarios y Permisos', icon: Users },
-    { id: 'modulos', label: 'Módulos ELIAS', icon: Puzzle },
-    { id: 'integraciones', label: 'Integraciones', icon: LinkIcon },
-    { id: 'notificaciones', label: 'Notificaciones', icon: Bell },
-    { id: 'seguridad', label: 'Seguridad', icon: Shield },
+const allTabs = [
+    { id: 'perfil', label: 'Mi Perfil', icon: UserIcon, roles: ['owner', 'admin', 'user', 'super_admin'] },
+    { id: 'general', label: 'Información General', icon: Settings, roles: ['owner', 'admin', 'super_admin'] },
+    { id: 'usuarios', label: 'Usuarios y Permisos', icon: Users, roles: ['owner', 'admin'] },
+    { id: 'modulos', label: 'Módulos ELIAS', icon: Puzzle, roles: ['owner', 'admin'] },
+    { id: 'integraciones', label: 'Integraciones', icon: LinkIcon, roles: ['owner', 'admin'] },
+    { id: 'notificaciones', label: 'Notificaciones', icon: Bell, roles: ['owner', 'admin', 'user', 'super_admin'] },
+    { id: 'seguridad', label: 'Seguridad', icon: Shield, roles: ['owner', 'admin', 'user', 'super_admin'] },
 ];
 
 // --- Sub-Components for each Tab ---
 
+const MiPerfilTab = ({ onSave }: { onSave: () => void }) => {
+    const { user } = useAuthStore();
+    
+    const [firstName, setFirstName] = useState(user?.firstName || '');
+    const [lastName, setLastName] = useState(user?.lastName || '');
+    const [phone, setPhone] = useState(user?.phone || '');
+    
+    return (
+        <Card>
+            <form onSubmit={(e) => { e.preventDefault(); onSave(); }}>
+                <div className="p-6 space-y-6">
+                    <h3 className="text-lg font-medium theme-text-primary">Tu Información Personal</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Input id="firstName" label="Nombre" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                        <Input id="lastName" label="Apellido" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                        <Input id="email" label="Email" type="email" defaultValue={user?.email} disabled />
+                        <Input id="phone" label="Teléfono" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                    </div>
+                     <div className="border-t theme-border pt-6 mt-6">
+                        <h3 className="text-lg font-medium theme-text-primary">Cambiar Contraseña</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <Input id="currentPassword" label="Contraseña Actual" type="password" placeholder="••••••••" />
+                            <Input id="newPassword" label="Nueva Contraseña" type="password" placeholder="••••••••" />
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-gray-50 dark:bg-gray-800/50 px-6 py-3 text-right rounded-b-lg">
+                     <Button type="submit">Guardar Cambios</Button>
+                </div>
+            </form>
+        </Card>
+    );
+};
+
+
 const InformacionGeneralTab = ({ onSave }: { onSave: () => void }) => {
-    const { organization } = useAuthStore();
+    const { organization, user } = useAuthStore();
+    const isSuperAdmin = user?.role === 'super_admin';
+
+    const { 
+        logoUrl: orgLogoUrl, 
+        setLogoUrl: setOrgLogoUrl, 
+        logoSize: orgLogoSize, 
+        setLogoSize: setOrgLogoSize,
+        globalLogoUrl,
+        setGlobalLogoUrl,
+        globalLogoSize,
+        setGlobalLogoSize
+    } = useSettingsStore();
+
+    // Conditionally select which state and setters to use based on user role
+    const logoUrl = isSuperAdmin ? globalLogoUrl : orgLogoUrl;
+    const setLogoUrl = isSuperAdmin ? setGlobalLogoUrl : setOrgLogoUrl;
+    const logoSize = isSuperAdmin ? globalLogoSize : orgLogoSize;
+    const setLogoSize = isSuperAdmin ? setGlobalLogoSize : setOrgLogoSize;
+    
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                toast.error('La imagen no debe superar los 2MB.');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setLogoUrl(reader.result as string);
+                toast.success('Logo previsualizado. Guarda los cambios para aplicarlo.');
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const currentLogo = logoUrl || EXTERNAL_ASSETS.logos.default;
+
     return (
         <Card>
             <form onSubmit={(e) => { e.preventDefault(); onSave(); }}>
@@ -44,15 +125,46 @@ const InformacionGeneralTab = ({ onSave }: { onSave: () => void }) => {
                         <Input id="cuit" label="CUIT/CUIL" placeholder="ej. 20-12345678-9" />
                         <Input id="phone" label="Teléfono principal" defaultValue={organization?.phone} />
                         <Input id="email" label="Email de contacto" type="email" defaultValue={organization?.email} />
-                        <div className="md:col-span-2">
-                             <label className="block text-sm font-medium theme-text-primary mb-2">Logo del Estudio</label>
-                             <div className="mt-1 flex items-center space-x-4 p-4 border-2 border-dashed theme-border rounded-lg">
-                                <span className="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-2xl theme-text-secondary">
-                                    {organization?.name?.charAt(0)}
-                                </span>
-                                <Button type="button" variant="outline"><UploadCloud className="w-4 h-4 mr-2"/> Cambiar Logo</Button>
-                             </div>
-                        </div>
+                        
+                        {isSuperAdmin && (
+                            <div className="md:col-span-2 space-y-4">
+                                <div>
+                                     <label className="block text-sm font-medium theme-text-primary mb-2">
+                                         Logo Global de la Plataforma
+                                     </label>
+                                     <div className="mt-1 flex items-center space-x-4 p-4 border-2 border-dashed theme-border rounded-lg">
+                                        <img 
+                                            src={currentLogo} 
+                                            alt="Logo preview" 
+                                            className="h-auto bg-gray-100 dark:bg-gray-700 rounded-md p-1 object-contain"
+                                            style={{ width: `${logoSize}px` }}
+                                        />
+                                        <input type="file" ref={fileInputRef} onChange={handleLogoChange} accept="image/png, image/jpeg, image/svg+xml" className="hidden" />
+                                        <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}><UploadCloud className="w-4 h-4 mr-2"/> Cambiar Logo</Button>
+                                        {logoUrl && <Button type="button" variant="ghost" size="sm" onClick={() => setLogoUrl(null)}><Trash2 className="w-4 h-4 mr-2 text-red-500"/> Quitar</Button>}
+                                     </div>
+                                     <p className="text-xs theme-text-muted mt-2">Recomendado: imagen horizontal (ej. 250x60px) en formato PNG, JPG o SVG, menor a 2MB.</p>
+                                </div>
+                                {logoUrl && (
+                                    <div>
+                                        <label htmlFor="logoSize" className="block text-sm font-medium theme-text-primary mb-2">Ajustar tamaño de la imagen</label>
+                                        <div className="flex items-center gap-4">
+                                            <input
+                                                id="logoSize"
+                                                type="range"
+                                                min="40"
+                                                max="120"
+                                                step="1"
+                                                value={logoSize}
+                                                onChange={(e) => setLogoSize(Number(e.target.value))}
+                                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                                            />
+                                            <span className="text-sm font-mono theme-text-secondary w-12 text-center">{logoSize}px</span>
+                                        </div>
+                                    </div>
+                                 )}
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-800/50 px-6 py-3 text-right rounded-b-lg">
@@ -180,10 +292,22 @@ const PlaceholderTab = ({ title }: { title: string }) => (
 );
 
 const ConfiguracionPage: React.FC = () => {
-    const [activeTab, setActiveTab] = useState(tabs[0].id);
+    const { user } = useAuthStore();
+    const visibleTabs = allTabs.filter(tab => user && tab.roles.includes(user.role));
+    
+    const defaultTab = user?.role === 'user' || user?.role === 'super_admin' ? 'perfil' : 'general';
+    const [activeTab, setActiveTab] = useState(defaultTab);
+    
+    useEffect(() => {
+        const newDefaultTab = user?.role === 'user' || user?.role === 'super_admin' ? 'perfil' : 'general';
+        if (!visibleTabs.some(tab => tab.id === activeTab)) {
+            setActiveTab(newDefaultTab);
+        }
+    }, [user, visibleTabs, activeTab]);
 
     const renderContent = () => {
         switch(activeTab) {
+            case 'perfil': return <MiPerfilTab onSave={() => toast.success('Perfil actualizado.')} />;
             case 'general': return <InformacionGeneralTab onSave={() => toast.success('Información guardada.')} />;
             case 'usuarios': return <UsuariosPermisosTab />;
             case 'modulos': return <PlaceholderTab title="Gestión de Módulos ELIAS" />;
@@ -194,16 +318,22 @@ const ConfiguracionPage: React.FC = () => {
         }
     };
 
+    const isOrgAdmin = user?.role === 'owner' || user?.role === 'admin';
+
     return (
-        <div className="space-y-8 max-w-6xl mx-auto">
+        <div className="space-y-8 mx-auto">
             <div>
-                <h1 className="text-3xl font-bold theme-text-primary">Configuración del Estudio</h1>
-                <p className="theme-text-secondary mt-1">Gestiona usuarios, módulos y preferencias de tu organización.</p>
+                <h1 className="text-3xl font-bold theme-text-primary">
+                    {isOrgAdmin ? 'Configuración del Estudio' : 'Configuración de Cuenta'}
+                </h1>
+                <p className="theme-text-secondary mt-1">
+                    {isOrgAdmin ? 'Gestiona usuarios, módulos y preferencias de tu organización.' : 'Gestiona tu información personal y preferencias.'}
+                </p>
             </div>
 
             <div className="border-b theme-border">
                  <nav className="-mb-px flex space-x-6 overflow-x-auto">
-                    {tabs.map(tab => (
+                    {visibleTabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}

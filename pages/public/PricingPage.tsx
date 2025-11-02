@@ -30,7 +30,7 @@ const PricingPage: React.FC = () => {
   return (
     <div className="theme-bg-secondary text-text-primary">
       <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
           <div className="text-center mb-12">
@@ -76,7 +76,7 @@ const PricingPage: React.FC = () => {
 
       {/* Final CTA */}
       <section className="py-16">
-        <div className="max-w-4xl mx-auto px-6 text-center">
+        <div className="max-w-5xl mx-auto px-6 text-center">
             <div style={{ background: 'var(--nexum-gradient-primary)' }} className="p-8 rounded-xl shadow-lg">
                 <h2 className="text-3xl font-bold text-white">¿Necesitas una solución a medida?</h2>
                 <p className="text-white mt-2 mb-6 [text-shadow:0_1px_3px_rgba(0,0,0,0.4)]">Planes Enterprise personalizados para estudios con +50 abogados, con todo ilimitado, SLA garantizado y soporte dedicado.</p>

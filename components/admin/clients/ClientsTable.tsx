@@ -6,6 +6,8 @@ import HealthIndicator from '../dashboard/HealthIndicator';
 import { MoreVertical, Eye, Edit, Tag, Mail, AlertCircle, FileText, ChevronUp, ChevronDown, User, LogIn, Repeat, Wallet, XCircle, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Button from '../../ui/Button';
+// FIX: Import cn utility for conditional class names.
+import { cn } from '../../../utils/cn';
 
 type SortConfig = { key: keyof ClientData; direction: 'ascending' | 'descending' } | null;
 
@@ -18,19 +20,8 @@ interface ClientsTableProps {
   onSelectionChange: (selected: Set<string>) => void;
 }
 
-const planBadgeColors: { [key: string]: string } = {
-  Lite: 'bg-gray-400/20 text-gray-300 border-gray-600',
-  Pro: 'bg-blue-400/20 text-blue-300 border-blue-600',
-  Professional: 'bg-purple-400/20 text-purple-300 border-purple-600',
-  Business: 'bg-indigo-400/20 text-indigo-300 border-indigo-600',
-  Enterprise: 'bg-yellow-400/20 text-yellow-300 border-yellow-600',
-};
-
-const paymentStatusColors: { [key: string]: string } = {
-    paid: 'text-green-400',
-    pending: 'text-yellow-400',
-    failed: 'text-red-400',
-};
+// FIX: Removed dynamic class name map as it's not safe for Tailwind's tree-shaking.
+// The logic is now handled inline with the `cn` utility.
 
 const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sortConfig, onSort, selectedClients, onSelectionChange }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -106,7 +97,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sor
         <table className="w-full text-sm">
           <thead>
             <tr>
-              <th><input type="checkbox" className="bg-gray-700 border-gray-600" onChange={handleSelectAll} checked={selectedClients.size === clients.length && clients.length > 0} /></th>
+              <th><input type="checkbox" className="theme-bg-secondary border-border-color" onChange={handleSelectAll} checked={selectedClients.size === clients.length && clients.length > 0} /></th>
               <SortableHeader tkey="empresa" label="Cliente" />
               <SortableHeader tkey="plan" label="Plan / Ingreso Mensual" />
               <th>Consumo</th>
@@ -119,10 +110,10 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sor
           <tbody>
             {paginatedClients.map(client => (
               <tr key={client.id} className={selectedClients.has(client.id) ? 'bg-blue-900/30' : ''}>
-                <td><input type="checkbox" className="bg-gray-700 border-gray-600" checked={selectedClients.has(client.id)} onChange={() => handleSelectOne(client.id)} /></td>
+                <td><input type="checkbox" className="theme-bg-secondary border-border-color" checked={selectedClients.has(client.id)} onChange={() => handleSelectOne(client.id)} /></td>
                 <td>
                   <div className="flex items-center gap-3">
-                    <img src={client.logoUrl} alt={client.empresa} className="h-8 w-8 rounded-full bg-gray-700" />
+                    <img src={client.logoUrl} alt={client.empresa} className="h-8 w-8 rounded-full theme-bg-secondary" />
                     <div>
                       <div className="font-bold">{client.empresa}</div>
                       <div className="text-xs">{client.contacto}</div>
@@ -131,7 +122,15 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sor
                 </td>
                 <td>
                   <div className="flex items-center gap-2">
-                    <span className={`px-2 py-0.5 text-xs font-semibold rounded-full border ${planBadgeColors[client.plan]}`}>{client.plan}</span>
+                    <span className={cn('px-2 py-0.5 text-xs font-semibold rounded-full border', {
+                        'bg-gray-100 text-gray-800 dark:bg-gray-400/20 dark:text-gray-300 border-gray-300 dark:border-gray-600': client.plan === 'Lite',
+                        'bg-blue-100 text-blue-800 dark:bg-blue-400/20 dark:text-blue-300 border-blue-300 dark:border-blue-600': client.plan === 'Pro',
+                        'bg-purple-100 text-purple-800 dark:bg-purple-400/20 dark:text-purple-300 border-purple-300 dark:border-purple-600': client.plan === 'Professional',
+                        'bg-indigo-100 text-indigo-800 dark:bg-indigo-400/20 dark:text-indigo-300 border-indigo-300 dark:border-indigo-600': client.plan === 'Business',
+                        'bg-yellow-100 text-yellow-800 dark:bg-yellow-400/20 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600': client.plan === 'Enterprise',
+                    })}>
+                        {client.plan}
+                    </span>
                     <div className="font-mono">{formatCurrency(client.mrr)}</div>
                   </div>
                 </td>
@@ -144,8 +143,17 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sor
                 <td className="text-center"><HealthIndicator score={client.healthScore} /></td>
                 <td>{formatDate(client.fechaInicio).split('de ').slice(1).join(' ')}</td>
                 <td>
-                    <div className={`font-semibold ${paymentStatusColors[client.ultimoPago.estado]}`}>{formatDate(client.ultimoPago.fecha).split('de ').slice(1).join(' ')}</div>
-                    <div className={`text-xs capitalize ${paymentStatusColors[client.ultimoPago.estado]}`}>{client.ultimoPago.estado}</div>
+                    {/* FIX: Replaced dynamic class concatenation with cn utility for static analysis by Tailwind. */}
+                    <div className={cn('font-semibold', {
+                        'text-green-500': client.ultimoPago.estado === 'paid',
+                        'text-yellow-500': client.ultimoPago.estado === 'pending',
+                        'text-red-500': client.ultimoPago.estado === 'failed',
+                    })}>{formatDate(client.ultimoPago.fecha).split('de ').slice(1).join(' ')}</div>
+                    <div className={cn('text-xs capitalize', {
+                        'text-green-500': client.ultimoPago.estado === 'paid',
+                        'text-yellow-500': client.ultimoPago.estado === 'pending',
+                        'text-red-500': client.ultimoPago.estado === 'failed',
+                    })}>{client.ultimoPago.estado}</div>
                 </td>
                 <td className="text-right">
                     <div className="relative">
@@ -174,12 +182,26 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sor
         </table>
       </div>
       {/* Pagination */}
-      <div className="p-4 flex justify-between items-center text-sm text-gray-400">
+      <div className="p-4 flex justify-between items-center text-sm text-text-muted">
         <div>Mostrando {paginatedClients.length} de {clients.length} clientes</div>
         <div className="flex items-center gap-2">
-            <Button size="sm" variant="secondary" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Anterior</Button>
-            <span>Página {currentPage} de {totalPages}</span>
-            <Button size="sm" variant="secondary" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Siguiente</Button>
+            <Button
+                size="sm"
+                variant="secondary"
+                className="!bg-bg-secondary !text-text-secondary disabled:!bg-bg-primary disabled:!text-text-muted hover:!bg-bg-surface"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1 || totalPages === 0}>
+                Anterior
+            </Button>
+            <span className="text-text-primary">Página {currentPage} de {totalPages || 1}</span>
+            <Button
+                size="sm"
+                variant="secondary"
+                className="!bg-bg-secondary !text-text-secondary disabled:!bg-bg-primary disabled:!text-text-muted hover:!bg-bg-surface"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages || totalPages === 0}>
+                Siguiente
+            </Button>
         </div>
       </div>
     </div>
