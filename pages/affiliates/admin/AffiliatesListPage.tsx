@@ -1,11 +1,17 @@
 
 import React from 'react';
-import AffiliatesTable from '../../../components/affiliates/admin/AffiliatesTable';
+// FIX: Changed to a named import as AffiliatesTable is not a default export.
+import { AffiliatesTable } from '../../../components/affiliates/admin/AffiliatesTable';
 import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
 import { PlusCircle } from 'lucide-react';
+// FIX: Imported store to provide necessary props to the AffiliatesTable component.
+import { useAffiliateStore } from '../../../store/authStore';
 
 const AffiliatesListPage: React.FC = () => {
+  // FIX: Fetched affiliates from the store to pass to the table.
+  const { affiliates } = useAffiliateStore();
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
@@ -19,7 +25,8 @@ const AffiliatesListPage: React.FC = () => {
         </Button>
       </div>
       <Card>
-        <AffiliatesTable />
+        {/* FIX: Passed required props 'affiliates' and 'setAffiliates' to the component. */}
+        <AffiliatesTable affiliates={affiliates} setAffiliates={(updatedAffiliates) => useAffiliateStore.setState({ affiliates: updatedAffiliates })} />
       </Card>
     </div>
   );

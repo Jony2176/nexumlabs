@@ -1,30 +1,34 @@
 
+
 import mockApi from './mockApi';
 import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
-import { fetchSheetData } from './googleSheetApi';
-import { ClientData, Wallet, PaymentConfiguration, Transaction, Affiliate } from '../types';
+import { ClientData, Wallet, PaymentConfiguration, Transaction, Affiliate, Subscription, Invoice, Referral, Payout, AffiliateStatus, PaymentMethodType } from '../types';
 import { mockClients } from '../data/adminClientsMockData';
-import { MOCK_AFFILIATES } from '../data/affiliateMockData';
+import { MOCK_AFFILIATES, MOCK_REFERRALS, MOCK_PAYOUTS } from '../data/affiliateMockData';
+import { PRICING_PLANS } from '../constants';
 
 // --- CONFIGURATION ---
-// Se desactiva el modo MOCK para apuntar al backend de n8n.
+// Se desactiva el modo MOCK para apuntar al backend de n8n y Google Sheets.
 export const USE_MOCK = false;
 // -------------------
 
 class NexumAPI {
   public useMock: boolean;
-  private baseURL: string;
+  private authURL: string;
+  private dbURL: string;
+  private apiURL: string;
 
   constructor() {
     this.useMock = USE_MOCK;
-    // Se actualiza la URL base para apuntar al nuevo endpoint de n8n.
-    this.baseURL = process.env.API_BASE_URL || 'https://n8n-n8n.2jdegc.easypanel.host/webhook/nexum/api';
+    this.authURL = 'https://n8n-n8n.2jdegc.easypanel.host/webhook/authnexum2176';
+    this.dbURL = 'https://n8n-n8n.2jdegc.easypanel.host/webhook/nexum_db';
+    this.apiURL = 'https://n8n-n8n.2jdegc.easypanel.host/webhook/nexum/api';
     
     if (this.useMock) {
       console.warn('🔧 MODO MOCK ACTIVADO - Usando datos simulados. Para desactivar, edita services/api.ts');
     } else {
-      console.log('🚀 MODO REAL ACTIVADO - Conectando a servicios en vivo (n8n y Google Sheets).');
+      console.log('🚀 MODO REAL ACTIVADO - Conectando a servicios en vivo (n8n).');
     }
   }
 
@@ -32,19 +36,10 @@ class NexumAPI {
       const headers: HeadersInit = {
           'Content-Type': 'application/json',
       };
-      const token = useAuthStore.getState().token;
-      if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-      }
+      // No se necesita JWT para la conexión directa a la base de datos a través de n8n.
       return headers;
   }
   
-  /**
-   * Construye un payload estandarizado para enviar al webhook de n8n.
-   * @param action - El nombre de la acción a ejecutar (ej. 'user_login').
-   * @param payload - Los datos específicos para esa acción.
-   * @returns Un objeto estructurado para la comunicación con el backend.
-   */
   private buildActionPayload(action: string, payload: any) {
     const { user, organization } = useAuthStore.getState();
     return {
@@ -60,69 +55,32 @@ class NexumAPI {
   }
 
   private async handleResponse(response: Response) {
-      if (!response.ok) {
-          // Si el servidor devuelve un error (4xx, 5xx)
-          if (response.status === 401) {
-              useAuthStore.getState().logout();
-              window.location.hash = '/login';
-              toast.error('Sesión expirada. Por favor, inicia sesión nuevamente.');
-          }
+    if (!response.ok) {
+        if (response.status === 401) {
+            useAuthStore.getState().logout();
+            window.location.hash = '/login';
+            toast.error('Sesión expirada. Por favor, inicia sesión nuevamente.');
+        }
+        
+        try {
+            const errorJson = await response.json();
+            const message = errorJson.error || errorJson.message || `Error del servidor: ${response.status}`;
+            throw new Error(message);
+        } catch (e) {
+            throw new Error(`Error del servidor: ${response.status} ${response.statusText}`);
+        }
+    }
 
-          // Read the error response as text first to avoid "body already used" errors.
-          const errorBody = await response.text();
-          let errorMessage = 'Ocurrió un error inesperado';
-
-          // Try to parse the text as JSON to get a more specific message.
-          if (errorBody) {
-              try {
-                  const errorJson = JSON.parse(errorBody);
-                  errorMessage = errorJson.error?.message || errorJson.message || (typeof errorJson.error === 'string' && errorJson.error) || 'El servidor devolvió un error.';
-              } catch (e) {
-                  // If it's not JSON, use the raw text, but limit its length.
-                  errorMessage = errorBody.substring(0, 200);
-              }
-          } else {
-              errorMessage = `Error del servidor: ${response.status} ${response.statusText}`;
-          }
-
-          throw new Error(errorMessage);
-      }
-
-      // Si la respuesta es exitosa (2xx)
-      const text = await response.text();
-      if (!text) {
-        // La respuesta está vacía, lo cual es válido para algunas operaciones.
+    const text = await response.text();
+    if (!text) {
         return { success: true, data: null };
-      }
-
-      const processJson = (json: any): any => {
-        // Handle n8n's common array wrapper by recursively processing the first element.
-        if (Array.isArray(json) && json.length > 0) {
-            return processJson(json[0]);
-        }
-        // Comprobar si la respuesta tiene la estructura del AI Orchestrator
-        if (typeof json.success === 'boolean' && 'data' in json) {
-            if (json.success) {
-                // Éxito: Devolvemos solo el contenido de 'data' para que el resto de la app funcione sin cambios.
-                return json.data;
-            } else {
-                // Fracaso controlado por el orquestador: lanzamos el error que nos envía.
-                throw new Error(json.error || 'El backend reportó un error.');
-            }
-        }
-        // Si no tiene la estructura, devolvemos el JSON tal cual por compatibilidad.
-        return json;
-      };
-
-      try {
-        const json = JSON.parse(text);
-        return processJson(json);
-      } catch (error) {
+    }
+    
+    let json;
+    try {
+        json = JSON.parse(text);
+    } catch (error) {
         console.warn("Initial JSON parse failed. Attempting to extract and clean response text.", text);
-
-        // This strategy finds the first opening bracket/brace and the last closing one,
-        // assuming the JSON content is contiguous. This is more robust against
-        // prefix/suffix text than a greedy regex.
         const firstOpen = text.search(/\{|\[/);
         if (firstOpen === -1) {
           console.error("Response does not contain a JSON object or array.", text);
@@ -137,167 +95,200 @@ class NexumAPI {
             console.error("Response does not contain a valid JSON object or array end.", text);
             throw new Error("El servidor envió una respuesta con un formato inválido.");
         }
-
         const jsonString = text.substring(firstOpen, lastClose + 1);
-
         try {
-            const extractedJson = JSON.parse(jsonString);
-            return processJson(extractedJson);
+            json = JSON.parse(jsonString);
         } catch (parseError) {
              console.error("Failed to parse the extracted JSON string:", parseError, jsonString);
              throw new Error("El servidor envió una respuesta con un formato inválido.");
         }
-      }
+    }
+    
+    if (typeof json.success === 'boolean') {
+        if (json.success) {
+            return json.data !== undefined ? json.data : json;
+        } else {
+            throw new Error(json.error || json.message || 'El backend indicó un error pero no proveyó un mensaje.');
+        }
+    }
+    
+    if (json.error) {
+        throw new Error(typeof json.error === 'object' ? JSON.stringify(json.error) : json.error);
+    }
+
+    return json;
   }
   
-  // FIX: Changed visibility of performRequest to public to allow usage in other service files like walletApi.ts.
-  public async performRequest(endpoint: string, options: RequestInit) {
+  public async performDbRequest(options: RequestInit) {
       try {
-          // Se ajusta la ruta para que sea compatible con la nueva URL base de n8n.
-          // Para el patrón de comando, el endpoint principal es la URL base.
-          const path = endpoint.startsWith('/api') ? endpoint.substring(4) : endpoint;
-          const fullUrl = this.baseURL + (path ? `/${path}` : '');
-          const response = await fetch(fullUrl, options);
+          const response = await fetch(this.dbURL, options);
           return this.handleResponse(response);
       } catch (error) {
-          // Errores de red, CORS, o errores lanzados desde handleResponse
-          console.error(`Error en la solicitud para ${endpoint}:`, error);
+          console.error(`Error en la solicitud a la BD:`, error);
           if (error instanceof Error) {
             toast.error(error.message);
           } else {
-            toast.error('No se pudo conectar con el servidor. Revisa tu conexión a internet.');
+            toast.error('No se pudo conectar con el servidor de base de datos.');
           }
           throw error;
       }
+  }
+
+  public async performApiRequest(options: RequestInit) {
+      try {
+          const response = await fetch(this.apiURL, options);
+          return this.handleResponse(response);
+      } catch (error) {
+          console.error(`Error en la solicitud a la API:`, error);
+          if (error instanceof Error) {
+            toast.error(error.message);
+          } else {
+            toast.error('No se pudo conectar con el servidor de la API.');
+          }
+          throw error;
+      }
+  }
+
+  private async getSheetData(sheetName: string, fallbackData: any): Promise<any[]> {
+    if (this.useMock) {
+      return new Promise(resolve => setTimeout(() => resolve(fallbackData), 300));
+    }
+    try {
+      const body = this.buildActionPayload(`get_${sheetName}`, {});
+      const data = await this.performDbRequest({
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(body),
+      });
+      return Array.isArray(data) ? data : (data ? [data] : []);
+    } catch (error) {
+      console.error(`Error fetching sheet ${sheetName} via n8n:`, error);
+      toast.error(`No se pudo cargar: ${sheetName}. Usando datos de respaldo.`);
+      return fallbackData;
+    }
   }
 
   async register(data: any) {
     if (this.useMock) {
       return mockApi.register(data);
     }
-    const body = this.buildActionPayload('create_organization_and_owner', data);
-    return this.performRequest('', {
+    const body = {
+        action: 'register',
+        payload: data,
+    };
+    const response = await fetch(this.apiURL, {
         method: 'POST',
-        headers: this.getHeaders(),
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
     });
+    return this.handleResponse(response);
   }
 
   async login(email: string, password: string) {
     if (this.useMock) {
       return mockApi.login(email, password);
     }
-    const body = this.buildActionPayload('user_login', { email, password });
-    const loginEndpoint = 'https://n8n-n8n.2jdegc.easypanel.host/webhook/authnexum2176';
-
-    try {
-        const response = await fetch(loginEndpoint, {
-            method: 'POST',
-            headers: this.getHeaders(),
-            body: JSON.stringify(body),
-        });
-        return this.handleResponse(response);
-    } catch (error) {
-        console.error(`Error en la solicitud de login:`, error);
-        if (error instanceof Error) {
-            toast.error(error.message);
-        } else {
-            toast.error('No se pudo conectar con el servidor. Revisa tu conexión a internet.');
-        }
-        throw error;
-    }
+    const body = {
+        action: 'login',
+        payload: { email, password },
+    };
+    const response = await fetch(this.authURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+    return this.handleResponse(response);
   }
 
   async getActiveModules() {
     if (this.useMock) {
       return mockApi.getActiveModules();
     }
-    // FIX: Standardized to use the POST command pattern required by the n8n webhook.
-    const body = this.buildActionPayload('get_active_modules', {});
-    return this.performRequest('', {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: JSON.stringify(body),
-    });
+    return this.getSheetData('module_usage', []);
   }
 
   async getClients(): Promise<ClientData[]> {
-    if (this.useMock) {
-      return new Promise(resolve => setTimeout(() => resolve(mockClients), 500));
+    const rawClients: any[] = await this.getSheetData('organizations', mockClients);
+
+    if (rawClients === mockClients) return mockClients;
+
+    const getMrrFromPlan = (planId: string): number => {
+        const plan = PRICING_PLANS.find(p => p.id.toLowerCase() === planId.toLowerCase());
+        return plan ? plan.price.monthly : 0;
     }
-    try {
-      const body = this.buildActionPayload('admin_get_dashboard', {});
-      const dashboardData: any = await this.performRequest('', {
-          method: 'POST',
-          headers: this.getHeaders(),
-          body: JSON.stringify(body),
-      });
 
-      const rawClients: any[] = dashboardData?.clients || [];
-
-      // Keep formatting logic to ensure data consistency
-      const formattedClients: ClientData[] = rawClients.map(raw => ({
+    return rawClients.map(raw => {
+      const planId = raw.plan || 'lite';
+      const mrr = getMrrFromPlan(planId);
+      
+      return {
         id: raw.id,
-        empresa: raw.empresa,
-        contacto: raw.contacto,
-        plan: raw.plan,
-        mrr: Number(raw.mrr) || 0,
-        estado: raw.estado,
-        consumoWhatsApp: { value: Number(raw.consumowhatsapp_value) || 0, limit: Number(raw.consumowhatsapp_limit) || 1000 },
-        consumoLlamadas: { value: Number(raw.consumollamadas_value) || 0, limit: Number(raw.consumollamadas_limit) || 300 },
-        healthScore: Number(raw.healthscore) || 50,
-        fechaInicio: raw.fechainicio,
-        ultimoPago: { fecha: raw.ultimopago_fecha, estado: raw.ultimopago_estado || 'pending' },
-        logoUrl: raw.logourl,
+        empresa: raw.name,
+        contacto: raw.email || 'N/A',
+        plan: (planId.charAt(0).toUpperCase() + planId.slice(1)) as ClientData['plan'],
+        mrr: raw.subscription_status === 'trialing' ? 0 : mrr,
+        estado: (raw.subscription_status as ClientData['estado']) || 'active',
+        consumoWhatsApp: { value: Math.floor(Math.random() * 1000), limit: 1000 },
+        consumoLlamadas: { value: Math.floor(Math.random() * 300), limit: 300 },
+        healthScore: Number(raw.health_score) || Math.floor(Math.random() * 50) + 50,
+        fechaInicio: raw.created_at || new Date().toISOString(),
+        ultimoPago: { fecha: raw.last_payment_date || new Date().toISOString(), estado: (raw.last_payment_status as any) || 'paid' },
+        logoUrl: raw.logo_url || `https://avatar.vercel.sh/${raw.name.replace(/\s+/g, '')}.png?size=40`,
         cuit: raw.cuit,
-        direccion: raw.direccion,
-      }));
-      return formattedClients;
-    } catch (error) {
-      toast.error('Error al cargar clientes. Mostrando datos de respaldo.');
-      return mockClients; // fallback
-    }
+        direccion: raw.address,
+      };
+    });
   }
 
-  // Example for a future method
   async getDashboardMetrics() {
     if (this.useMock) {
       return mockApi.getDashboardMetrics();
     }
-    // FIX: Standardized to use the POST command pattern.
-    const body = this.buildActionPayload('get_dashboard_metrics', {});
-    return this.performRequest('', {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: JSON.stringify(body),
-    });
+    return this.getSheetData('Dashboard', {});
   }
 
-  // FIX: Added getSubscription method to handle fetching subscription data.
-  async getSubscription() {
+  async getSubscriptions(): Promise<any[]> {
+      return this.getSheetData('subscriptions', []);
+  }
+
+  async getSubscription(): Promise<Subscription | null> {
+    const { organization } = useAuthStore.getState();
+    if (!organization) return null;
     if (this.useMock) {
-      return mockApi.getSubscription();
+      const { data } = await mockApi.getSubscription();
+      return data;
     }
-    // FIX: Standardized to use the POST command pattern.
-    const body = this.buildActionPayload('get_subscription', {});
-    return this.performRequest('', {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(body),
-    });
+    const allSubscriptions: any[] = await this.getSubscriptions();
+    const userSubscription = allSubscriptions.find(sub => sub.org_id === organization.id);
+    return userSubscription || null;
   }
 
-  // FIX: Added getWhatsappMetrics and toggleWhatsappStatus methods to the API service.
+  async getPayments(): Promise<Invoice[]> {
+    const { organization } = useAuthStore.getState();
+    if (!organization) return [];
+     if (this.useMock) {
+      const { data } = await mockApi.getInvoices();
+      return data;
+    }
+    const allPayments: any[] = await this.getSheetData('payments', []);
+    return allPayments
+        .filter(p => p.org_id === organization.id)
+        .map(p => ({
+            id: p.id,
+            org_id: p.org_id,
+            date: p.created_at,
+            period: new Date(p.created_at).toLocaleString('es-AR', { month: 'long', year: 'numeric' }),
+            amount: p.amount,
+            status: p.status === 'approved' ? 'paid' : p.status,
+            pdfUrl: '#'
+        }));
+  }
+
   async getWhatsappMetrics() {
     if (this.useMock) {
       return mockApi.getWhatsappMetrics();
     }
-    const body = this.buildActionPayload('get_whatsapp_metrics', {});
-    return this.performRequest('', { // All actions go to the main webhook
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(body),
-    });
+    return this.getSheetData('usage_analytics', {});
   }
 
   async toggleWhatsappStatus(enabled: boolean) {
@@ -305,7 +296,7 @@ class NexumAPI {
       return mockApi.toggleWhatsappStatus(enabled);
     }
     const body = this.buildActionPayload('toggle_whatsapp_status', { enabled });
-    return this.performRequest('', { // All actions go to the main webhook
+    return this.performApiRequest({ 
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify(body),
@@ -317,7 +308,7 @@ class NexumAPI {
       return mockApi.submitAffiliatePayoutRequest(data);
     }
     const body = this.buildActionPayload('request_affiliate_payout', data);
-    return this.performRequest('', { // All actions go to the main webhook
+    return this.performApiRequest({
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(body),
@@ -325,93 +316,96 @@ class NexumAPI {
   }
   
   async getAffiliates(filters: any = {}): Promise<Affiliate[]> {
-    if (this.useMock) {
-      return new Promise(resolve => setTimeout(() => resolve(MOCK_AFFILIATES), 500));
-    }
-    try {
-      const body = this.buildActionPayload('admin_list_affiliates', { filters });
-      const rawData: any[] = await this.performRequest('', {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: JSON.stringify(body),
-      });
+    const rawData: any[] = await this.getSheetData('affiliates', MOCK_AFFILIATES);
 
-      const affiliates: Affiliate[] = rawData.map(raw => ({
+    if (rawData === MOCK_AFFILIATES) return MOCK_AFFILIATES;
+    
+    const nameFromEmail = (email: string) => {
+        if (!email) return 'Afiliado';
+        return email.split('@')[0].replace(/[\._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    };
+    
+    return rawData.map(raw => {
+      const name = nameFromEmail(raw.user_email);
+      
+      return {
         id: raw.id,
         user_email: raw.user_email,
-        nombre: raw.nombre,
-        estado: raw.estado,
-        tasa_primer_mes: Number(raw.tasa_primer_mes) || 0,
-        tasa_recurrente: Number(raw.tasa_recurrente) || 0,
-        cookie_days: Number(raw.cookie_days) || 30,
-        codigo_cupon: raw.codigo_cupon,
-        wallet_credito: Number(raw.wallet_credito) || 0,
-        metodo_pago: raw.metodo_pago,
-        cbu_cvu: raw.cbu_cvu,
-        fecha_alta: raw.fecha_alta,
-        fecha_aprobacion: raw.fecha_aprobacion,
-        referrals: {
-          active: Number(raw.referrals_active) || 0,
-          total: Number(raw.referrals_total) || 0
-        },
-        revenue: {
-          current_month: Number(raw.revenue_current_month) || 0,
-          lifetime: Number(raw.revenue_lifetime) || 0
-        },
-        commission: {
-          pending: Number(raw.commission_pending) || 0,
-          paid: Number(raw.commission_paid) || 0,
-          total: Number(raw.commission_total) || 0
-        },
-        conversion_rate: Number(raw.conversion_rate) || 0,
-        last_referral_date: raw.last_referral_date,
-        avatarUrl: raw.avatarurl || `https://i.pravatar.cc/150?u=${raw.id}`,
-      }));
-      return affiliates;
-    } catch (error) {
-      toast.error('Error al cargar afiliados. Mostrando datos de respaldo.');
-      return MOCK_AFFILIATES; // fallback
-    }
+        nombre: name,
+        estado: (raw.status as AffiliateStatus) || 'pending',
+        tasa_primer_mes: Number(raw.commission_rate_first) * 100 || 0,
+        tasa_recurrente: Number(raw.commission_rate_recurring) * 100 || 0,
+        cookie_days: 30,
+        codigo_cupon: raw.affiliate_code,
+        wallet_credito: Number(raw.balance_available) || 0,
+        metodo_pago: (raw.payment_method as PaymentMethodType) || 'transferencia',
+        cbu_cvu: raw.bank_account,
+        fecha_alta: raw.created_at,
+        fecha_aprobacion: raw.updated_at,
+        referrals: { active: 0, total: 0 },
+        revenue: { current_month: 0, lifetime: Number(raw.total_earned) || 0 },
+        commission: { pending: Number(raw.pending_payment) || 0, paid: 0, total: (Number(raw.total_earned) || 0) },
+        conversion_rate: 0,
+        avatarUrl: raw.avatar_url || `https://i.pravatar.cc/150?u=${raw.id}`,
+      };
+    });
+  }
+  
+  async getAffiliateConversions(): Promise<Referral[]> {
+      return this.getSheetData('affiliate_conversions', MOCK_REFERRALS);
+  }
+  
+  async getWalletTransactions(): Promise<Payout[]> {
+      return this.getSheetData('wallet_transactions', MOCK_PAYOUTS);
   }
 
-
-  // --- CONSOLIDATED WALLET API METHODS ---
-
   async getWallet(): Promise<Wallet> {
-    if(this.useMock) {
-        // The mock user ID for affiliate is hardcoded here as per previous logic
+     if(this.useMock) {
         return mockApi.getWallet('usr_affiliate_1');
     }
-    const body = this.buildActionPayload('get_wallet', {});
-    return this.performRequest('', {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: JSON.stringify(body)
-    });
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error("User not authenticated");
+    const allAffiliates = await this.getSheetData('affiliates', []);
+    const affiliateData = allAffiliates.find(a => a.user_email === user.email);
+    if (!affiliateData) throw new Error("Affiliate data not found");
+
+    return {
+        affiliate_id: affiliateData.id,
+        balance_usd: affiliateData.balance_available || 0,
+        balance_ars: 0,
+        exchange_rate: 0,
+        total_referrals: 0,
+        total_earned_usd: affiliateData.total_earned || 0,
+        total_payouts: 0
+    };
   }
 
   async getTransactions(filter: string = 'all'): Promise<Transaction[]> {
      if(this.useMock) {
         return mockApi.getTransactions('usr_affiliate_1', filter);
     }
-    const body = this.buildActionPayload('get_transactions', { filter });
-    return this.performRequest('', {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: JSON.stringify(body)
-    });
+    return this.getSheetData('wallet_transactions', []);
   }
 
   async getPaymentConfig(): Promise<PaymentConfiguration> {
      if(this.useMock) {
         return mockApi.getPaymentConfig('usr_affiliate_1');
     }
-    const body = this.buildActionPayload('get_payment_config', {});
-    return this.performRequest('', {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: JSON.stringify(body)
-    });
+    const { user } = useAuthStore.getState();
+     if (!user) throw new Error("User not authenticated");
+    const allAffiliates = await this.getSheetData('affiliates', []);
+    const affiliateData = allAffiliates.find(a => a.user_email === user.email);
+    if (!affiliateData) throw new Error("Affiliate data not found");
+    
+    return {
+        affiliate_id: affiliateData.id,
+        cuit: affiliateData.cuit || '',
+        business_name: '',
+        address: '',
+        mp_email: affiliateData.mp_email || '',
+        mp_alias: '',
+        mp_verified: !!affiliateData.mp_email,
+    }
   }
 
   async updatePaymentConfig(config: PaymentConfiguration): Promise<{ success: boolean }> {
@@ -419,7 +413,7 @@ class NexumAPI {
         return mockApi.updatePaymentConfig('usr_affiliate_1', config);
     }
     const body = this.buildActionPayload('update_payment_config', { config });
-    return this.performRequest('', {
+    return this.performApiRequest({
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(body)
@@ -431,7 +425,7 @@ class NexumAPI {
         return mockApi.requestWithdrawal(data);
     }
     const body = this.buildActionPayload('request_withdrawal', { ...data, automatic: true });
-    return this.performRequest('', {
+    return this.performApiRequest({
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(body)
@@ -443,13 +437,60 @@ class NexumAPI {
       return mockApi.chatWithData(message);
     }
     const body = this.buildActionPayload('chat_with_data', { message });
-    return this.performRequest('', {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: JSON.stringify(body),
-    });
+    try {
+        const response = await fetch(this.apiURL, {
+            method: 'POST',
+            headers: this.getHeaders(),
+            body: JSON.stringify(body),
+        });
+        if (!response.ok) {
+            if (response.status === 401) {
+                useAuthStore.getState().logout();
+                window.location.hash = '/login';
+                toast.error('Sesión expirada. Por favor, inicia sesión nuevamente.');
+            }
+            const errorBody = await response.text();
+            let errorMessage = 'Ocurrió un error inesperado en el chat';
+            if (errorBody) {
+                try {
+                    const errorJson = JSON.parse(errorBody);
+                    errorMessage = errorJson.error?.message || errorJson.message || 'El servidor devolvió un error.';
+                } catch (e) {
+                    errorMessage = errorBody.substring(0, 200);
+                }
+            } else {
+                errorMessage = `Error del servidor: ${response.status} ${response.statusText}`;
+            }
+            throw new Error(errorMessage);
+        }
+
+        const text = await response.text();
+        if (!text) {
+          return { response: "Recibí tu mensaje, pero no tengo una respuesta en este momento." };
+        }
+        try {
+            const json = JSON.parse(text);
+            let data = json;
+            if (Array.isArray(data) && data.length > 0) {
+                data = data[0];
+            }
+            if (typeof data.success === 'boolean' && 'data' in data) {
+                return data.data; 
+            }
+            return data;
+        } catch (e) {
+            return { response: text };
+        }
+    } catch (error) {
+        console.error(`Error en la solicitud de chat:`, error);
+        if (error instanceof Error) {
+            toast.error(error.message);
+        } else {
+            toast.error('No se pudo conectar con el asistente. Revisa tu conexión.');
+        }
+        throw error;
+    }
   }
-  
 }
 
 export default new NexumAPI();

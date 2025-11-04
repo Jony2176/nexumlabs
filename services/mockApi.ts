@@ -1,5 +1,4 @@
 
-
 import { User, Organization, Subscription, Addon, PaymentMethod, Invoice, Plan } from '../types';
 import { MOCK_WALLET, MOCK_PAYMENT_CONFIG, MOCK_TRANSACTIONS } from '../data/walletMockData';
 import { MOCK_ADDONS, MOCK_PAYMENT_METHODS, MOCK_INVOICES } from '../data/subscriptionMockData';
@@ -192,6 +191,7 @@ class MockAPI {
     }
     const defaultSub: Subscription = {
         id: 'sub_mock_123',
+        org_id: 'org_demo',
         plan_id: 'pro',
         status: 'active',
         price: 199,

@@ -13,7 +13,8 @@ export const useSubscription = () => {
       try {
         // FIX: Replaced direct api.get call with the new api.getSubscription method.
         const response = await api.getSubscription();
-        setSubscription(response.data);
+        // FIX: The api.getSubscription method returns Subscription | null directly, not an object with a 'data' property.
+        setSubscription(response);
       } catch (err) {
         setError('Failed to fetch subscription details.');
         console.error(err);

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { getMyPayouts } from '../../../services/affiliateApi';
 import { Payout, PayoutStatus } from '../../../types';
@@ -7,6 +6,7 @@ import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import Button from '../../../components/ui/Button';
 import { Download, CheckCircle, Clock } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const statusInfo: { [key in PayoutStatus]: { text: string, icon: React.ElementType, className: string } } = {
   pending: { text: 'Pendiente', icon: Clock, className: 'text-yellow-500' },
@@ -87,6 +87,7 @@ const PortalPayoutsPage: React.FC = () => {
                 setPayouts(data);
             } catch (error) {
                 console.error("Failed to fetch payouts:", error);
+                toast.error("No se pudieron cargar tus pagos.");
             } finally {
                 setIsLoading(false);
             }

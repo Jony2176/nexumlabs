@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -7,6 +9,8 @@ import Input from '../components/ui/Input';
 import Card from '../components/ui/Card';
 import { useAuthStore } from '../store/authStore';
 import { CheckCircle } from 'lucide-react';
+import { User as UserType } from '../types';
+
 
 const RegisterPage: React.FC = () => {
   const [orgName, setOrgName] = useState('');
@@ -25,7 +29,7 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const responseData = await api.register({
+      const apiResponse = await api.register({
         organizationName: orgName,
         firstName,
         lastName,
@@ -34,37 +38,43 @@ const RegisterPage: React.FC = () => {
         password,
       });
 
-      // Check for auto-login data
-      if (responseData && responseData.id && responseData.api_key) {
-        // We can auto-login, construct the auth object
+      // Handle n8n wrapping response in an array
+      const responseData = Array.isArray(apiResponse) ? apiResponse[0] : apiResponse;
+
+      // Check for auto-login data (flexible check for flat or nested structure)
+      if (responseData && (responseData.token || responseData.api_key)) {
+        const token = responseData.token || responseData.api_key;
+        // Handle both flat (from login) and nested (from mock) structures
+        const userPayload = responseData.user || responseData;
+        const orgPayload = responseData.organization || responseData;
+
         const authData = {
-          token: responseData.api_key,
+          token: token,
           user: {
-            id: responseData.id,
-            email: responseData.email,
-            firstName: responseData.name || firstName,
-            lastName: responseData.last_name || lastName,
-            phone: responseData.phone,
-            role: responseData.role || 'owner',
-            orgId: responseData.org_id || responseData.id,
-            onboardingCompleted: responseData.onboarding_completed ?? false,
+            id: userPayload.id,
+            email: userPayload.email,
+            firstName: userPayload.firstName,
+            lastName: userPayload.lastName,
+            phone: userPayload.phone,
+            role: (userPayload.role || 'owner') as UserType['role'],
+            orgId: userPayload.orgId || orgPayload.id,
+            onboardingCompleted: userPayload.onboardingCompleted ?? false,
           },
           organization: {
-            id: responseData.org_id || responseData.id,
-            name: responseData.organization_name || orgName,
-            slug: responseData.slug || responseData.name,
-            email: responseData.email,
-            phone: responseData.phone,
-            modules: responseData.modules || {},
-            subscription_status: responseData.subscription_status || 'trialing',
-            trial_ends_at: responseData.trial_ends_at || new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-          }
+            id: orgPayload.id,
+            name: orgPayload.name || orgPayload.organizationName,
+            slug: orgPayload.slug,
+            email: orgPayload.email,
+            phone: orgPayload.phone,
+            modules: orgPayload.modules || {},
+            subscription_status: orgPayload.subscription_status || 'trialing',
+            trial_ends_at: orgPayload.trial_ends_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          },
         };
         setAuth(authData);
         setShouldNavigateToDashboard(true);
         toast.success(`¡Bienvenido, ${authData.user.firstName}! Tu cuenta ha sido creada.`);
       } else {
-        // Registration was successful but no auto-login data.
         console.warn("Registro exitoso, pero la respuesta del backend no contenía datos para el inicio de sesión automático:", responseData);
         toast.success("¡Registro exitoso! Ahora puedes iniciar sesión.");
       }

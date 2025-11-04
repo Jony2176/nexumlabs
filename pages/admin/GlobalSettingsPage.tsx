@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -9,12 +5,17 @@ import {
     Settings, Briefcase, Tag, Puzzle, Link as LinkIcon, Shield, Bell, HardDrive, SlidersHorizontal,
     Save, UploadCloud, Info, CheckCircle, AlertTriangle, Trash2, RotateCcw, DatabaseZap, Power,
     Globe, Clock, Calendar, Hash, Mail, KeyRound, Lock, Eye, EyeOff, PlusCircle, ExternalLink,
-    Terminal
+    Terminal,
+    // FIX: Imported the 'X' icon from lucide-react to resolve 'Cannot find name' error.
+    X
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useSettingsStore } from '../../store/settingsStore';
+import { usePlatformConfigStore } from '../../store/authStore';
 import { EXTERNAL_ASSETS } from '../../config/assets.config';
 import Button from '../../components/ui/Button';
+import { PromoCode } from '../../types';
+import { formatDate } from '../../utils/formatters';
 
 // --- Reusable UI Components ---
 
@@ -52,13 +53,21 @@ const SettingsInput = ({ id, label, type = 'text', value, onChange, placeholder,
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className="input-premium w-full"
+                    className={cn(
+                        "input-premium w-full",
+                        type === 'date' && 'pr-10' // Add padding for the icon
+                    )}
                     {...props}
                 />
                 {isPassword && (
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 px-3 flex items-center theme-text-muted">
                         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
+                )}
+                {type === 'date' && (
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <Calendar className="h-5 w-5 text-gray-400" />
+                    </div>
                 )}
             </div>
             {hint && <p className="text-xs theme-text-muted mt-1">{hint}</p>}
@@ -92,15 +101,6 @@ const SettingsToggle = ({ id, label, checked, onChange, description }: any) => (
         </button>
     </div>
 );
-
-const ProgressBar = ({ value, max }: { value: number, max: number }) => {
-    const percentage = (value / max) * 100;
-    return (
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-            <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: `${percentage}%` }}></div>
-        </div>
-    );
-};
 
 // --- Tab Content Components ---
 
@@ -205,61 +205,170 @@ const GeneralTab = ({ onSave }: { onSave: () => void }) => {
     </div>
 )};
 
+const PricingTab = ({ onSave }: { onSave: () => void }) => {
+    const { plans, updatePlans, promoCodes, addPromoCode, updatePromoCode, deletePromoCode } = usePlatformConfigStore();
+    const [localPlans, setLocalPlans] = useState(plans);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    
+    useEffect(() => {
+        setLocalPlans(plans);
+    }, [plans]);
 
-const PricingTab = ({ onSave }: { onSave: () => void }) => (
-     <div className="space-y-8">
-        <SettingsCard title="Gestión de Planes" description="Define los precios y características de tus planes." footer={<Button onClick={onSave}>Guardar Cambios</Button>}>
-             <div className="overflow-x-auto">
-                 <table className="w-full text-sm">
-                    <thead>
-                        <tr className="border-b theme-border text-left theme-text-secondary">
-                           <th className="p-2">Plan</th><th className="p-2">Precio Mensual</th><th className="p-2">Precio Anual</th><th className="p-2">Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td className="p-2 font-medium">ELIAS Lite</td>
-                            <td className="p-2"><input type="number" defaultValue="79" className="w-24 bg-gray-700 text-white p-1 rounded border border-gray-600" /> USD</td>
-                            <td className="p-2"><input type="number" defaultValue="632" className="w-24 bg-gray-700 text-white p-1 rounded border border-gray-600" /> USD</td>
-                            <td className="p-2"><span className="px-2 py-1 text-xs rounded-full bg-green-500/20 text-green-300">Activo</span></td>
-                        </tr>
-                         <tr>
-                            <td className="p-2 font-medium">ELIAS Pro</td>
-                            <td className="p-2"><input type="number" defaultValue="199" className="w-24 bg-gray-700 text-white p-1 rounded border border-gray-600" /> USD</td>
-                            <td className="p-2"><input type="number" defaultValue="1592" className="w-24 bg-gray-700 text-white p-1 rounded border border-gray-600" /> USD</td>
-                            <td className="p-2"><span className="px-2 py-1 text-xs rounded-full bg-green-500/20 text-green-300">Activo</span></td>
-                        </tr>
-                    </tbody>
-                 </table>
-            </div>
-        </SettingsCard>
-        <SettingsCard title="Códigos Promocionales" description="Gestiona descuentos y ofertas especiales." footer={<Button onClick={onSave}>Guardar Cambios</Button>}>
-            <button className="flex items-center gap-2 text-sm text-blue-400 mb-4"><PlusCircle size={16}/> Crear nuevo código</button>
-            {/* Table for codes would go here */}
-        </SettingsCard>
-    </div>
-);
+    const handlePlanChange = (id: string, field: 'monthlyPrice' | 'annualPrice' | 'active', value: string | number | boolean) => {
+        setLocalPlans(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
+    };
 
-const ModulesTab = ({ onSave }: { onSave: () => void }) => (
+    const handleSaveChanges = () => {
+        updatePlans(localPlans);
+        onSave();
+    };
+
+    const handleAddCode = (codeData: Omit<PromoCode, 'id' | 'usageCount' | 'createdAt'>) => {
+        addPromoCode(codeData);
+        toast.success('Código promocional creado.');
+        setIsModalOpen(false);
+    };
+
+    const handleToggleStatus = (code: PromoCode) => {
+        updatePromoCode(code.id, { status: code.status === 'active' ? 'inactive' : 'active' });
+        toast.success(`Estado del código ${code.code} actualizado.`);
+    };
+    
+    const handleDeleteCode = (code: PromoCode) => {
+        if(confirm(`¿Estás seguro que quieres eliminar el código ${code.code}?`)) {
+            deletePromoCode(code.id);
+            toast.success('Código eliminado.');
+        }
+    };
+
+    return (
+     <>
+        <div className="space-y-8">
+            <SettingsCard title="Gestión de Planes" description="Define los precios y características de tus planes." footer={<Button onClick={handleSaveChanges}>Guardar Cambios</Button>}>
+                 <div className="overflow-x-auto">
+                     <table className="w-full text-sm">
+                        <thead>
+                            <tr className="border-b theme-border text-left theme-text-secondary">
+                            <th className="p-2">Plan</th><th className="p-2">Precio Mensual</th><th className="p-2">Precio Anual</th><th className="p-2">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {localPlans.map(plan => (
+                                <tr key={plan.id}>
+                                    <td className="p-2 font-medium">{plan.name}</td>
+                                    <td className="p-2"><input type="number" value={plan.monthlyPrice} onChange={(e) => handlePlanChange(plan.id, 'monthlyPrice', Number(e.target.value))} className="w-24 bg-gray-700 text-white p-1 rounded border border-gray-600" /> USD</td>
+                                    <td className="p-2"><input type="number" value={plan.annualPrice} onChange={(e) => handlePlanChange(plan.id, 'annualPrice', Number(e.target.value))} className="w-24 bg-gray-700 text-white p-1 rounded border border-gray-600" /> USD</td>
+                                    <td className="p-2">
+                                        <button onClick={() => handlePlanChange(plan.id, 'active', !plan.active)} className={cn('px-2 py-1 text-xs font-semibold rounded-full', 
+                                            plan.active 
+                                                ? 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300' 
+                                                : 'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300'
+                                        )}>
+                                            {plan.active ? 'Activo' : 'Inactivo'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                     </table>
+                </div>
+            </SettingsCard>
+            <SettingsCard title="Códigos Promocionales" description="Gestiona descuentos y ofertas especiales.">
+                <Button onClick={() => setIsModalOpen(true)} className="mb-4">
+                    <PlusCircle size={16} className="mr-2"/> Crear nuevo código
+                </Button>
+                <div className="overflow-x-auto">
+                     <table className="w-full text-sm">
+                        <thead className="text-xs text-text-secondary uppercase theme-bg-secondary">
+                            <tr>
+                                <th className="p-2 text-left">Código</th>
+                                <th className="p-2 text-left">Descuento</th>
+                                <th className="p-2 text-center">Usos</th>
+                                <th className="p-2 text-center">Estado</th>
+                                <th className="p-2 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {promoCodes.map(code => (
+                                <tr key={code.id} className="border-b theme-border last:border-0">
+                                    <td className="p-2 font-mono theme-text-primary">{code.code}</td>
+                                    <td className="p-2 theme-text-secondary">{code.discountType === 'percentage' ? `${code.discountValue}%` : `$${code.discountValue}`}</td>
+                                    <td className="p-2 text-center theme-text-secondary">{code.usageCount}{code.usageLimit ? ` / ${code.usageLimit}` : ''}</td>
+                                    <td className="p-2 text-center">
+                                        <button onClick={() => handleToggleStatus(code)} className={cn('px-2 py-0.5 text-xs rounded-full capitalize', 
+                                            code.status === 'active' 
+                                                ? 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300' 
+                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-500/20 dark:text-gray-300'
+                                        )}>{code.status}</button>
+                                    </td>
+                                    <td className="p-2 text-right"><Button variant="ghost" size="sm" onClick={() => handleDeleteCode(code)}><Trash2 size={14} className="text-red-500"/></Button></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                     </table>
+                </div>
+            </SettingsCard>
+        </div>
+        <PromoCodeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleAddCode} />
+     </>
+)};
+
+const ModulesTab = ({ onSave }: { onSave: () => void }) => {
+    const { moduleSettings, updateModuleSettings } = usePlatformConfigStore();
+    const [localSettings, setLocalSettings] = useState(moduleSettings);
+
+    const handleSettingChange = (id: string, field: keyof typeof localSettings.elias_whatsapp, value: any) => {
+        setLocalSettings(prev => ({
+            ...prev,
+            [id]: { ...prev[id], [field]: value }
+        }));
+    };
+    
+    const handleSaveChanges = () => {
+        updateModuleSettings(localSettings);
+        onSave();
+    };
+    
+    const whatsappSettings = localSettings['elias_whatsapp'];
+
+    return (
     <div className="space-y-8">
-        <SettingsCard title="ELIAS WhatsApp Bot" description="Límites y costos del módulo de WhatsApp." footer={<Button onClick={onSave}>Guardar Cambios</Button>}>
+        <SettingsCard title="ELIAS WhatsApp Bot" description="Límites y costos del módulo de WhatsApp." footer={<Button onClick={handleSaveChanges}>Guardar Cambios</Button>}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <SettingsToggle id="whatsapp-active" label="Módulo Activo" checked={true} onChange={() => {}} />
-                <SettingsInput id="whatsapp-launch" label="Fecha Lanzamiento" type="date" defaultValue="2025-10-01" />
-                <SettingsInput id="whatsapp-lite-limit" label="Mensajes Plan Lite" type="number" defaultValue="500" />
-                <SettingsInput id="whatsapp-cost" label="Costo por mensaje extra" type="number" defaultValue="0.02" />
+                <SettingsToggle id="whatsapp-active" label="Módulo Activo" checked={whatsappSettings.active} onChange={(val: boolean) => handleSettingChange('elias_whatsapp', 'active', val)} />
+                <SettingsInput id="whatsapp-launch" label="Fecha Lanzamiento" type="date" value={whatsappSettings.launchDate} onChange={(e: any) => handleSettingChange('elias_whatsapp', 'launchDate', e.target.value)} />
+                <SettingsInput id="whatsapp-lite-limit" label="Mensajes Plan Lite" type="number" value={whatsappSettings.liteMessageLimit} onChange={(e: any) => handleSettingChange('elias_whatsapp', 'liteMessageLimit', Number(e.target.value))} />
+                <SettingsInput id="whatsapp-cost" label="Costo por mensaje extra" type="number" value={whatsappSettings.extraMessageCost} onChange={(e: any) => handleSettingChange('elias_whatsapp', 'extraMessageCost', Number(e.target.value))} />
             </div>
         </SettingsCard>
     </div>
-);
+)};
 
-const IntegrationsTab = ({ onSave }: { onSave: () => void }) => (
+const IntegrationsTab = ({ onSave }: { onSave: () => void }) => {
+    const { integrations, updateIntegrations } = usePlatformConfigStore();
+    const [localIntegrations, setLocalIntegrations] = useState(integrations);
+
+    const handleIntegrationChange = (id: 'mercadopago', field: keyof typeof localIntegrations.mercadopago, value: any) => {
+        setLocalIntegrations(prev => ({
+            ...prev,
+            [id]: { ...prev[id], [field]: value }
+        }));
+    };
+    
+    const handleSaveChanges = () => {
+        updateIntegrations(localIntegrations);
+        onSave();
+    };
+    
+    const mpSettings = localIntegrations['mercadopago'];
+    
+     return (
      <div className="space-y-8">
-        <SettingsCard title="MercadoPago" description="Configura tu pasarela de pagos principal." footer={<><Button variant="outline" size="sm" onClick={() => toast.success("Conexión exitosa!")}>Test conexión</Button><Button onClick={onSave} className="ml-2">Guardar Cambios</Button></>}>
+        <SettingsCard title="MercadoPago" description="Configura tu pasarela de pagos principal." footer={<><Button variant="outline" size="sm" onClick={() => toast.success("Conexión exitosa!")}>Test conexión</Button><Button onClick={handleSaveChanges} className="ml-2">Guardar Cambios</Button></>}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <SettingsInput id="mp-public-key" label="Public Key" defaultValue="TEST-xxxx-xxxx-xxxx" />
-                 <SettingsInput id="mp-access-token" label="Access Token" defaultValue="supersecrettoken" isPassword />
-                 <SettingsToggle id="mp-production" label="Modo Producción" checked={true} onChange={() => {}} />
+                 <SettingsInput id="mp-public-key" label="Public Key" value={mpSettings.publicKey} onChange={(e: any) => handleIntegrationChange('mercadopago', 'publicKey', e.target.value)} />
+                 <SettingsInput id="mp-access-token" label="Access Token" value={mpSettings.accessToken} onChange={(e: any) => handleIntegrationChange('mercadopago', 'accessToken', e.target.value)} isPassword />
+                 <SettingsToggle id="mp-production" label="Modo Producción" checked={mpSettings.productionMode} onChange={(val: boolean) => handleIntegrationChange('mercadopago', 'productionMode', val)} />
             </div>
         </SettingsCard>
         <SettingsCard title="Google API" description="Conecta tu cuenta de Google para Calendar y otros servicios.">
@@ -273,7 +382,63 @@ const IntegrationsTab = ({ onSave }: { onSave: () => void }) => (
             </div>
         </SettingsCard>
     </div>
-);
+)};
+
+const PromoCodeModal = ({ isOpen, onClose, onSave }: { isOpen: boolean, onClose: () => void, onSave: (data: any) => void }) => {
+    const [code, setCode] = useState('');
+    const [discountType, setDiscountType] = useState<'percentage' | 'fixed'>('percentage');
+    const [discountValue, setDiscountValue] = useState(10);
+    const [usageLimit, setUsageLimit] = useState('');
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSave({
+            code: code.toUpperCase(),
+            discountType,
+            discountValue,
+            usageLimit: usageLimit ? Number(usageLimit) : undefined,
+            status: 'active'
+        });
+        // Reset form
+        setCode('');
+        setDiscountType('percentage');
+        setDiscountValue(10);
+        setUsageLimit('');
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
+            <div className="theme-bg-card rounded-xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+                <form onSubmit={handleSubmit}>
+                    <div className="p-4 border-b theme-border flex justify-between items-center">
+                        <h3 className="text-lg font-bold">Crear Código Promocional</h3>
+                        <Button type="button" variant="ghost" size="icon" onClick={onClose}><X size={16}/></Button>
+                    </div>
+                    <div className="p-4 space-y-4">
+                        <SettingsInput id="code" label="Código" value={code} onChange={(e: any) => setCode(e.target.value)} placeholder="EJ: BLACKFRIDAY25" required />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label htmlFor="discountType" className="block text-sm font-medium mb-1">Tipo</label>
+                                <select id="discountType" value={discountType} onChange={(e: any) => setDiscountType(e.target.value)} className="input-premium w-full">
+                                    <option value="percentage">Porcentaje (%)</option>
+                                    <option value="fixed">Monto Fijo (USD)</option>
+                                </select>
+                            </div>
+                            <SettingsInput id="discountValue" label="Valor" type="number" value={discountValue} onChange={(e: any) => setDiscountValue(Number(e.target.value))} required />
+                        </div>
+                        <SettingsInput id="usageLimit" label="Límite de Usos (Opcional)" type="number" value={usageLimit} onChange={(e: any) => setUsageLimit(e.target.value)} placeholder="Ej: 100" />
+                    </div>
+                    <div className="p-4 theme-bg-secondary rounded-b-xl flex justify-end gap-2">
+                        <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+                        <Button type="submit">Crear Código</Button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
 
 // --- Main Page Component ---
 

@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Invoice } from '../../types';
-import * as mockApi from '../../services/mockApi';
+import api from '../../services/api';
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
@@ -15,8 +16,8 @@ const InvoiceHistory: React.FC = () => {
     const fetchInvoices = async () => {
       setIsLoading(true);
       try {
-        const { data } = await mockApi.default.getInvoices();
-        setInvoices(data);
+        const userInvoices = await api.getPayments();
+        setInvoices(userInvoices);
       } catch (error) {
         toast.error('No se pudo cargar el historial de facturas.');
       } finally {
@@ -98,44 +99,45 @@ const InvoiceHistory: React.FC = () => {
     }
   };
 
+
   return (
     <Card>
       <div className="p-6">
         <h2 className="text-xl font-semibold text-text-primary mb-4">Historial de Facturas</h2>
-        
+
         {isLoading ? (
-          <div className="space-y-2 animate-pulse">
-            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
-            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
-            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+          <div className="space-y-3 animate-pulse">
+            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
           </div>
+        ) : invoices.length === 0 ? (
+          <p className="text-sm text-center text-text-secondary py-4">No hay facturas disponibles.</p>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border-color">
-                <th className="text-left font-medium text-text-secondary pb-2">Fecha</th>
-                <th className="text-right font-medium text-text-secondary pb-2">Monto</th>
-                <th className="text-right font-medium text-text-secondary pb-2"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoices.map(invoice => (
-                <tr key={invoice.id} className="border-b border-border-color last:border-b-0">
-                  <td className="py-3 text-text-secondary">{formatDate(invoice.date)}</td>
-                  <td className="py-3 text-right font-medium text-text-primary">${invoice.amount.toFixed(2)}</td>
-                  <td className="py-3 text-right">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => handleDownloadInvoice(invoice)}
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ul className="space-y-3">
+            {invoices.map(invoice => (
+              <li key={invoice.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                  <div>
+                    <p className="font-medium text-text-primary">{invoice.period}</p>
+                    <p className="text-xs text-text-muted">{formatDate(invoice.date)}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 mt-2 sm:mt-0 w-full sm:w-auto">
+                  <p className="font-semibold text-text-primary flex-grow text-left sm:text-right">{formatCurrency(invoice.amount)}</p>
+                  <Button
+                    onClick={() => handleDownloadInvoice(invoice)}
+                    variant="ghost"
+                    size="sm"
+                    className="flex-shrink-0"
+                  >
+                    <Download className="h-4 w-4 mr-2" /> Descargar
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </Card>

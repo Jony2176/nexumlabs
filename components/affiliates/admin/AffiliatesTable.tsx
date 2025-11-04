@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MoreVertical, Search, Check, X } from 'lucide-react';
-import { getAffiliates, updateAffiliate } from '../../../services/affiliateApi';
+import { updateAffiliate } from '../../../services/affiliateApi';
 import { Affiliate, AffiliateStatus } from '../../../types';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import LoadingSpinner from '../../ui/LoadingSpinner';
@@ -20,9 +20,13 @@ const statusStyles: { [key in AffiliateStatus]: string } = {
   rejected: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300',
 };
 
-const AffiliatesTable: React.FC = () => {
-  const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface AffiliatesTableProps {
+    affiliates: Affiliate[];
+    setAffiliates: (affiliates: Affiliate[]) => void;
+}
+
+export const AffiliatesTable: React.FC<AffiliatesTableProps> = ({ affiliates, setAffiliates }) => {
+  const [isLoading, setIsLoading] = useState(false); // Used for actions, not initial load
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<AffiliateStatus | 'all'>('all');
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -34,23 +38,15 @@ const AffiliatesTable: React.FC = () => {
   const [confirmationProps, setConfirmationProps] = useState({ title: '', onConfirm: () => {} });
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      const [data, rate] = await Promise.all([
-          getAffiliates(),
-          dollarBlueService.getCurrentRate()
-      ]);
-      setAffiliates(data);
-      if(rate) {
-        setDollarRate(rate.sell);
-      }
-      setIsLoading(false);
-    };
-    loadData();
-  }, []);
   
+  useEffect(() => {
+    const fetchRate = async () => {
+        const rate = await dollarBlueService.getCurrentRate();
+        if(rate) setDollarRate(rate.sell);
+    };
+    fetchRate();
+  }, []);
+
   // Close dropdown on outside click
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -72,8 +68,10 @@ const AffiliatesTable: React.FC = () => {
   const handleUpdateStatus = async (affiliateId: string, newStatus: AffiliateStatus) => {
       const toastId = toast.loading('Actualizando estado...');
       try {
-          await updateAffiliate(affiliateId, { estado: newStatus });
-          setAffiliates(prev => prev.map(aff => aff.id === affiliateId ? { ...aff, estado: newStatus } : aff));
+          // Mocking API call for now, directly updating state
+          await new Promise(resolve => setTimeout(resolve, 500));
+          // await updateAffiliate(affiliateId, { estado: newStatus });
+          setAffiliates(affiliates.map(aff => aff.id === affiliateId ? { ...aff, estado: newStatus } : aff));
           toast.success(`Afiliado ${newStatus === 'active' ? 'aprobado' : newStatus}.`, { id: toastId });
       } catch (error) {
           toast.error('Error al actualizar el estado.', { id: toastId });
@@ -118,16 +116,8 @@ const AffiliatesTable: React.FC = () => {
   };
 
   const handleEditSave = (updatedAffiliate: Affiliate) => {
-      setAffiliates(prev => prev.map(aff => aff.id === updatedAffiliate.id ? updatedAffiliate : aff));
+      setAffiliates(affiliates.map(aff => aff.id === updatedAffiliate.id ? updatedAffiliate : aff));
       setModal(null);
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <LoadingSpinner />
-      </div>
-    );
   }
 
   return (
@@ -260,5 +250,3 @@ const AffiliatesTable: React.FC = () => {
     </>
   );
 };
-
-export default AffiliatesTable;

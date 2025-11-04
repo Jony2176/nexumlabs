@@ -67,7 +67,7 @@ const FloatingChatWindow: React.FC = () => {
 
         try {
             const response = await api.chatWithData(query);
-            const botResponseText = response.response || "No he podido procesar tu solicitud. Intenta de nuevo.";
+            const botResponseText = response.response || response.text || response.answer || "No he podido procesar tu solicitud. Intenta de nuevo.";
             const newBotMessage: Message = { id: Date.now() + 1, role: 'bot', text: botResponseText };
             addMessage(newBotMessage);
         } catch (error) {

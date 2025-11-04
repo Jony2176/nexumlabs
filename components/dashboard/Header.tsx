@@ -102,10 +102,10 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onTestNotification }) => {
         <div className="relative hidden md:block">
           <input
             type="text"
-            placeholder="Buscar..."
-            className="w-64 px-4 py-2 pl-10 bg-bg-secondary dark:bg-nexum-surface border theme-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="/"
+            className="w-64 px-4 py-2 pl-10 bg-white text-gray-900 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
-          <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+          <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
         </div>
 
         {/* Theme Toggle */}
@@ -128,8 +128,8 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, onTestNotification }) => {
         
         {/* User Menu */}
         <button className="flex items-center gap-3 p-1 rounded-lg hover:bg-black/5 dark:hover:bg-nexum-surface">
-          <div className="w-9 h-9 bg-gradient-to-br from-nexum-gradient-start to-nexum-gradient-end rounded-full flex items-center justify-center">
-            <span className="text-white text-sm font-medium">
+          <div className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+            <span className="text-gray-800 dark:text-gray-200 text-sm font-medium">
                 {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
             </span>
           </div>

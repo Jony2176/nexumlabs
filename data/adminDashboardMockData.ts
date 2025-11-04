@@ -1,3 +1,4 @@
+
 import { DollarSign, Users, TrendingDown, Target, UserPlus, Share2, Eye, Edit, Tag, Mail, AlertCircle, FileText, Download, RefreshCw, Settings, LucideIcon } from 'lucide-react';
 import { KPICardData, ClientData, AlertData } from '../types';
 
@@ -82,7 +83,6 @@ export const revenueByProduct = [
 ];
 
 export const clientsData: ClientData[] = [
-    // FIX: Added missing 'fechaInicio' and 'ultimoPago' properties to match the ClientData type.
     { id: '1', empresa: 'Estudio Jurídico Norte', contacto: 'Roberto Martínez', plan: 'Professional', mrr: 320, estado: 'active', consumoWhatsApp: { value: 850, limit: 1000 }, consumoLlamadas: { value: 450, limit: 1000 }, healthScore: 92, fechaInicio: '2024-01-15T10:00:00Z', ultimoPago: { fecha: '2024-07-01T10:00:00Z', estado: 'paid' } },
     { id: '2', empresa: 'Legal & Co.', contacto: 'Ana Gómez', plan: 'Pro', mrr: 199, estado: 'active', consumoWhatsApp: { value: 400, limit: 1000 }, consumoLlamadas: { value: 120, limit: 300 }, healthScore: 75, fechaInicio: '2024-03-20T10:00:00Z', ultimoPago: { fecha: '2024-07-01T10:00:00Z', estado: 'paid' } },
     { id: '3', empresa: 'Abogados del Sur', contacto: 'Carlos Rodríguez', plan: 'Lite', mrr: 79, estado: 'trial', consumoWhatsApp: { value: 150, limit: 1000 }, consumoLlamadas: { value: 20, limit: 100 }, healthScore: 60, fechaInicio: '2024-06-25T10:00:00Z', ultimoPago: { fecha: '2024-07-01T10:00:00Z', estado: 'pending' } },
@@ -107,8 +107,9 @@ export const alerts: AlertData[] = [
 ];
 
 export const topAffiliates = [
-    { nombre: 'María González', referidos: 12, revenue: 3420 },
-    { nombre: 'Juan Pérez', referidos: 8, revenue: 2140 },
-    { nombre: 'LegalGrowth Hackers', referidos: 7, revenue: 1980 },
-    { nombre: 'Abogados 2.0', referidos: 5, revenue: 1540 },
+    { nombre: 'Referidor Activo', referidos: 25, revenue: 3400 },
+    { nombre: 'Juan Pérez', referidos: 18, revenue: 2100 },
+    { nombre: 'Partner Ejemplo', referidos: 15, revenue: 1250 },
+    { nombre: 'Influencer Legal', referidos: 11, revenue: 780 },
+    { nombre: 'Maria Lopez', referidos: 8, revenue: 120 },
 ];

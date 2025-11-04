@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Users, UserPlus, Clock, HeartHandshake } from 'lucide-react';
 import { ClientData } from '../../../types';
 import KPICard from '../dashboard/KPICard';
@@ -8,24 +8,27 @@ interface ClientStatsHeaderProps {
 }
 
 const ClientStatsHeader: React.FC<ClientStatsHeaderProps> = ({ clients }) => {
-  const stats = React.useMemo(() => {
-    if (!clients) {
+  // Calculate stats on every render, removing React.useMemo to fix potential runtime errors.
+  const calculateStats = (clientList: ClientData[]) => {
+    if (!clientList) {
       return { activeClients: 0, trialClients: 0, newThisMonth: 0, retentionRate: 92 };
     }
-    const activeClients = clients.filter(c => c.estado === 'active' || c.estado === 'trial').length;
-    const trialClients = clients.filter(c => c.estado === 'trial').length;
+    const activeClients = clientList.filter(c => c.estado === 'active' || c.estado === 'trial').length;
+    const trialClients = clientList.filter(c => c.estado === 'trial').length;
     
     const startOfThisMonth = new Date();
     startOfThisMonth.setDate(1);
     startOfThisMonth.setHours(0, 0, 0, 0);
 
-    const newThisMonth = clients.filter(c => new Date(c.fechaInicio) >= startOfThisMonth).length;
+    const newThisMonth = clientList.filter(c => new Date(c.fechaInicio) >= startOfThisMonth).length;
     
     // Mock retention rate as requested
     const retentionRate = 92;
 
     return { activeClients, trialClients, newThisMonth, retentionRate };
-  }, [clients]);
+  };
+
+  const stats = calculateStats(clients);
 
   const kpis = [
     { title: "Total de Clientes", value: stats.activeClients.toString(), change: 3, trend: 'up' as const, icon: Users },

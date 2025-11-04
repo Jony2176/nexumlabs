@@ -40,8 +40,9 @@ export const MOCK_PAYMENT_METHODS: PaymentMethod[] = [
 ];
 
 export const MOCK_INVOICES: Invoice[] = [
-  { id: 'inv_1', date: '2025-09-01T10:00:00Z', period: 'Septiembre 2025', amount: 319, status: 'paid', pdfUrl: '#' },
-  { id: 'inv_2', date: '2025-08-01T10:00:00Z', period: 'Agosto 2025', amount: 319, status: 'paid', pdfUrl: '#' },
-  { id: 'inv_3', date: '2025-07-01T10:00:00Z', period: 'Julio 2025', amount: 297, status: 'paid', pdfUrl: '#' },
-  { id: 'inv_4', date: '2025-06-01T10:00:00Z', period: 'Junio 2025', amount: 297, status: 'paid', pdfUrl: '#' },
+  // FIX: Added missing 'org_id' property to all invoice objects to align with the Invoice type definition.
+  { id: 'inv_1', org_id: 'org_demo', date: '2025-09-01T10:00:00Z', period: 'Septiembre 2025', amount: 319, status: 'paid', pdfUrl: '#' },
+  { id: 'inv_2', org_id: 'org_demo', date: '2025-08-01T10:00:00Z', period: 'Agosto 2025', amount: 319, status: 'paid', pdfUrl: '#' },
+  { id: 'inv_3', org_id: 'org_demo', date: '2025-07-01T10:00:00Z', period: 'Julio 2025', amount: 297, status: 'paid', pdfUrl: '#' },
+  { id: 'inv_4', org_id: 'org_demo', date: '2025-06-01T10:00:00Z', period: 'Junio 2025', amount: 297, status: 'paid', pdfUrl: '#' },
 ];

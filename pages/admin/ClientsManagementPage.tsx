@@ -1,10 +1,9 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 
 import { ClientData } from '../../types';
+import { useClientStore } from '../../store/authStore';
 import api from '../../services/api';
 
 import ClientStatsHeader from '../../components/admin/clients/ClientStatsHeader';
@@ -13,11 +12,12 @@ import ClientsTable from '../../components/admin/clients/ClientsTable';
 import ClientDetailsModal from '../../components/admin/clients/ClientDetailsModal';
 import DashboardSkeleton from '../../components/admin/dashboard/DashboardSkeleton';
 import { RefreshCw } from 'lucide-react';
+import AddClientModal from '../../components/admin/clients/AddClientModal';
 
 type SortConfig = { key: keyof ClientData; direction: 'ascending' | 'descending' } | null;
 
 const ClientsManagementPage: React.FC = () => {
-    const [clients, setClients] = useState<ClientData[]>([]);
+    const { clients, setClients, addClient } = useClientStore();
     const [isLoading, setIsLoading] = useState(true);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -25,28 +25,25 @@ const ClientsManagementPage: React.FC = () => {
     const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'fechaInicio', direction: 'descending'});
     const [selectedClients, setSelectedClients] = useState<Set<string>>(new Set());
     const [selectedClientForModal, setSelectedClientForModal] = useState<ClientData | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     useEffect(() => {
-        const fetchData = async (isInitialLoad = false) => {
-            if (isInitialLoad) setIsLoading(true);
+        const fetchClients = async () => {
+            setIsLoading(true);
             try {
-                const data = await api.getClients();
-                setClients(data);
+                const fetchedClients = await api.getClients();
+                setClients(fetchedClients);
                 setLastUpdated(new Date());
             } catch (error) {
-                console.error(error);
+                toast.error("No se pudieron cargar los clientes.");
             } finally {
-                if (isInitialLoad) setIsLoading(false);
+                setIsLoading(false);
             }
         };
+        fetchClients();
+    }, [setClients]);
 
-        fetchData(true); // Initial fetch
-
-        const intervalId = setInterval(() => fetchData(false), 30000); // Poll every 30 seconds
-
-        return () => clearInterval(intervalId); // Cleanup on unmount
-    }, []);
 
     const handleSort = (key: keyof ClientData) => {
         let direction: 'ascending' | 'descending' = 'ascending';
@@ -56,43 +53,69 @@ const ClientsManagementPage: React.FC = () => {
         setSortConfig({ key, direction });
     };
 
-    let sortedAndFilteredClients = [...clients];
+    // The sorting and filtering logic is now calculated on every render
+    // to definitively resolve the persistent 'useMemo' runtime error.
+    let filteredClients = [...clients];
 
     if (searchTerm) {
-        sortedAndFilteredClients = sortedAndFilteredClients.filter(client =>
+        filteredClients = filteredClients.filter(client =>
             client.empresa.toLowerCase().includes(searchTerm.toLowerCase()) ||
             client.contacto.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }
     if (filters.plan !== 'all') {
-        sortedAndFilteredClients = sortedAndFilteredClients.filter(client => client.plan === filters.plan);
+        filteredClients = filteredClients.filter(client => client.plan.toLowerCase() === filters.plan.toLowerCase());
     }
     if (filters.status !== 'all') {
-        sortedAndFilteredClients = sortedAndFilteredClients.filter(client => client.estado === filters.status);
+        filteredClients = filteredClients.filter(client => client.estado === filters.status);
     }
 
+    const sortedAndFilteredClients = [...filteredClients]; // create a mutable copy
     if (sortConfig !== null) {
+        const sortKey = sortConfig.key;
         sortedAndFilteredClients.sort((a, b) => {
-            const aVal = a[sortConfig.key];
-            const bVal = b[sortConfig.key];
+            const aVal = a[sortKey];
+            const bVal = b[sortKey];
+            
+            if (aVal === null || aVal === undefined) return 1;
+            if (bVal === null || bVal === undefined) return -1;
             
             if (typeof aVal === 'string' && typeof bVal === 'string') {
-                if (aVal < bVal) return sortConfig.direction === 'ascending' ? -1 : 1;
-                if (aVal > bVal) return sortConfig.direction === 'ascending' ? 1 : -1;
-            } else if (typeof aVal === 'number' && typeof bVal === 'number') {
+                return sortConfig.direction === 'ascending' 
+                    ? aVal.localeCompare(bVal) 
+                    : bVal.localeCompare(aVal);
+            }
+            if (typeof aVal === 'number' && typeof bVal === 'number') {
                 return sortConfig.direction === 'ascending' ? aVal - bVal : bVal - aVal;
             }
+            
             return 0;
         });
     }
 
+
     const handleViewDetails = (client: ClientData) => {
         setSelectedClientForModal(client);
-        setIsModalOpen(true);
+        setIsDetailsModalOpen(true);
+    };
+    
+    const handleAddClient = (newClientData: Omit<ClientData, 'id' | 'consumoWhatsApp' | 'consumoLlamadas' | 'healthScore' | 'ultimoPago' | 'logoUrl' | 'cuit' | 'direccion'>) => {
+        const newClient: ClientData = {
+            id: `cli_${Date.now()}`,
+            ...newClientData,
+            consumoWhatsApp: { value: 0, limit: 1000 },
+            consumoLlamadas: { value: 0, limit: 300 },
+            healthScore: 75,
+            ultimoPago: { fecha: new Date().toISOString(), estado: 'paid' },
+            logoUrl: `https://avatar.vercel.sh/${newClientData.empresa.replace(/\s+/g, '')}.png?size=40`,
+        };
+        addClient(newClient);
+        setIsAddModalOpen(false);
+        toast.success('Cliente agregado exitosamente!');
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
+    const handleCloseDetailsModal = () => {
+        setIsDetailsModalOpen(false);
         setTimeout(() => setSelectedClientForModal(null), 300);
     };
 
@@ -115,8 +138,8 @@ const ClientsManagementPage: React.FC = () => {
                     </div>
                      {lastUpdated && (
                         <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <RefreshCw size={14} className="animate-spin" style={{ animationDuration: '2s' }} />
-                            <span>Última actualización: {lastUpdated.toLocaleTimeString('es-AR')}</span>
+                            <RefreshCw size={14} />
+                            <span>Datos actualizados</span>
                         </div>
                     )}
                 </div>
@@ -128,10 +151,14 @@ const ClientsManagementPage: React.FC = () => {
                     onSearchChange={setSearchTerm}
                     filters={filters}
                     onFilterChange={setFilters}
-                    onAddClient={() => toast.success('Modal para agregar cliente se implementará aquí.')}
+                    onAddClient={() => setIsAddModalOpen(true)}
                     onExport={() => toast.success('Exportando datos...')}
                     selectedCount={selectedClients.size}
                     onBulkAction={(action) => {
+                        if (action === 'clear') {
+                            setSelectedClients(new Set());
+                            return;
+                        }
                         toast.success(`Acción masiva "${action}" aplicada a ${selectedClients.size} clientes.`);
                         setSelectedClients(new Set());
                     }}
@@ -149,8 +176,14 @@ const ClientsManagementPage: React.FC = () => {
             
             <ClientDetailsModal
                 client={selectedClientForModal}
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
+                isOpen={isDetailsModalOpen}
+                onClose={handleCloseDetailsModal}
+            />
+            
+            <AddClientModal 
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onAddClient={handleAddClient}
             />
         </>
     );

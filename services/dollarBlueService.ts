@@ -1,5 +1,7 @@
+
 class DollarBlueService {
   private cache: { rate: any; timestamp: number } | null = null;
+  private publicApiUrl = 'https://dolarapi.com/v1/dolares/blue';
 
   async getCurrentRate() {
     // Cache the rate for 5 minutes to avoid excessive API calls
@@ -8,11 +10,16 @@ class DollarBlueService {
     }
 
     try {
-      // Free API for Argentinian dollar rates
-      const response = await fetch('https://dolarapi.com/v1/dolares/blue');
-      if (!response.ok) throw new Error('API response not OK');
+      const response = await fetch(this.publicApiUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch from public API. Status: ${response.status}`);
+      }
       const data = await response.json();
       
+      if (!data || !data.venta || !data.compra) {
+          throw new Error('Invalid data format from public dollar API.');
+      }
+
       const rate = {
         buy: data.compra,
         sell: data.venta,
@@ -23,8 +30,8 @@ class DollarBlueService {
       this.cache = { rate, timestamp: Date.now() };
       return rate;
     } catch (error) {
-      console.error('Error fetching dollar rate:', error);
-      // Fallback rate if the API fails, as requested
+      console.error('Error fetching dollar rate from public API:', error);
+      // Fallback rate if the API fails
       return { buy: 1200, sell: 1245, average: 1222.5, lastUpdate: new Date().toISOString() };
     }
   }

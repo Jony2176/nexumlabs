@@ -34,7 +34,8 @@ export const useModules = () => {
       setError(null);
       try {
         const response = await api.getActiveModules();
-        const apiModules: ApiModuleStatus[] = response.modules || [];
+        // FIX: Handle different response structures from the API for modules.
+        const apiModules: ApiModuleStatus[] = Array.isArray(response) ? response : response.modules || [];
 
         // Merge static data with API data
         const enhancedModules = MODULES.map(staticModule => {

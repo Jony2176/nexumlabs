@@ -35,6 +35,7 @@ export interface ModuleConfig {
 
 export interface Subscription {
   id: string;
+  org_id: string;
   plan_id: string;
   status: string;
   price: number;
@@ -85,6 +86,7 @@ export interface PaymentMethod {
 
 export interface Invoice {
   id: string;
+  org_id: string;
   date: string;
   period: string;
   amount: number;
@@ -162,6 +164,7 @@ export interface Referral {
 
 export interface Payout {
   id: string;
+  affiliate_id: string; // Added for filtering
   periodo: string; // e.g., "Julio 2024"
   total_comisiones: number;
   metodo: PaymentMethodType;
@@ -173,6 +176,7 @@ export interface Payout {
 // --- WALLET SYSTEM TYPES ---
 
 export interface Wallet {
+  affiliate_id: string; // Added for filtering
   balance_usd: number;
   balance_ars: number;
   exchange_rate: number;
@@ -182,6 +186,7 @@ export interface Wallet {
 }
 
 export interface PaymentConfiguration {
+  affiliate_id: string; // Added for filtering
   cuit: string;
   business_name: string;
   address: string;
@@ -195,6 +200,7 @@ export type TransactionStatus = 'completed' | 'processing' | 'pending';
 
 export interface Transaction {
   id: string;
+  affiliate_id: string; // Added for filtering
   type: TransactionType;
   description: string;
   created_at: string;
@@ -244,4 +250,15 @@ export interface AlertData {
   action?: {
     label: string;
   };
+}
+
+export interface PromoCode {
+  id: string;
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  status: 'active' | 'inactive';
+  usageCount: number;
+  usageLimit?: number;
+  createdAt: string;
 }

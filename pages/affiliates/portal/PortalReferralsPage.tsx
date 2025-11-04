@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { getMyReferrals } from '../../../services/affiliateApi';
 import { Referral, ReferralStatus, ReferralType } from '../../../types';
 import Card from '../../../components/ui/Card';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
+import toast from 'react-hot-toast';
 
 const statusStyles: { [key in ReferralStatus]: string } = {
   pending: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
@@ -79,6 +79,7 @@ const PortalReferralsPage: React.FC = () => {
                 setReferrals(data);
             } catch (error) {
                 console.error("Failed to fetch referrals:", error);
+                toast.error("No se pudieron cargar tus referidos.");
             } finally {
                 setIsLoading(false);
             }

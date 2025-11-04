@@ -1,15 +1,10 @@
 
-
-
-
 import React, { useEffect, useState } from 'react';
-// FIX: Moved Toaster here from index.tsx to ensure it has access to all contexts and simplify the root render.
 import { Toaster } from 'react-hot-toast';
 import { Routes, Route, Navigate, HashRouter } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import { useSettingsStore } from './store/settingsStore';
 import { FeatureFlagProvider } from './providers/FeatureFlagProvider';
-// FIX: Moved ThemeProvider here to centralize all context providers and resolve the 'missing children' prop error.
 import { ThemeProvider } from './context/ThemeContext';
 
 // Layouts
@@ -49,7 +44,6 @@ import ControlPanelPage from './pages/ControlPanelPage';
 import ModulesPage from './pages/ModulesPage';
 import MySubscriptionPage from './pages/subscription/MySubscriptionPage';
 import SubscriptionChangePlanPage from './pages/subscription/SubscriptionChangePlanPage';
-// FIX: Added default export to BillingSuccessPage and updated import path.
 import BillingSuccessPage from './pages/BillingSuccessPage';
 import SettingsPage from './pages/SettingsPage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
@@ -61,6 +55,7 @@ import JurispredictManagementPage from './pages/jurispredict/JurispredictManagem
 import AvatarPartnerManagementPage from './pages/avatar/AvatarPartnerManagementPage';
 import IntegrationsPage from './pages/IntegrationsPage';
 import SupportPage from './pages/SupportPage';
+import ChatDataPage from './pages/ChatDataPage';
 
 
 // Admin Pages
@@ -70,7 +65,6 @@ import AfiliadosAdminPage from './pages/admin/AfiliadosAdminPage';
 import FeatureFlagsPage from './pages/admin/FeatureFlagsPage';
 import FinancialDashboardPage from './pages/admin/FinancialDashboardPage';
 import AuditLogsPage from './pages/admin/AuditLogsPage';
-// FIX: Corrected import path for GlobalSettingsPage.
 import GlobalSettingsPage from './pages/admin/GlobalSettingsPage';
 import CommunicationsPage from './pages/admin/CommunicationsPage';
 import ReportsPage from './pages/admin/ReportsPage';
@@ -96,7 +90,6 @@ import { useReferralTracking } from './hooks/useReferralTracking';
 import FloatingChatButton from './components/chat/FloatingChatButton';
 import FloatingChatWindow from './components/chat/FloatingChatWindow';
 
-// FIX: Removed React.FC type to avoid potential typing issues with nested providers that require a `children` prop.
 const App = () => {
   const [isHydrated, setIsHydrated] = useState(false);
   const { isAuthenticated } = useAuthStore();
@@ -121,7 +114,6 @@ const App = () => {
   }
 
   return (
-    // FIX: The compiler was incorrectly reporting a 'missing children' prop error. The React.Fragment was removed to simplify the component tree and resolve this parsing issue.
     <ThemeProvider>
       <FeatureFlagProvider>
         <HashRouter>
@@ -204,6 +196,7 @@ const App = () => {
               <Route path="avatar" element={<AvatarPartnerManagementPage />} />
               <Route path="integrations" element={<IntegrationsPage />} />
               <Route path="support" element={<SupportPage />} />
+              <Route path="chat" element={<ChatDataPage />} />
               <Route path="subscription" element={
                   <ProtectedRoute allowedRoles={['owner']}>
                       <MySubscriptionPage />
