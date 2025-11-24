@@ -29,19 +29,29 @@ const ClientsManagementPage: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     useEffect(() => {
-        const fetchClients = async () => {
-            setIsLoading(true);
+        const fetchClients = async (isAutoRefresh = false) => {
+            if (!isAutoRefresh) setIsLoading(true);
             try {
                 const fetchedClients = await api.getClients();
                 setClients(fetchedClients);
                 setLastUpdated(new Date());
             } catch (error) {
-                toast.error("No se pudieron cargar los clientes.");
+                if (!isAutoRefresh) {
+                    toast.error("No se pudieron cargar los clientes.");
+                }
             } finally {
                 setIsLoading(false);
             }
         };
+
         fetchClients();
+
+        // Refresh every 30 seconds
+        const intervalId = setInterval(() => {
+            fetchClients(true);
+        }, 30000);
+
+        return () => clearInterval(intervalId);
     }, [setClients]);
 
 
@@ -139,7 +149,7 @@ const ClientsManagementPage: React.FC = () => {
                      {lastUpdated && (
                         <div className="flex items-center gap-2 text-sm text-gray-400">
                             <RefreshCw size={14} />
-                            <span>Datos actualizados</span>
+                            <span>Actualizado: {lastUpdated.toLocaleTimeString()}</span>
                         </div>
                     )}
                 </div>

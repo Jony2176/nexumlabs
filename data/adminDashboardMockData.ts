@@ -4,91 +4,78 @@ import { KPICardData, ClientData, AlertData } from '../types';
 
 export const kpis: KPICardData[] = [
   {
-    title: "Ingresos Mensuales",
-    value: "$15,234",
-    valueInARS: "$19,244,826",
-    subtitle: "Total facturado por suscripciones este mes",
-    change: 12.5,
+    title: "Ingresos Mensuales (MRR)",
+    value: "$2,032",
+    valueInARS: "$2,240,530",
+    subtitle: "Total facturado por suscripciones activas",
+    change: 6.9, // Simulated growth
     trend: 'up',
-    target: "$20,000",
+    target: "$30,000",
     icon: DollarSign
   },
   {
-    title: "Clientes Activos",
-    value: "25",
-    change: 8.3,
+    title: "Clientes Totales",
+    value: "8",
+    change: 1,
     trend: 'up',
-    subtitle: "3 nuevos este mes",
+    subtitle: "6 activos, 2 en trial",
     icon: Users
   },
   {
-    title: "Tasa de Cancelación",
-    value: "8%",
-    change: -2.1,
-    trend: 'down',
-    target: "< 5%",
-    alert: true,
-    icon: TrendingDown,
-    subtitle: "Clientes que cancelaron este mes"
+    title: "Conversión Trial",
+    value: "75%",
+    change: 5.0,
+    trend: 'up',
+    target: "> 60%",
+    alert: false,
+    icon: Target,
+    subtitle: "6 de 8 orgs activas"
   },
   {
-    title: "Valor del Cliente",
-    value: "$3,847",
-    change: 18.2,
+    title: "Revenue Total",
+    value: "$2,630",
+    change: 15.2,
     trend: 'up',
-    subtitle: "Costo por Cliente Nuevo: $312",
-    icon: Target
+    subtitle: "11 pagos aprobados",
+    icon: DollarSign
   },
   {
     title: "Afiliados Activos",
-    value: "89",
-    change: 24.5,
+    value: "8",
+    change: 1,
     trend: 'up',
-    subtitle: "15 nuevos esta semana",
+    subtitle: "9 registrados en total",
     icon: UserPlus
   },
   {
-    title: "Ingresos por Referidos",
-    value: "$4,234",
-    change: 31.2,
+    title: "Comisiones Pendientes",
+    value: "$12,514",
+    change: 10.5,
     trend: 'up',
-    subtitle: "28% de los ingresos totales",
+    subtitle: "Balance acumulado a pagar",
     icon: Share2
   }
 ];
 
 export const mrrData = [
-  { mes: 'Oct 24', real: 2500, proyectado: 2500 },
-  { mes: 'Nov 24', real: 3200, proyectado: 3500 },
-  { mes: 'Dic 24', real: 4800, proyectado: 5000 },
-  { mes: 'Ene 25', real: 6100, proyectado: 6500 },
-  { mes: 'Feb 25', real: 7500, proyectado: 8000 },
-  { mes: 'Mar 25', real: 8900, proyectado: 9500 },
-  { mes: 'Abr 25', real: 10200, proyectado: 11000 },
-  { mes: 'May 25', real: 11500, proyectado: 12500 },
-  { mes: 'Jun 25', real: 12800, proyectado: 14000 },
-  { mes: 'Jul 25', real: 13900, proyectado: 16000 },
-  { mes: 'Ago 25', real: 14500, proyectado: 17000 },
-  { mes: 'Sep 25', real: 15234, proyectado: 18000 },
-  { mes: 'Oct 25', real: null, proyectado: 22000 },
-  { mes: 'Nov 25', real: null, proyectado: 28000 },
-  { mes: 'Dic 25', real: null, proyectado: 35000 }
+  { mes: 'Jun 25', real: 800, proyectado: 800 },
+  { mes: 'Jul 25', real: 1100, proyectado: 1200 },
+  { mes: 'Ago 25', real: 1450, proyectado: 1600 },
+  { mes: 'Sep 25', real: 1750, proyectado: 2000 },
+  { mes: 'Oct 25', real: 1900, proyectado: 2400 },
+  { mes: 'Nov 25', real: 2032, proyectado: 2800 },
+  { mes: 'Dic 25', real: null, proyectado: 2400 },
+  { mes: 'Ene 26', real: null, proyectado: 2900 }
 ];
 
 export const revenueByProduct = [
-  { producto: 'ELIAS WhatsApp', valor: 8500, fill: '#667eea' },
-  { producto: 'ELIAS Llamadas', valor: 3200, fill: '#764ba2' },
-  { producto: 'Dashboard Premium', valor: 2100, fill: '#86efac' },
-  { producto: 'Add-ons', valor: 1434, fill: '#f59e0b' }
+  { producto: 'Suscripciones', valor: 2032, fill: '#6366F1' },
+  { producto: 'Consumo Extra', valor: 450, fill: '#8B5CF6' },
+  { producto: 'Setup Fees', valor: 148, fill: '#EC4899' }
 ];
 
-export const clientsData: ClientData[] = [
-    { id: '1', empresa: 'Estudio Jurídico Norte', contacto: 'Roberto Martínez', plan: 'Professional', mrr: 320, estado: 'active', consumoWhatsApp: { value: 850, limit: 1000 }, consumoLlamadas: { value: 450, limit: 1000 }, healthScore: 92, fechaInicio: '2024-01-15T10:00:00Z', ultimoPago: { fecha: '2024-07-01T10:00:00Z', estado: 'paid' } },
-    { id: '2', empresa: 'Legal & Co.', contacto: 'Ana Gómez', plan: 'Pro', mrr: 199, estado: 'active', consumoWhatsApp: { value: 400, limit: 1000 }, consumoLlamadas: { value: 120, limit: 300 }, healthScore: 75, fechaInicio: '2024-03-20T10:00:00Z', ultimoPago: { fecha: '2024-07-01T10:00:00Z', estado: 'paid' } },
-    { id: '3', empresa: 'Abogados del Sur', contacto: 'Carlos Rodríguez', plan: 'Lite', mrr: 79, estado: 'trial', consumoWhatsApp: { value: 150, limit: 1000 }, consumoLlamadas: { value: 20, limit: 100 }, healthScore: 60, fechaInicio: '2024-06-25T10:00:00Z', ultimoPago: { fecha: '2024-07-01T10:00:00Z', estado: 'pending' } },
-    { id: '4', empresa: 'Bufete Central', contacto: 'Lucía Fernández', plan: 'Business', mrr: 399, estado: 'active', consumoWhatsApp: { value: 980, limit: 1000 }, consumoLlamadas: { value: 2100, limit: 2500 }, healthScore: 45, fechaInicio: '2023-11-10T10:00:00Z', ultimoPago: { fecha: '2024-07-01T10:00:00Z', estado: 'failed' } },
-    { id: '5', empresa: 'Consultores Legales', contacto: 'Miguel Torres', plan: 'Pro', mrr: 199, estado: 'cancelled', consumoWhatsApp: { value: 50, limit: 1000 }, consumoLlamadas: { value: 10, limit: 300 }, healthScore: 15, fechaInicio: '2024-02-01T10:00:00Z', ultimoPago: { fecha: '2024-06-01T10:00:00Z', estado: 'paid' } },
-];
+// Use mockClients from adminClientsMockData instead of defining here to avoid duplication
+export const clientsData: ClientData[] = []; 
 
 export const quickActions: { icon: LucideIcon; label: string; color: string; key: string }[] = [
   { icon: UserPlus, label: 'Agregar Cliente', color: 'green', key: 'add_client' },
@@ -100,16 +87,18 @@ export const quickActions: { icon: LucideIcon; label: string; color: string; key
 ];
 
 export const alerts: AlertData[] = [
-  { type: 'warning', title: 'Alerta: Muchas cancelaciones', description: '3 clientes en riesgo de cancelar este mes.', action: { label: 'Ver clientes' }},
-  { type: 'error', title: 'Pago Fallido', description: 'Estudio Rodríguez - Tarjeta rechazada.', action: { label: 'Contactar' }},
-  { type: 'success', title: 'Nuevo Cliente Premium', description: 'Estudio Legal Norte - Plan Professional.', action: { label: 'Ver detalle' }},
-  { type: 'info', title: 'API de WhatsApp', description: 'Meta requiere re-autenticación de la cuenta.', action: { label: 'Re-autenticar' }},
+  { type: 'error', title: 'Límite de llamadas alcanzado', description: 'Abogados & Partners (5000/5000).', action: { label: 'Ver consumo' }},
+  { type: 'error', title: 'Degradación API', description: 'Latencia media 850ms vs 500ms objetivo.', action: { label: 'Ver logs' }},
+  { type: 'warning', title: 'Límite WhatsApp próximo', description: 'Consultores Legales SA al 90% (45k/50k).', action: { label: 'Notificar' }},
+  { type: 'warning', title: 'Trial por vencer', description: 'Abogados López SRL expira en 3 días.', action: { label: 'Contactar' }},
+  { type: 'warning', title: 'Trial por vencer', description: 'Asesoría Legal Ramírez expira en 5 días.', action: { label: 'Contactar' }},
+  { type: 'info', title: 'Pago pendiente', description: 'Abogados López SRL: $79 USD.', action: { label: 'Ver detalle' }},
 ];
 
 export const topAffiliates = [
-    { nombre: 'Referidor Activo', referidos: 25, revenue: 3400 },
-    { nombre: 'Juan Pérez', referidos: 18, revenue: 2100 },
-    { nombre: 'Partner Ejemplo', referidos: 15, revenue: 1250 },
-    { nombre: 'Influencer Legal', referidos: 11, revenue: 780 },
-    { nombre: 'Maria Lopez', referidos: 8, revenue: 120 },
+    { nombre: 'Carolina Vega', referidos: 18, revenue: 3450.60 },
+    { nombre: 'María Rodríguez', referidos: 12, revenue: 2340.80 },
+    { nombre: 'Patricia Herrera', referidos: 9, revenue: 1890.30 },
+    { nombre: 'Diego Flores', referidos: 7, revenue: 1678.90 },
+    { nombre: 'Demo Affiliate', referidos: 8, revenue: 1250.50 },
 ];

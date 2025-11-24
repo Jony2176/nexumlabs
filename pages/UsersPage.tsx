@@ -11,13 +11,13 @@ import InviteUserModal from '../components/users/InviteUserModal';
 
 // Mock user data, now used as initial state
 const initialUsers: User[] = [
-    { id: '1', firstName: 'Juan', lastName: 'Perez', email: 'juan.perez@ejemplo.com', role: 'owner', orgId: 'org1' },
-    { id: '2', firstName: 'Ana', lastName: 'Gomez', email: 'ana.gomez@ejemplo.com', role: 'admin', orgId: 'org1' },
+    { id: '1', firstName: 'Juan', lastName: 'Perez', email: 'juan.perez@ejemplo.com', role: 'user', orgId: 'org1' },
+    { id: '2', firstName: 'Ana', lastName: 'Gomez', email: 'ana.gomez@ejemplo.com', role: 'user', orgId: 'org1' },
     { id: '3', firstName: 'Carlos', lastName: 'Rodriguez', email: 'carlos.r@ejemplo.com', role: 'user', orgId: 'org1' },
     { id: '4', firstName: 'Maria', lastName: 'Lopez', email: 'maria.l@ejemplo.com', role: 'user', orgId: 'org1' },
 ];
 
-const ROLES: Array<User['role']> = ['owner', 'admin', 'user'];
+const ROLES: Array<User['role']> = ['user'];
 
 const UsersPage: React.FC = () => {
     const [users, setUsers] = useState<User[]>(initialUsers);

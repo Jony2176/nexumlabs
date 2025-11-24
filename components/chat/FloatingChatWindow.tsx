@@ -66,8 +66,12 @@ const FloatingChatWindow: React.FC = () => {
         setIsTyping(true);
 
         try {
-            const response = await api.chatWithData(query);
-            const botResponseText = response.response || response.text || response.answer || "No he podido procesar tu solicitud. Intenta de nuevo.";
+            // Call the API which now sends event_type: 'chat', action: 'chat_interaction' and payload
+            const response = await api.chatWithData(query) as any;
+            
+            // Robustly handle response format (JSON object with output/text/response key, or plain string)
+            const botResponseText = response.output || response.text || response.response || (typeof response === 'string' ? response : JSON.stringify(response));
+            
             const newBotMessage: Message = { id: Date.now() + 1, role: 'bot', text: botResponseText };
             addMessage(newBotMessage);
         } catch (error) {
@@ -93,7 +97,7 @@ const FloatingChatWindow: React.FC = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 50, scale: 0.9 }}
                     transition={{ duration: 0.3, ease: 'easeOut' }}
-                    className="fixed bottom-24 right-6 w-[90vw] max-w-sm h-[70vh] max-h-[600px] z-40"
+                    className="fixed bottom-24 right-6 w-[90vw] max-w-lg h-[70vh] max-h-[600px] z-40"
                 >
                     <div className="glass-card shadow-2xl shadow-black/30 h-full flex flex-col">
                         {/* Header */}

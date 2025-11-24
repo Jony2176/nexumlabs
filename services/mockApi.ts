@@ -1,4 +1,5 @@
 
+
 import { User, Organization, Subscription, Addon, PaymentMethod, Invoice, Plan } from '../types';
 import { MOCK_WALLET, MOCK_PAYMENT_CONFIG, MOCK_TRANSACTIONS } from '../data/walletMockData';
 import { MOCK_ADDONS, MOCK_PAYMENT_METHODS, MOCK_INVOICES } from '../data/subscriptionMockData';
@@ -58,7 +59,7 @@ class MockAPI {
       email: data.email,
       firstName: data.firstName || 'Usuario',
       lastName: data.lastName || 'Demo',
-      role: 'owner',
+      role: 'user',
       phone: data.phone || '',
       organizationName: newOrganization.name,
       trialEndsAt: newOrganization.trial_ends_at,
@@ -95,7 +96,7 @@ class MockAPI {
         if (password === 'demo123') {
             return {
                 token: `mock_token_demo_${Date.now()}`,
-                user: { id: 'usr_demo', orgId: 'org_demo', email: 'demo@nexum.com', firstName: 'Usuario', lastName: 'Demo', role: 'owner', onboardingCompleted: true },
+                user: { id: 'usr_demo', orgId: 'org_demo', email: 'demo@nexum.com', firstName: 'Usuario', lastName: 'Demo', role: 'user', onboardingCompleted: true },
                 organization: { id: 'org_demo', name: 'Estudio Demo', slug: 'estudio-demo', email: 'demo@nexum.com', phone: '123456789', modules: {}, subscription_status: 'trialing', trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() }
             };
         } else {
@@ -361,7 +362,7 @@ class MockAPI {
           responseText = "El afiliado con mayores ingresos este mes es 'Marketing Digital Pro' con $1,200 USD.";
       }
       
-      return { success: true, data: { response: responseText } };
+      return { response: responseText };
   }
 }
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PlusCircle, Download, Users, DollarSign, Clock, Percent, RefreshCw } from 'lucide-react';
@@ -82,19 +81,28 @@ const AfiliadosAdminPage: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     useEffect(() => {
-        const fetchAffiliates = async () => {
-            setIsLoading(true);
+        const fetchAffiliates = async (isAutoRefresh = false) => {
+            if (!isAutoRefresh) setIsLoading(true);
             try {
                 const fetchedAffiliates = await api.getAffiliates();
                 setAffiliates(fetchedAffiliates);
                 setLastUpdated(new Date());
             } catch (error) {
-                toast.error("No se pudieron cargar los afiliados.");
+                if (!isAutoRefresh) {
+                    toast.error("No se pudieron cargar los afiliados.");
+                }
             } finally {
                 setIsLoading(false);
             }
         };
         fetchAffiliates();
+
+        // Update every 30s
+        const intervalId = setInterval(() => {
+            fetchAffiliates(true);
+        }, 30000);
+
+        return () => clearInterval(intervalId);
     }, [setAffiliates]);
     
     const handleAddAffiliate = (newAffiliateData: {
@@ -168,7 +176,7 @@ const AfiliadosAdminPage: React.FC = () => {
                         {lastUpdated && (
                             <div className="flex items-center gap-2 text-sm text-gray-400">
                                 <RefreshCw size={14} />
-                                <span>Datos actualizados</span>
+                                <span>Actualizado: {lastUpdated.toLocaleTimeString()}</span>
                             </div>
                         )}
                         <div className="flex items-center gap-2">

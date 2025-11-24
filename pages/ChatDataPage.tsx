@@ -5,7 +5,6 @@ import { useAuthStore } from '../store/authStore';
 import api from '../services/api';
 import { cn } from '../utils/cn';
 import toast from 'react-hot-toast';
-// FIX: Imported the Button component to resolve 'Cannot find name' errors.
 import Button from '../components/ui/Button';
 
 interface Message {
@@ -60,11 +59,17 @@ const ChatDataPage: React.FC = () => {
         setIsTyping(true);
 
         try {
-            const response = await api.chatWithData(input);
-            const botResponseText = response.response || response.text || response.answer || "No he podido procesar tu solicitud. Intenta de nuevo.";
+            // El método chatWithData ahora envía event_type='chat', action='chat_interaction', payload={message: input}
+            const response = await api.chatWithData(input) as any;
+            
+            // Manejar diferentes formatos de respuesta de N8N (objeto JSON o texto plano)
+            // N8N puede devolver: { output: "..." }, { text: "..." }, { response: "..." } o directamente un string
+            const botResponseText = response.output || response.text || response.response || (typeof response === 'string' ? response : JSON.stringify(response));
+            
             const newBotMessage: Message = { id: Date.now() + 1, role: 'bot', text: botResponseText };
             setMessages(prev => [...prev, newBotMessage]);
         } catch (error) {
+            console.error("Chat Error:", error);
             toast.error("Error al conectar con el asistente de IA.");
             const errorMessage: Message = { id: Date.now() + 1, role: 'bot', text: "Lo siento, estoy teniendo problemas para conectarme. Por favor, intenta más tarde." };
             setMessages(prev => [...prev, errorMessage]);

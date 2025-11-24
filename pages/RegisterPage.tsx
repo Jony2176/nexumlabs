@@ -56,7 +56,7 @@ const RegisterPage: React.FC = () => {
             firstName: userPayload.firstName,
             lastName: userPayload.lastName,
             phone: userPayload.phone,
-            role: (userPayload.role || 'owner') as UserType['role'],
+            role: (userPayload.role || 'user') as UserType['role'],
             orgId: userPayload.orgId || orgPayload.id,
             onboardingCompleted: userPayload.onboardingCompleted ?? false,
           },

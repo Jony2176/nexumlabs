@@ -8,7 +8,7 @@ export interface User {
   firstName: string;
   lastName:string;
   phone?: string;
-  role: 'owner' | 'admin' | 'user' | 'affiliate' | 'super_admin';
+  role: 'user' | 'affiliate' | 'super_admin';
   orgId: string;
   // FIX: Added optional 'onboardingCompleted' property to align with mock data usage.
   onboardingCompleted?: boolean;
@@ -153,7 +153,7 @@ export interface Referral {
   affiliate_id: string;
   customer_email_short: string; // "joh...com"
   plan_contratado: string;
-  subscription_status: 'active' | 'cancelled';
+  subscription_status: 'active' | 'cancelled' | 'trial';
   monto_base: number;
   tasa_aplicada: number;
   comision_calculada: number;
@@ -227,7 +227,7 @@ export interface ClientData {
   id: string;
   empresa: string;
   contacto: string;
-  plan: 'Lite' | 'Pro' | 'Professional' | 'Business' | 'Enterprise';
+  plan: 'Lite' | 'Start' | 'Pro' | 'Professional' | 'Business' | 'Enterprise';
   mrr: number;
   estado: 'active' | 'trial' | 'cancelled' | 'suspended';
   consumoWhatsApp: { value: number; limit: number };
@@ -261,4 +261,149 @@ export interface PromoCode {
   usageCount: number;
   usageLimit?: number;
   createdAt: string;
+}
+
+// --- NEW DASHBOARD TYPES ---
+
+// CLIENT DASHBOARD
+export interface ClientDashboardData {
+  organization: {
+    id: string;
+    name: string;
+    plan: string;
+    status: string;
+    modules_config: {
+      whatsapp_bot: { active: boolean; limit: number };
+      calls: { active: boolean; limit: number };
+      dashboard: { active: boolean };
+      avatar: { active: boolean; limit: number };
+      predict: { active: boolean; limit: number };
+    };
+    current_usage: {
+      whatsapp_messages: number;
+      call_minutes: number;
+      avatar_queries: number;
+      predict_cases: number;
+    };
+    trial_ends_at: string | null;
+    next_billing_date: string;
+  };
+  subscription: {
+    id: string;
+    plan_id: string;
+    status: string;
+    price_usd: number;
+    price_ars: number;
+    next_billing_date: string;
+    auto_renew: boolean;
+  };
+}
+
+export interface UsageHistoryData {
+    date: string; // "2025-11-01"
+    whatsapp_messages: number;
+    call_minutes: number;
+    avatar_queries: number;
+}
+export interface UsageHistoryResponse {
+  data: UsageHistoryData[];
+}
+
+export interface ActivityEvent {
+  id: string;
+  event_type: string;
+  module: string;
+  quantity: number;
+  created_at: string;
+  metadata: Record<string, any>;
+}
+
+// AFFILIATE DASHBOARD
+export interface AffiliateDashboardData {
+  affiliate: {
+    id: string;
+    name: string;
+    affiliate_code: string;
+    balance_usd: number;
+    balance_ars: number;
+    total_referrals: number;
+    active_referrals: number;
+    tier: string;
+  };
+  thisMonthEarnings: {
+    first_month_commissions: number;
+    recurring_commissions: number;
+    total: number;
+  };
+  conversionRate: {
+    clicks: number;
+    conversions: number;
+    rate: number; // 0.12 = 12%
+  };
+}
+
+export interface RevenueHistoryData {
+    month: string; // "2025-11"
+    first_month: number;
+    recurring: number;
+    total: number;
+}
+export interface RevenueHistoryResponse {
+    data: RevenueHistoryData[];
+}
+
+export interface ReferralData {
+  org_id: string;
+  org_name: string;
+  plan_id: string;
+  status: 'trial' | 'active' | 'cancelled';
+  monthly_commission_usd: number;
+  total_commission_paid: number;
+  conversion_date: string;
+  plan_type?: 'primer_mes' | 'recurrente';
+}
+
+// ADMIN DASHBOARD
+export interface AdminOverviewData {
+  metrics: {
+    total_organizations: number;
+    active_organizations: number;
+    trialing_organizations: number;
+    mrr_usd: number;
+    total_users: number;
+    active_users: number;
+    total_affiliates: number;
+    active_affiliates: number;
+    pending_commissions_usd: number;
+    churn_rate: number;
+  };
+  plan_distribution: Array<{
+    plan: string;
+    count: number;
+    percentage: number;
+  }>;
+  top_affiliates: Array<{
+    id: string;
+    name: string;
+    active_referrals: number;
+    balance_usd: number;
+  }>;
+  critical_alerts: Array<{
+    id: string;
+    event_type: string;
+    severity: string;
+    message: string;
+    created_at: string;
+  }>;
+}
+
+export interface MRRHistoryData {
+    month: string; // "2025-11"
+    mrr: number;
+    new_mrr: number;
+    churned_mrr: number;
+    expansion_mrr: number;
+}
+export interface MRRHistoryResponse {
+    data: MRRHistoryData[];
 }

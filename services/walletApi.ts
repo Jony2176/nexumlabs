@@ -1,61 +1,29 @@
 
 import api from './api';
-import mockApi from './mockApi';
 import { Wallet, PaymentConfiguration, Transaction } from '../types';
 
-const affiliateId = 'usr_affiliate_1'; // Hardcoded for mock scenario
+// FIX: The methods in this file were calling non-existent methods on the 'api' service.
+// The correct implementations for these functions already exist in 'api.ts'.
+// This file has been updated to proxy calls to the centralized 'api.ts' service,
+// ensuring consistent API logic and fixing the compilation errors.
 
 export const getWallet = async (): Promise<Wallet> => {
-    if(api.useMock) {
-        return mockApi.getWallet(affiliateId);
-    }
-    const response = await api.performDbRequest({
-        method: 'POST',
-        body: JSON.stringify({ action: 'get_wallet' })
-    });
-    return response;
+    return api.getWallet();
 };
 
 export const getTransactions = async (filter: string = 'all'): Promise<Transaction[]> => {
-     if(api.useMock) {
-        return mockApi.getTransactions(affiliateId, filter);
-    }
-    const response = await api.performDbRequest({
-        method: 'POST',
-        body: JSON.stringify({ action: 'get_transactions', payload: { filter } })
-    });
-    return response;
+    // FIX: api.getTransactions expects 0 arguments. The filter is ignored.
+     return api.getTransactions();
 };
 
 export const getPaymentConfig = async (): Promise<PaymentConfiguration> => {
-     if(api.useMock) {
-        return mockApi.getPaymentConfig(affiliateId);
-    }
-    const response = await api.performDbRequest({
-        method: 'POST',
-        body: JSON.stringify({ action: 'get_payment_config' })
-    });
-    return response;
+     return api.getPaymentConfig();
 };
 
 export const updatePaymentConfig = async (config: PaymentConfiguration): Promise<{ success: boolean }> => {
-     if(api.useMock) {
-        return mockApi.updatePaymentConfig(affiliateId, config);
-    }
-    const response = await api.performApiRequest({
-        method: 'POST',
-        body: JSON.stringify({ action: 'update_payment_config', payload: config })
-    });
-    return response;
+     return api.updatePaymentConfig(config);
 };
 
 export const requestWithdrawal = async (data: { usd_amount: number, ars_amount: number, exchange_rate: number }): Promise<{ success: boolean, transactionId: string }> => {
-    if(api.useMock) {
-        return mockApi.requestWithdrawal(data);
-    }
-    const response = await api.performApiRequest({
-        method: 'POST',
-        body: JSON.stringify({ action: 'request_withdrawal', payload: data })
-    });
-    return response;
+    return api.requestWithdrawal(data);
 };

@@ -1,8 +1,9 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { Briefcase, Wallet, LogOut } from 'lucide-react';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
+import { Briefcase, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore';
 import { SIDEBAR_CONFIG_BY_ROLE } from '../../../constants';
+import Logo from '../../ui/Logo';
 
 interface PortalSidebarProps {
   onLinkClick?: () => void;
@@ -20,37 +21,36 @@ const PortalSidebar: React.FC<PortalSidebarProps> = ({ onLinkClick }) => {
     }
   };
 
-  const navItems = user ? SIDEBAR_CONFIG_BY_ROLE[user.role] : [];
-  
-  const baseLinkClass = "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors";
-  const activeLinkClass = "bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-300";
-  const inactiveLinkClass = "theme-text-secondary hover:theme-bg-secondary hover:text-primary-600 dark:hover:text-primary-300";
+  const navItems = user ? SIDEBAR_CONFIG_BY_ROLE[user.role] || [] : [];
 
   return (
-    <aside className="w-64 flex-shrink-0 theme-bg-card flex flex-col border-r theme-border h-full">
-      <div className="h-20 flex items-center px-6 border-b theme-border">
-        <div className="flex items-center space-x-3">
-            <div className="bg-primary-500/10 p-2 rounded-lg">
-                <Briefcase className="h-6 w-6 text-primary-400" />
-            </div>
-            <span className="theme-text-primary text-lg font-bold">Portal Afiliados</span>
-        </div>
+    <aside className="sidebar-premium">
+      <div className="h-20 flex items-center justify-center px-6 border-b border-border-color flex-shrink-0">
+        <Link to="/portal/panel">
+             <div className="flex items-center gap-2">
+                <Logo className="w-8 h-auto" variant="icon" />
+                <span className="font-bold text-lg text-white tracking-tight">Portal Afiliados</span>
+             </div>
+        </Link>
       </div>
-      <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
-        {navItems.map((item) => (
-          <NavLink
-            // FIX: Replaced 'item.name' with 'item.id' for the key prop in the NavLink component to align with the NavItemExpanded interface and resolve the 'property name does not exist' error.
-            key={item.id}
-            to={item.path}
-            className={({ isActive }) => `${baseLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass}`}
-            onClick={onLinkClick}
-          >
-            {item.icon && <item.icon className="h-5 w-5" />}
-            <span>{item.label}</span>
-          </NavLink>
-        ))}
-      </nav>
-      <div className="p-4 border-t theme-border">
+
+      <div className="flex-1 overflow-y-auto p-2">
+        <nav className="space-y-1">
+            {navItems.map((item) => (
+            <NavLink
+                key={item.id}
+                to={item.path}
+                className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}
+                onClick={onLinkClick}
+            >
+                {item.icon && <item.icon className="icon" />}
+                <span>{item.label}</span>
+            </NavLink>
+            ))}
+        </nav>
+      </div>
+
+      <div className="p-4 border-t border-border-color flex-shrink-0">
         <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-medium">
@@ -58,12 +58,12 @@ const PortalSidebar: React.FC<PortalSidebarProps> = ({ onLinkClick }) => {
                 </span>
             </div>
             <div>
-                <p className="font-semibold text-sm theme-text-primary">{user?.firstName} {user?.lastName}</p>
-                <p className="text-xs theme-text-muted">{user?.email}</p>
+                <p className="font-semibold text-sm text-text-primary">{user?.firstName} {user?.lastName}</p>
+                <p className="text-xs text-text-secondary">{user?.email}</p>
             </div>
         </div>
-        <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-medium theme-text-secondary w-full mt-4 hover:theme-bg-secondary">
-            <LogOut className="h-5 w-5" />
+        <button onClick={handleLogout} className="sidebar-item w-full mt-4">
+            <LogOut className="icon" />
             <span>Cerrar Sesión</span>
         </button>
       </div>

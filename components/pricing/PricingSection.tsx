@@ -57,7 +57,12 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onPlanSelect }) => {
         
         <AnnualSavingsBanner isAnnual={billingPeriod === 'annual'} />
         
-        <PlanSelector onPlanSelect={onPlanSelect} isAnnual={billingPeriod === 'annual'} />
+        <PlanSelector 
+            onPlanSelect={onPlanSelect} 
+            isAnnual={billingPeriod === 'annual'} 
+            currency="USD"
+            view="all"
+        />
 
       </div>
     </section>

@@ -10,12 +10,24 @@ export const formatCurrency = (amount: number, currency: string = 'USD'): string
 };
 
 export const formatDate = (dateString: string): string => {
+  if (!dateString) return 'N/A';
+  
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(date);
+  
+  // Check if date is valid
+  if (isNaN(date.getTime())) {
+    return 'Fecha inválida';
+  }
+
+  try {
+    return new Intl.DateTimeFormat('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(date);
+  } catch (e) {
+    return 'Fecha inválida';
+  }
 };
 
 export const formatARS = (amount: number, options: { showCurrency?: boolean; abbreviated?: boolean; decimals?: number } = {}): string => {

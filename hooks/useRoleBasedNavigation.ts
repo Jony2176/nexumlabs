@@ -3,9 +3,7 @@ import { User } from '../types';
 
 export const homePaths: { [key in User['role']]: string } = {
   super_admin: '/admin/panel',
-  owner: '/app/panel-control',
-  admin: '/app/panel-control',
-  user: '/app/modules', // As per spec, 'user' has a more restricted default view
+  user: '/app/panel-control',
   affiliate: '/portal/panel',
 };
 

@@ -38,7 +38,7 @@ const EliasWhatsappManagementPage: React.FC = () => {
         const fetchMetrics = async () => {
             setIsLoading(true);
             try {
-                const data = await api.getWhatsappMetrics();
+                const data = await api.getWhatsappMetrics() as unknown as WhatsappMetrics;
                 setMetrics(data);
             } catch (error) {
                 toast.error("No se pudo cargar la información de WhatsApp.");
@@ -54,7 +54,8 @@ const EliasWhatsappManagementPage: React.FC = () => {
         if (!metrics) return;
         setIsToggling(true);
         try {
-            const response = await api.toggleWhatsappStatus(!metrics.enabled);
+            // FIX: Casted the unknown response from the API call to the expected { enabled: boolean } type to resolve property access errors.
+            const response = await api.toggleWhatsappStatus(!metrics.enabled) as { enabled: boolean };
             setMetrics(prev => prev ? { ...prev, enabled: response.enabled } : null);
             toast.success(`Servicio ${response.enabled ? 'activado' : 'pausado'}.`);
         } catch (error) {

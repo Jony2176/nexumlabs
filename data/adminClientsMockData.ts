@@ -1,103 +1,157 @@
 
 import { ClientData } from '../types';
 
-const randomDate = (start: Date, end: Date): string => {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString();
-};
-
-const generateClients = (count: number): ClientData[] => {
-  const clients: ClientData[] = [];
-  const firstNames = ['Juan', 'Maria', 'Carlos', 'Ana', 'Luis', 'Laura', 'Roberto', 'Sofia', 'Miguel', 'Elena'];
-  const lastNames = ['García', 'Martinez', 'Rodriguez', 'Fernandez', 'Lopez', 'Perez', 'Gonzalez', 'Sanchez', 'Romero', 'Torres'];
-  const companies = [
-    'Estudio Jurídico Norte', 'Legal & Co.', 'Abogados del Sur', 'Bufete Central', 'Consultores Legales',
-    'Lex Veritas', 'Iuris Consultores', 'Poder Legal', 'Justicia & Ley', 'Defensa Total', 'Grupo Jurídico Integral',
-    'Asesores Legales Argentinos', 'Estudio de la Cruz', 'Soluciones Legales BA', 'Lexnet Abogados', 'Estudio Integral Patagonico',
-    'Derecho y Empresa', 'Consultorio Jurídico Cuyo', 'Legaltech Solutions', 'Firma Legal Innovadora'
-  ];
-
-  // Add specific test clients
-  const specificClients = [
-    { empresa: 'Estudio Garcia', plan: 'Pro' as const, estado: 'active' as const, mrr: 199 },
-    { empresa: 'Bufete Martinez', plan: 'Professional' as const, estado: 'active' as const, mrr: 319 },
-    // FIX: Changed plan from 'Start' to 'Lite' and MRR to 79 to match the ClientData type.
-    { empresa: 'Legal Consultores', plan: 'Lite' as const, estado: 'active' as const, mrr: 79 },
-    { empresa: 'Abogados Unidos', plan: 'Business' as const, estado: 'active' as const, mrr: 399 },
-    // FIX: Changed estado from 'past_due' to 'suspended' to align with the ClientData type.
-    { empresa: 'Firma Juridica', plan: 'Pro' as const, estado: 'suspended' as const, mrr: 199 },
-    { empresa: 'Lawfirm BA', plan: 'Professional' as const, estado: 'active' as const, mrr: 319 },
-    // FIX: Changed plan from 'Start' to 'Lite' and estado from 'trialing' to 'trial' to match ClientData type.
-    { empresa: 'Despacho Cordoba', plan: 'Lite' as const, estado: 'trial' as const, mrr: 0 },
-    // FIX: Changed estado from 'trialing' to 'trial' to align with the ClientData type.
-    { empresa: 'demo@nexum.com', plan: 'Lite' as const, estado: 'trial' as const, mrr: 0 },
-  ];
-  
-  specificClients.forEach((sc, i) => {
-     clients.push({
-      id: `cli_${i+1}`,
-      empresa: sc.empresa,
-      contacto: `${firstNames[i % firstNames.length]} ${lastNames[i % lastNames.length]}`,
-      logoUrl: `https://avatar.vercel.sh/${sc.empresa.replace(/\s+/g, '')}.png?size=40`,
-      plan: sc.plan,
-      mrr: sc.mrr,
-      estado: sc.estado,
-      consumoWhatsApp: { value: Math.floor(Math.random() * 1000), limit: 1000 },
-      consumoLlamadas: { value: Math.floor(Math.random() * 300), limit: 300 },
-      healthScore: Math.floor(Math.random() * 50) + 50,
-      fechaInicio: randomDate(new Date(2023, 0, 1), new Date()),
-      ultimoPago: {
-        fecha: randomDate(new Date(2024, 7, 1), new Date(2024, 8, 5)),
-        estado: Math.random() > 0.9 ? 'failed' : 'paid'
-      },
-      cuit: `30-${Math.floor(Math.random() * 90000000) + 10000000}-9`,
-      direccion: 'Av. Corrientes 123, CABA'
-    });
-  });
-
-
-  for (let i = clients.length + 1; i <= count; i++) {
-    const planIndex = Math.random();
-    let plan: ClientData['plan'];
-    if (planIndex < 0.4) plan = 'Lite';
-    else if (planIndex < 0.8) plan = 'Pro';
-    else plan = 'Professional';
-    
-    let mrr;
-    switch(plan) {
-        case 'Lite': mrr = 79; break;
-        case 'Pro': mrr = 199; break;
-        case 'Professional': mrr = 320; break;
-        default: mrr = 199;
-    }
-    
-    let estado: ClientData['estado'];
-    const estadoIndex = Math.random();
-    if (estadoIndex < 0.7) estado = 'active';
-    else if (estadoIndex < 0.85) estado = 'trial';
-    else if (estadoIndex < 0.95) estado = 'cancelled';
-    else estado = 'suspended';
-
-    clients.push({
-      id: `cli_${i}`,
-      empresa: `${companies[i % companies.length]}`,
-      contacto: `${firstNames[i % firstNames.length]} ${lastNames[i % lastNames.length]}`,
-      logoUrl: `https://avatar.vercel.sh/${companies[i % companies.length].replace(/\s+/g, '')}.png?size=40`,
-      plan,
-      mrr: estado === 'trial' ? 0 : mrr,
-      estado,
-      consumoWhatsApp: { value: Math.floor(Math.random() * 1000), limit: 1000 },
-      consumoLlamadas: { value: Math.floor(Math.random() * (plan === 'Lite' ? 100 : plan === 'Pro' ? 300 : 1000)), limit: (plan === 'Lite' ? 100 : plan === 'Pro' ? 300 : 1000) },
-      healthScore: Math.random() > 0.3 ? Math.floor(Math.random() * 30) + 71 : Math.floor(Math.random() * 30) + 40,
-      fechaInicio: randomDate(new Date(2023, 0, 1), new Date()),
-      ultimoPago: {
-        fecha: randomDate(new Date(2024, 7, 1), new Date(2024, 8, 5)),
-        estado: Math.random() > 0.95 ? 'failed' : 'paid'
-      },
-      cuit: `30-${Math.floor(Math.random() * 90000000) + 10000000}-9`,
-      direccion: 'Av. Corrientes 123, CABA'
-    });
+export const mockClients: ClientData[] = [
+  {
+    id: 'org_2025_007',
+    empresa: 'Abogados & Partners',
+    contacto: 'Socio Principal',
+    logoUrl: 'https://ui-avatars.com/api/?name=Abogados+Partners&background=random',
+    plan: 'Enterprise',
+    mrr: 499,
+    estado: 'active',
+    consumoWhatsApp: { value: 45600, limit: 50000 }, // Enterprise limit
+    consumoLlamadas: { value: 2340, limit: 5000 }, // Enterprise limit
+    healthScore: 98,
+    fechaInicio: '2025-01-15T10:00:00Z',
+    ultimoPago: {
+      fecha: '2025-11-15T10:00:00Z',
+      estado: 'paid'
+    },
+    cuit: '30-77777777-9',
+    direccion: 'Puerto Madero, CABA'
+  },
+  {
+    id: 'org_2025_004',
+    empresa: 'Consultores Legales SA',
+    contacto: 'Fernando Silva',
+    logoUrl: 'https://ui-avatars.com/api/?name=Consultores+Legales&background=random',
+    plan: 'Business',
+    mrr: 419,
+    estado: 'active',
+    consumoWhatsApp: { value: 18900, limit: 20000 }, // Business limit
+    consumoLlamadas: { value: 890, limit: 2500 },
+    healthScore: 85,
+    fechaInicio: '2025-03-10T10:00:00Z',
+    ultimoPago: {
+      fecha: '2025-11-28T10:00:00Z', // Próximo pago
+      estado: 'pending'
+    },
+    cuit: '30-66666666-5',
+    direccion: 'Microcentro, CABA'
+  },
+  {
+    id: 'org_demo_2025',
+    empresa: 'Estudio Jurídico Demo',
+    contacto: 'Admin Demo',
+    logoUrl: 'https://ui-avatars.com/api/?name=Estudio+Demo&background=random',
+    plan: 'Professional',
+    mrr: 319,
+    estado: 'active',
+    consumoWhatsApp: { value: 2450, limit: 5000 }, // Professional limit
+    consumoLlamadas: { value: 340, limit: 1000 },
+    healthScore: 92,
+    fechaInicio: '2025-01-01T10:00:00Z',
+    ultimoPago: {
+      fecha: '2025-11-01T10:00:00Z',
+      estado: 'paid'
+    },
+    cuit: '30-11111111-1',
+    direccion: 'Av. Libertador 1000, CABA'
+  },
+  {
+    id: 'org_2025_005',
+    empresa: 'Estudio Fernández',
+    contacto: 'Gabriela Fernández',
+    logoUrl: 'https://ui-avatars.com/api/?name=Estudio+Fernandez&background=random',
+    plan: 'Pro',
+    mrr: 219,
+    estado: 'active',
+    consumoWhatsApp: { value: 7234, limit: 10000 },
+    consumoLlamadas: { value: 412, limit: 300 },
+    healthScore: 78,
+    fechaInicio: '2025-06-15T10:00:00Z',
+    ultimoPago: {
+      fecha: '2025-11-10T10:00:00Z',
+      estado: 'paid'
+    },
+    cuit: '27-55555555-4',
+    direccion: 'La Plata, PBA'
+  },
+  {
+    id: 'org_2025_002',
+    empresa: 'Bufete Legal González',
+    contacto: 'Juan González',
+    logoUrl: 'https://ui-avatars.com/api/?name=Bufete+Gonzalez&background=random',
+    plan: 'Pro',
+    mrr: 219,
+    estado: 'active',
+    consumoWhatsApp: { value: 5620, limit: 10000 },
+    consumoLlamadas: { value: 278, limit: 300 },
+    healthScore: 88,
+    fechaInicio: '2025-04-20T10:00:00Z',
+    ultimoPago: {
+      fecha: '2025-11-20T10:00:00Z', // Próximo pago
+      estado: 'pending'
+    },
+    cuit: '20-33333333-3',
+    direccion: 'Córdoba Capital'
+  },
+  {
+    id: 'org_2025_001',
+    empresa: 'Estudio Martínez & Asociados',
+    contacto: 'Carlos Martínez',
+    logoUrl: 'https://ui-avatars.com/api/?name=Estudio+Martinez&background=random',
+    plan: 'Start',
+    mrr: 139,
+    estado: 'active',
+    consumoWhatsApp: { value: 890, limit: 5000 },
+    consumoLlamadas: { value: 45, limit: 0 },
+    healthScore: 95,
+    fechaInicio: '2025-02-15T10:00:00Z',
+    ultimoPago: {
+      fecha: '2025-11-05T10:00:00Z',
+      estado: 'paid'
+    },
+    cuit: '20-22222222-2',
+    direccion: 'Rosario, Santa Fe'
+  },
+  {
+    id: 'org_2025_006',
+    empresa: 'Asesoría Legal Ramírez',
+    contacto: 'Miguel Ramírez',
+    logoUrl: 'https://ui-avatars.com/api/?name=Asesoria+Ramirez&background=random',
+    plan: 'Start',
+    mrr: 139,
+    estado: 'trial',
+    consumoWhatsApp: { value: 320, limit: 1000 },
+    consumoLlamadas: { value: 15, limit: 50 },
+    healthScore: 65,
+    fechaInicio: '2025-11-15T10:00:00Z',
+    ultimoPago: {
+      fecha: '2025-11-30T10:00:00Z', // Fin de trial
+      estado: 'pending'
+    },
+    cuit: '20-66666666-6',
+    direccion: 'Mendoza Capital'
+  },
+  {
+    id: 'org_2025_003',
+    empresa: 'Abogados López SRL',
+    contacto: 'Roberto López',
+    logoUrl: 'https://ui-avatars.com/api/?name=Abogados+Lopez&background=random',
+    plan: 'Lite',
+    mrr: 79,
+    estado: 'trial',
+    consumoWhatsApp: { value: 150, limit: 500 },
+    consumoLlamadas: { value: 0, limit: 0 },
+    healthScore: 60,
+    fechaInicio: '2025-11-10T10:00:00Z',
+    ultimoPago: {
+      fecha: '2025-11-25T10:00:00Z', // Fin de trial
+      estado: 'pending'
+    },
+    cuit: '30-44444444-4',
+    direccion: 'Mar del Plata, PBA'
   }
-  return clients;
-};
-
-export const mockClients: ClientData[] = generateClients(25);
+];

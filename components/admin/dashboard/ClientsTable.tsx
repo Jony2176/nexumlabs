@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ClientData } from '../../../types';
 import { formatCurrency } from '../../../utils/formatters';
@@ -12,6 +13,7 @@ interface ClientsTableProps {
 
 const planBadgeColors: { [key: string]: string } = {
   Lite: 'bg-gray-500 text-white border-gray-500 dark:bg-gray-400/20 dark:text-gray-300 dark:border-gray-600',
+  Start: 'bg-cyan-500 text-white border-cyan-500 dark:bg-cyan-400/20 dark:text-cyan-300 dark:border-cyan-600',
   Pro: 'bg-blue-500 text-white border-blue-500 dark:bg-blue-400/20 dark:text-blue-300 dark:border-blue-600',
   Professional: 'bg-purple-500 text-white border-purple-500 dark:bg-purple-400/20 dark:text-purple-300 dark:border-purple-600',
   Business: 'bg-indigo-500 text-white border-indigo-500 dark:bg-indigo-400/20 dark:text-indigo-300 dark:border-indigo-600',

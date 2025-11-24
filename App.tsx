@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { Routes, Route, Navigate, HashRouter } from 'react-router-dom';
@@ -40,7 +39,7 @@ import AIRevolutionPage from './pages/public/blog/AIRevolutionPage';
 // App Pages
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import ControlPanelPage from './pages/ControlPanelPage';
+import ClientDashboardPage from './pages/client/ClientDashboardPage';
 import ModulesPage from './pages/ModulesPage';
 import MySubscriptionPage from './pages/subscription/MySubscriptionPage';
 import SubscriptionChangePlanPage from './pages/subscription/SubscriptionChangePlanPage';
@@ -59,7 +58,7 @@ import ChatDataPage from './pages/ChatDataPage';
 
 
 // Admin Pages
-import AdminPanelPage from './pages/admin/AdminDashboardPage';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import ClientsManagementPage from './pages/admin/ClientsManagementPage';
 import AfiliadosAdminPage from './pages/admin/AfiliadosAdminPage';
 import FeatureFlagsPage from './pages/admin/FeatureFlagsPage';
@@ -71,7 +70,7 @@ import ReportsPage from './pages/admin/ReportsPage';
 
 
 // Affiliate Portal Pages
-import PortalPanelPage from './pages/affiliates/portal/PortalDashboardPage';
+import PortalDashboardPage from './pages/affiliates/portal/PortalDashboardPage';
 import PortalUrlsPage from './pages/affiliates/portal/PortalUrlsPage';
 import PortalReferralsPage from './pages/affiliates/portal/PortalReferralsPage';
 import PortalPayoutsPage from './pages/affiliates/portal/PortalPayoutsPage';
@@ -176,19 +175,19 @@ const App = () => {
             
             {/* --- STANDALONE PROTECTED ROUTES --- */}
             <Route path="/app/waitlist-confirmation" element={
-              <ProtectedRoute allowedRoles={['owner', 'admin', 'user']}>
+              <ProtectedRoute allowedRoles={['user']}>
                 <WaitlistConfirmationPage />
               </ProtectedRoute>
             } />
 
             {/* --- PROTECTED CLIENT ROUTES (/app) --- */}
             <Route path="/app" element={
-              <ProtectedRoute allowedRoles={['owner', 'admin', 'user']} requireCompletedOnboarding={true}>
+              <ProtectedRoute allowedRoles={['user']} requireCompletedOnboarding={true}>
                 <AppLayout />
               </ProtectedRoute>
             }>
               <Route index element={<Navigate to="/app/panel-control" replace />} />
-              <Route path="panel-control" element={<ControlPanelPage />} />
+              <Route path="panel-control" element={<ClientDashboardPage />} />
               <Route path="modules" element={<ModulesPage />} />
               <Route path="whatsapp" element={<EliasWhatsappManagementPage />} />
               <Route path="calls" element={<EliasCallsManagementPage />} />
@@ -198,18 +197,18 @@ const App = () => {
               <Route path="support" element={<SupportPage />} />
               <Route path="chat" element={<ChatDataPage />} />
               <Route path="subscription" element={
-                  <ProtectedRoute allowedRoles={['owner']}>
+                  <ProtectedRoute allowedRoles={['user']}>
                       <MySubscriptionPage />
                   </ProtectedRoute>
               }/>
               <Route path="subscription/change-plan" element={
-                  <ProtectedRoute allowedRoles={['owner']}>
+                  <ProtectedRoute allowedRoles={['user']}>
                       <SubscriptionChangePlanPage />
                   </ProtectedRoute>
               } />
               <Route path="billing/success" element={<BillingSuccessPage />} />
               <Route path="configuracion" element={
-                <ProtectedRoute allowedRoles={['owner', 'admin', 'user']}>
+                <ProtectedRoute allowedRoles={['user']}>
                   <SettingsPage />
                 </ProtectedRoute>
               } />
@@ -222,7 +221,7 @@ const App = () => {
               </ProtectedRoute>
             }>
               <Route index element={<Navigate to="/portal/panel" replace />} />
-              <Route path="panel" element={<PortalPanelPage />} />
+              <Route path="panel" element={<PortalDashboardPage />} />
               <Route path="urls" element={<PortalUrlsPage />} />
               <Route path="referrals" element={<PortalReferralsPage />} />
               <Route path="payouts" element={<PortalPayoutsPage />} />
@@ -245,7 +244,7 @@ const App = () => {
               </ProtectedRoute>
             }>
               <Route index element={<Navigate to="/admin/panel" replace />} />
-              <Route path="panel" element={<AdminPanelPage />} />
+              <Route path="panel" element={<AdminDashboardPage />} />
               <Route path="clients" element={<ClientsManagementPage />} />
               <Route path="affiliates" element={<AfiliadosAdminPage />} />
               <Route path="feature-flags" element={<FeatureFlagsPage />} />
@@ -258,7 +257,7 @@ const App = () => {
             
             {/* --- ONBOARDING & OTHER PROTECTED ROUTES --- */}
             <Route path="/onboarding" element={
-              <ProtectedRoute allowedRoles={['owner', 'user']}>
+              <ProtectedRoute allowedRoles={['user']}>
                   {/* OnboardingFlow component would go here */}
                   <ComingSoonPage /> 
               </ProtectedRoute>

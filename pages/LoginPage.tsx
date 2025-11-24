@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
@@ -56,46 +57,60 @@ const LoginPage: React.FC = () => {
     let loginSuccess = false;
     try {
       const apiResponse = await api.login(email, password);
-      
-      // Handle n8n sometimes wrapping the response in an array
-      const responseData = Array.isArray(apiResponse) ? apiResponse[0] : apiResponse;
-      
-      // Flexible check for flat response from n8n backend
-      if (!responseData || !responseData.api_key) {
-          console.error("Respuesta de inicio de sesión inválida:", JSON.stringify(apiResponse, null, 2));
-          throw new Error("Credenciales incorrectas o el usuario no existe.");
+
+      // 1. Handle empty/null response for failed login
+      if (!apiResponse || (Array.isArray(apiResponse) && apiResponse.length === 0)) {
+        console.error("Respuesta de inicio de sesión inválida:", JSON.stringify(apiResponse, null, 2));
+        throw new Error("Credenciales incorrectas o el usuario no existe.");
       }
-      
-      // Infer role from email for demo users, as backend doesn't provide it
-      let role: UserType['role'] = 'owner'; // Default role
+
+      // 2. Extract user data object
+      const responseData = Array.isArray(apiResponse) ? apiResponse[0] : apiResponse;
+
+      // 3. Validate essential data (email must be present)
+      if (!responseData || !responseData.email) {
+         console.error("Respuesta de inicio de sesión inválida:", JSON.stringify(apiResponse, null, 2));
+         throw new Error("La respuesta del servidor es inválida.");
+      }
+
+      // 4. Infer role from email (critical since backend doesn't provide it)
+      let role: UserType['role'] = 'user'; // Default role
       if (responseData.email === 'superadmin@nexum.com') {
           role = 'super_admin';
       } else if (responseData.email === 'affiliate@nexum.com') {
           role = 'affiliate';
-      } else if (responseData.role) {
+      } else if (responseData.role) { // fallback if backend starts sending it
           role = responseData.role;
       }
+      
+      // 5. Construct a valid authData object with fallbacks
+      const userId = responseData.id || responseData.org_id || `usr_${responseData.email.split('@')[0]}`;
+      const orgId = responseData.org_id || userId;
+      const firstName = responseData.first_name || responseData.name || (role === 'user' ? 'Usuario' : role === 'super_admin' ? 'Super' : 'Afiliado');
+      const lastName = responseData.last_name || (role === 'user' ? 'Demo' : role === 'super_admin' ? 'Admin' : '');
+      const orgName = responseData.organization_name || responseData.name || (role === 'user' ? 'Estudio Demo' : role === 'super_admin' ? 'NEXUM Labs HQ' : 'Marketing Pro');
 
       const authData = {
-        token: responseData.api_key,
+        // Generate a mock token as backend doesn't provide one
+        token: `mock_token_${role}_${Date.now()}`, 
         user: {
-          id: responseData.id || `usr_${Date.now()}`,
+          id: userId,
           email: responseData.email,
-          firstName: responseData.name || 'Usuario',
-          lastName: responseData.last_name || '',
-          phone: responseData.phone,
+          firstName: firstName,
+          lastName: lastName,
+          phone: responseData.phone || '',
           role: role,
-          orgId: responseData.id,
+          orgId: orgId,
           onboardingCompleted: responseData.onboarding_completed ?? true,
         },
         organization: {
-          id: responseData.id,
-          name: responseData.name || 'Mi Estudio',
-          slug: responseData.slug,
+          id: orgId,
+          name: orgName,
+          slug: orgName.toLowerCase().replace(/\s+/g, '-'),
           email: responseData.email,
-          phone: responseData.phone,
-          modules: {}, // Let useModules hook handle the real module state
-          subscription_status: responseData.subscription_status || 'trialing',
+          phone: responseData.phone || '',
+          modules: responseData.modules || {},
+          subscription_status: responseData.subscription_status || (role === 'user' ? 'trialing' : 'active'),
           trial_ends_at: responseData.trial_ends_at || new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
         }
       };
@@ -111,6 +126,11 @@ const LoginPage: React.FC = () => {
     } catch (error: any) {
       const title = "Error de Inicio de Sesión";
       const description = error.message || "No se pudo iniciar sesión. Revisa tus datos e intenta de nuevo.";
+      
+      // Avoid re-logging the specific "invalid response" error which is already logged before throwing
+      if (!error.message.includes("inválida")) {
+         console.error('Login failed:', error);
+      }
       
       toast.custom(
         (t) => (
@@ -135,7 +155,6 @@ const LoginPage: React.FC = () => {
         ),
         { duration: 8000 }
       );
-      console.error('Login failed:', error);
     } finally {
       if (!loginSuccess) {
         setIsLoading(false);
@@ -199,7 +218,7 @@ const LoginPage: React.FC = () => {
               <p className="text-xs text-center text-gray-400 mb-4">Haz clic en un rol para usar sus credenciales y explorar la plataforma.</p>
               <div className="space-y-3 text-sm">
                   {[
-                      { role: 'Cliente (Dueño)', email: 'demo@nexum.com', pass: 'demo123', icon: User, color: 'blue' },
+                      { role: 'Cliente (Usuario)', email: 'demo@nexum.com', pass: 'demo123', icon: User, color: 'blue' },
                       { role: 'Super Admin', email: 'superadmin@nexum.com', pass: 'demo123', icon: Shield, color: 'purple' },
                       { role: 'Afiliado', email: 'affiliate@nexum.com', pass: 'demo123', icon: AffiliateIcon, color: 'green' }
                   ].map(item => (

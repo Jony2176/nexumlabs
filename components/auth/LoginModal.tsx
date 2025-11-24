@@ -71,11 +71,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     setIsLoading(true);
     let loginSuccess = false;
     try {
-      const responseData = await api.login(email, password);
+      // FIX: Cast API response to 'any' to resolve multiple 'does not exist on type unknown' errors.
+      const responseData = await api.login(email, password) as any;
 
       // --- SPECIAL USER: SUPERADMIN ---
       if (responseData && email === 'superadmin@nexum.com') {
           const authData = {
+              // FIX: Accessing property on 'any' type.
               token: responseData.api_key || `MOCK_SUPERADMIN_TOKEN_${Date.now()}`,
               user: {
                   id: 'usr_superadmin',
@@ -103,6 +105,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       // --- SPECIAL USER: AFFILIATE ---
       if (responseData && email === 'affiliate@nexum.com') {
           const authData = {
+              // FIX: Accessing property on 'any' type.
               token: responseData.api_key || `MOCK_AFFILIATE_TOKEN_${Date.now()}`,
               user: {
                   id: 'usr_affiliate_1',
@@ -128,24 +131,28 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       }
       
       // --- REGULAR USER FLOW ---
+      // FIX: Accessing properties on 'any' type.
       if (!responseData || !responseData.id || !responseData.api_key) {
           console.error("Respuesta de inicio de sesión inválida:", JSON.stringify(responseData, null, 2));
           throw new Error("Credenciales incorrectas o el usuario no existe.");
       }
       
       const authData = {
+        // FIX: Accessing property on 'any' type.
         token: responseData.api_key,
         user: {
+          // FIX: Accessing properties on 'any' type.
           id: responseData.id,
           email: responseData.email,
           firstName: responseData.name || 'Usuario',
           lastName: responseData.last_name || '',
           phone: responseData.phone,
-          role: (responseData.role || 'owner') as UserType['role'],
+          role: (responseData.role || 'user') as UserType['role'],
           orgId: responseData.org_id || responseData.id,
           onboardingCompleted: responseData.onboarding_completed ?? true,
         },
         organization: {
+          // FIX: Accessing properties on 'any' type.
           id: responseData.org_id || responseData.id,
           name: responseData.organization_name || responseData.name || 'Mi Estudio',
           slug: responseData.slug || responseData.name || 'mi-estudio',

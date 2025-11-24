@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { ClientData } from '../../../types';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
@@ -6,7 +7,6 @@ import HealthIndicator from '../dashboard/HealthIndicator';
 import { MoreVertical, Eye, Edit, Tag, Mail, AlertCircle, FileText, ChevronUp, ChevronDown, User, LogIn, Repeat, Wallet, XCircle, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Button from '../../ui/Button';
-// FIX: Import cn utility for conditional class names.
 import { cn } from '../../../utils/cn';
 
 type SortConfig = { key: keyof ClientData; direction: 'ascending' | 'descending' } | null;
@@ -19,9 +19,6 @@ interface ClientsTableProps {
   selectedClients: Set<string>;
   onSelectionChange: (selected: Set<string>) => void;
 }
-
-// FIX: Removed dynamic class name map as it's not safe for Tailwind's tree-shaking.
-// The logic is now handled inline with the `cn` utility.
 
 const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sortConfig, onSort, selectedClients, onSelectionChange }) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -124,6 +121,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sor
                   <div className="flex items-center gap-2">
                     <span className={cn('px-2 py-0.5 text-xs font-semibold rounded-full border', {
                         'bg-gray-100 text-gray-800 dark:bg-gray-400/20 dark:text-gray-300 border-gray-300 dark:border-gray-600': client.plan === 'Lite',
+                        'bg-cyan-100 text-cyan-800 dark:bg-cyan-400/20 dark:text-cyan-300 border-cyan-300 dark:border-cyan-600': client.plan === 'Start',
                         'bg-blue-100 text-blue-800 dark:bg-blue-400/20 dark:text-blue-300 border-blue-300 dark:border-blue-600': client.plan === 'Pro',
                         'bg-purple-100 text-purple-800 dark:bg-purple-400/20 dark:text-purple-300 border-purple-300 dark:border-purple-600': client.plan === 'Professional',
                         'bg-indigo-100 text-indigo-800 dark:bg-indigo-400/20 dark:text-indigo-300 border-indigo-300 dark:border-indigo-600': client.plan === 'Business',
@@ -143,7 +141,6 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sor
                 <td className="text-center"><HealthIndicator score={client.healthScore} /></td>
                 <td>{formatDate(client.fechaInicio).split('de ').slice(1).join(' ')}</td>
                 <td>
-                    {/* FIX: Replaced dynamic class concatenation with cn utility for static analysis by Tailwind. */}
                     <div className={cn('font-semibold', {
                         'text-green-500': client.ultimoPago.estado === 'paid',
                         'text-yellow-500': client.ultimoPago.estado === 'pending',

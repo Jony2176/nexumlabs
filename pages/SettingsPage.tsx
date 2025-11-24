@@ -19,22 +19,22 @@ import { EXTERNAL_ASSETS } from '../config/assets.config';
 
 // Mock user data, now used as initial state for the user management tab
 const initialUsers: User[] = [
-    { id: '1', firstName: 'Juan', lastName: 'Perez', email: 'juan.perez@ejemplo.com', role: 'owner', orgId: 'org1' },
-    { id: '2', firstName: 'Ana', lastName: 'Gomez', email: 'ana.gomez@ejemplo.com', role: 'admin', orgId: 'org1' },
+    { id: '1', firstName: 'Juan', lastName: 'Perez', email: 'juan.perez@ejemplo.com', role: 'user', orgId: 'org1' },
+    { id: '2', firstName: 'Ana', lastName: 'Gomez', email: 'ana.gomez@ejemplo.com', role: 'user', orgId: 'org1' },
     { id: '3', firstName: 'Carlos', lastName: 'Rodriguez', email: 'carlos.r@ejemplo.com', role: 'user', orgId: 'org1' },
     { id: '4', firstName: 'Maria', lastName: 'Lopez', email: 'maria.l@ejemplo.com', role: 'user', orgId: 'org1' },
 ];
 
-const ROLES: Array<User['role']> = ['owner', 'admin', 'user'];
+const ROLES: Array<User['role']> = ['user'];
 
 const allTabs = [
-    { id: 'perfil', label: 'Mi Perfil', icon: UserIcon, roles: ['owner', 'admin', 'user', 'super_admin'] },
-    { id: 'general', label: 'Información General', icon: Settings, roles: ['owner', 'admin', 'super_admin'] },
-    { id: 'usuarios', label: 'Usuarios y Permisos', icon: Users, roles: ['owner', 'admin'] },
-    { id: 'modulos', label: 'Módulos ELIAS', icon: Puzzle, roles: ['owner', 'admin'] },
-    { id: 'integraciones', label: 'Integraciones', icon: LinkIcon, roles: ['owner', 'admin'] },
-    { id: 'notificaciones', label: 'Notificaciones', icon: Bell, roles: ['owner', 'admin', 'user', 'super_admin'] },
-    { id: 'seguridad', label: 'Seguridad', icon: Shield, roles: ['owner', 'admin', 'user', 'super_admin'] },
+    { id: 'perfil', label: 'Mi Perfil', icon: UserIcon, roles: ['user', 'super_admin'] },
+    { id: 'general', label: 'Información General', icon: Settings, roles: ['user', 'super_admin'] },
+    { id: 'usuarios', label: 'Usuarios y Permisos', icon: Users, roles: ['user'] },
+    { id: 'modulos', label: 'Módulos ELIAS', icon: Puzzle, roles: ['user'] },
+    { id: 'integraciones', label: 'Integraciones', icon: LinkIcon, roles: ['user'] },
+    { id: 'notificaciones', label: 'Notificaciones', icon: Bell, roles: ['user', 'super_admin'] },
+    { id: 'seguridad', label: 'Seguridad', icon: Shield, roles: ['user', 'super_admin'] },
 ];
 
 // --- Sub-Components for each Tab ---
@@ -295,11 +295,11 @@ const ConfiguracionPage: React.FC = () => {
     const { user } = useAuthStore();
     const visibleTabs = allTabs.filter(tab => user && tab.roles.includes(user.role));
     
-    const defaultTab = user?.role === 'user' || user?.role === 'super_admin' ? 'perfil' : 'general';
+    const defaultTab = 'general';
     const [activeTab, setActiveTab] = useState(defaultTab);
     
     useEffect(() => {
-        const newDefaultTab = user?.role === 'user' || user?.role === 'super_admin' ? 'perfil' : 'general';
+        const newDefaultTab = 'general';
         if (!visibleTabs.some(tab => tab.id === activeTab)) {
             setActiveTab(newDefaultTab);
         }
@@ -318,7 +318,7 @@ const ConfiguracionPage: React.FC = () => {
         }
     };
 
-    const isOrgAdmin = user?.role === 'owner' || user?.role === 'admin';
+    const isOrgAdmin = user?.role === 'user';
 
     return (
         <div className="space-y-8 mx-auto">
