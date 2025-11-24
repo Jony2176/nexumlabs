@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User, Sparkles, X, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Sparkles, X, Loader2, Mic, Square } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import api from '../../services/api';
 import { cn } from '../../utils/cn';
@@ -36,8 +36,10 @@ const FloatingChatWindow: React.FC = () => {
     
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const recognitionRef = useRef<any>(null);
 
     useEffect(() => {
         if (user) {
@@ -66,12 +68,8 @@ const FloatingChatWindow: React.FC = () => {
         setIsTyping(true);
 
         try {
-            // Call the API which now sends event_type: 'chat', action: 'chat_interaction' and payload
             const response = await api.chatWithData(query) as any;
-            
-            // Robustly handle response format (JSON object with output/text/response key, or plain string)
-            const botResponseText = response.output || response.text || response.response || (typeof response === 'string' ? response : JSON.stringify(response));
-            
+            const botResponseText = response.response || response.output || response.text || (typeof response === 'string' ? response : "No pude procesar tu solicitud.");
             const newBotMessage: Message = { id: Date.now() + 1, role: 'bot', text: botResponseText };
             addMessage(newBotMessage);
         } catch (error) {
@@ -82,6 +80,59 @@ const FloatingChatWindow: React.FC = () => {
             setIsTyping(false);
         }
     };
+    
+    const toggleRecording = () => {
+        if (isRecording) {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+            setIsRecording(false);
+            return;
+        }
+
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            toast.error("Tu navegador no soporta la entrada de voz.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'es-AR';
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+            setIsRecording(true);
+        };
+
+        recognition.onend = () => {
+            setIsRecording(false);
+            inputRef.current?.focus();
+        };
+
+        recognition.onresult = (event: any) => {
+            const transcript = Array.from(event.results)
+                .map((result: any) => result[0])
+                .map((result: any) => result.transcript)
+                .join('');
+            setInput(transcript);
+        };
+
+        recognition.onerror = (event: any) => {
+            console.error("Speech recognition error", event.error);
+            setIsRecording(false);
+            if (event.error === 'not-allowed') {
+                toast.error("Permiso de micrófono denegado.");
+            } else {
+                toast.error("Error al escuchar audio: " + event.error);
+            }
+        };
+
+        recognitionRef.current = recognition;
+        recognition.start();
+    };
+
 
     const quickQuestions = [
         "¿Cuál es el MRR actual?",
@@ -160,13 +211,30 @@ const FloatingChatWindow: React.FC = () => {
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    placeholder="Pregúntame algo..."
-                                    className="input-premium w-full !pr-12 !min-h-0 !h-11"
+                                    placeholder={isRecording ? "Escuchando..." : "Pregúntame algo..."}
+                                    className={cn(
+                                        "input-premium w-full !pr-20 !min-h-0 !h-11",
+                                        isRecording && "border-red-500 ring-1 ring-red-500"
+                                    )}
                                     disabled={isTyping}
                                 />
-                                <button type="submit" disabled={isTyping || !input.trim()} className="absolute inset-y-0 right-1.5 flex items-center justify-center w-8 h-8 rounded-lg text-white bg-blue-600 hover:bg-blue-500 disabled:bg-gray-500 transition-colors">
-                                    {isTyping ? <Loader2 className="w-4 h-4 animate-spin"/> : <Send className="w-4 h-4"/>}
-                                </button>
+                                <div className="absolute inset-y-0 right-1.5 flex items-center gap-1">
+                                    <button 
+                                        type="button" 
+                                        onClick={toggleRecording}
+                                        className={cn(
+                                            "w-8 h-8 flex items-center justify-center rounded-lg transition-colors",
+                                            isRecording 
+                                                ? "bg-red-500 text-white animate-pulse" 
+                                                : "text-gray-400 hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        )}
+                                    >
+                                         {isRecording ? <Square className="w-4 h-4 fill-current" /> : <Mic className="w-4 h-4" />}
+                                    </button>
+                                    <button type="submit" disabled={isTyping || !input.trim()} className="flex items-center justify-center w-8 h-8 rounded-lg text-white bg-blue-600 hover:bg-blue-500 disabled:bg-gray-500 transition-colors">
+                                        {isTyping ? <Loader2 className="w-4 h-4 animate-spin"/> : <Send className="w-4 h-4"/>}
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </div>

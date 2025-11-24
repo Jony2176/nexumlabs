@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User, CornerDownLeft, Sparkles } from 'lucide-react';
+import { Send, Bot, User, CornerDownLeft, Sparkles, Mic, Square } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import api from '../services/api';
 import { cn } from '../utils/cn';
@@ -35,8 +35,10 @@ const ChatDataPage: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const recognitionRef = useRef<any>(null);
 
     useEffect(() => {
         setMessages([
@@ -63,8 +65,7 @@ const ChatDataPage: React.FC = () => {
             const response = await api.chatWithData(input) as any;
             
             // Manejar diferentes formatos de respuesta de N8N (objeto JSON o texto plano)
-            // N8N puede devolver: { output: "..." }, { text: "..." }, { response: "..." } o directamente un string
-            const botResponseText = response.output || response.text || response.response || (typeof response === 'string' ? response : JSON.stringify(response));
+            const botResponseText = response.response || response.output || response.text || (typeof response === 'string' ? response : "No pude procesar tu solicitud.");
             
             const newBotMessage: Message = { id: Date.now() + 1, role: 'bot', text: botResponseText };
             setMessages(prev => [...prev, newBotMessage]);
@@ -76,6 +77,59 @@ const ChatDataPage: React.FC = () => {
         } finally {
             setIsTyping(false);
         }
+    };
+
+    const toggleRecording = () => {
+        if (isRecording) {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+            setIsRecording(false);
+            return;
+        }
+
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            toast.error("Tu navegador no soporta la entrada de voz.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'es-AR';
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+            setIsRecording(true);
+            toast('Escuchando...', { icon: '🎙️' });
+        };
+
+        recognition.onend = () => {
+            setIsRecording(false);
+        };
+
+        recognition.onresult = (event: any) => {
+            const transcript = Array.from(event.results)
+                .map((result: any) => result[0])
+                .map((result: any) => result.transcript)
+                .join('');
+            
+            setInput(transcript);
+        };
+
+        recognition.onerror = (event: any) => {
+            console.error("Speech recognition error", event.error);
+            setIsRecording(false);
+            if (event.error === 'not-allowed') {
+                toast.error("Permiso de micrófono denegado. Por favor habilítalo en tu navegador.");
+            } else {
+                toast.error("Error al escuchar audio: " + event.error);
+            }
+        };
+
+        recognitionRef.current = recognition;
+        recognition.start();
     };
 
     const quickQuestions = [
@@ -141,11 +195,27 @@ const ChatDataPage: React.FC = () => {
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Ej: ¿Cuál fue el ingreso total del último trimestre?"
-                        className="input-premium w-full !pr-24"
+                        placeholder={isRecording ? "Escuchando..." : "Escribe o graba tu consulta..."}
+                        className={cn(
+                            "input-premium w-full !pr-32",
+                            isRecording && "border-red-500 ring-1 ring-red-500 animate-pulse"
+                        )}
                         disabled={isTyping}
                     />
-                    <div className="absolute inset-y-0 right-2 flex items-center gap-1">
+                    <div className="absolute inset-y-0 right-2 flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={toggleRecording}
+                            className={cn(
+                                "p-2 rounded-full transition-all",
+                                isRecording 
+                                    ? "bg-red-500 text-white hover:bg-red-600" 
+                                    : "bg-gray-200 dark:bg-gray-700 text-gray-500 hover:text-primary dark:hover:text-white"
+                            )}
+                            title={isRecording ? "Detener grabación" : "Grabar audio"}
+                        >
+                            {isRecording ? <Square className="w-4 h-4 fill-current" /> : <Mic className="w-4 h-4" />}
+                        </button>
                          <kbd className="hidden sm:inline-flex items-center gap-1 rounded border bg-bg-surface px-2 font-mono text-xs text-text-muted">
                             <CornerDownLeft size={12} /> Enter
                         </kbd>
