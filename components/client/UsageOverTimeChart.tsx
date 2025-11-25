@@ -47,10 +47,14 @@ const UsageOverTimeChart: React.FC<UsageOverTimeChartProps> = ({ orgId }) => {
           <YAxis tick={{ fill: '#9CA3AF' }} fontSize={12} />
           <Tooltip 
             contentStyle={{
-              backgroundColor: 'rgba(31, 41, 55, 0.9)',
-              border: '1px solid #4B5563',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #E5E7EB',
               borderRadius: '0.5rem',
+              color: '#1F2937',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
             }}
+            itemStyle={{ color: '#1F2937' }}
+            labelStyle={{ color: '#1F2937', fontWeight: 'bold' }}
             formatter={(value: number) => value.toLocaleString()}
           />
           <Legend />

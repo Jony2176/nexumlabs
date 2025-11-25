@@ -54,11 +54,14 @@ const AggregatedUsageChart: React.FC = () => {
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'var(--bg-surface)',
-                borderColor: 'var(--border-color)',
+                backgroundColor: '#FFFFFF',
+                borderColor: '#E5E7EB',
                 borderRadius: '0.5rem',
-                color: 'var(--text-primary)'
+                color: '#1F2937',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
               }}
+              itemStyle={{ color: '#1F2937' }}
+              labelStyle={{ color: '#1F2937', fontWeight: 'bold' }}
               cursor={{fill: 'transparent'}}
             />
             <Legend wrapperStyle={{ color: 'var(--text-secondary)' }}/>

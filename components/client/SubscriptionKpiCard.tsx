@@ -10,7 +10,7 @@ interface SubscriptionKpiCardProps {
 
 const SubscriptionKpiCard: React.FC<SubscriptionKpiCardProps> = ({ daysUntilRenewal, amount, currency, icon }) => {
   return (
-    <Card className="p-6 hover:shadow-lg transition-shadow">
+    <Card className="p-6 hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between mb-4">
         <div className="p-3 rounded-lg bg-purple-100 dark:bg-purple-900/20">
           {React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: 'h-6 w-6 text-purple-500' })}

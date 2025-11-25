@@ -43,7 +43,7 @@ const UsageKpiCard: React.FC<UsageKpiCardProps> = ({ module, used, limit, icon, 
   const variants = colorVariants[color];
 
   return (
-    <Card className="p-6 hover:shadow-lg transition-shadow">
+    <Card className="p-6 hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between mb-4">
         <div className={cn('p-3 rounded-lg', variants.bg)}>
           {React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: cn('h-6 w-6', variants.icon) })}

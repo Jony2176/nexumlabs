@@ -16,7 +16,10 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, total, ic
   const isPositive = change !== undefined && change >= 0;
 
   return (
-    <Card className={cn('p-6', severity === 'critical' && value !== '0' && 'bg-red-500/10 border-red-500/30')}>
+    <Card className={cn(
+      'p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700', 
+      severity === 'critical' && value !== '0' && 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+    )}>
       <div className="flex justify-between items-start">
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h3>
         {React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: 'h-5 w-5 text-gray-400' })}

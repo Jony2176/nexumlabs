@@ -64,12 +64,17 @@ const MRRGrowthChart: React.FC = () => {
             fontSize={12}
           />
           <Tooltip 
-            formatter={(value: number) => `$${value.toLocaleString()}`}
+            formatter={(value: number) => [`$${value.toLocaleString()}`, 'MRR']}
             contentStyle={{
-              backgroundColor: 'rgba(31, 41, 55, 0.9)',
-              border: '1px solid #4B5563',
+              backgroundColor: '#FFFFFF',
+              borderColor: '#E5E7EB',
               borderRadius: '0.5rem',
+              color: '#1F2937',
+              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
             }}
+            itemStyle={{ color: '#1F2937' }}
+            labelStyle={{ color: '#1F2937', fontWeight: 'bold', marginBottom: '0.25rem' }}
+            cursor={{ stroke: '#6B7280', strokeWidth: 1 }}
           />
           <Area 
             type="monotone" 

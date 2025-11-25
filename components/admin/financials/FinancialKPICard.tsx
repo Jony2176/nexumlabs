@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { ArrowUp, ArrowDown, LucideIcon } from 'lucide-react';
@@ -29,7 +28,7 @@ const FinancialKPICard: React.FC<FinancialKPICardProps> = ({
     const isChangeGood = (trend === 'up' && change && change > 0) || (trend === 'down' && change && change < 0);
     
     return (
-        <div className="bg-bg-surface border border-border-color rounded-xl p-4 shadow-lg hover:bg-bg-secondary transition-colors duration-300 backdrop-blur-sm h-full flex flex-col justify-between">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-lg hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors duration-300 backdrop-blur-sm h-full flex flex-col justify-between">
             <div>
                 <div className="flex items-center justify-between mb-1">
                     <h3 className="text-sm font-medium text-text-secondary">{title}</h3>

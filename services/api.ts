@@ -1,3 +1,4 @@
+
 import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
 import { 
@@ -162,6 +163,7 @@ async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promis
 class NexumAPI {
   // =================================================================
   // HELPER FOR 'chat' EVENT TYPE
+  // Estructura estricta para el Agente de IA en N8N
   // =================================================================
   private getChatBody(action: string, payloadObject: any) {
     const { user, organization } = useAuthStore.getState();
@@ -182,6 +184,7 @@ class NexumAPI {
 
   // =================================================================
   // HELPER FOR 'database' EVENT TYPE
+  // Sends the SHEET NAME directly in the 'action' field
   // =================================================================
   private async readSheet<T>(sheetName: string): Promise<T[]> {
       const response = await apiClient<any>('', {
@@ -236,6 +239,18 @@ class NexumAPI {
             payload: data,
             metadata: { user_id: 'new_user', user_role: 'guest', org_id: 'new_org' }
         }),
+    });
+  }
+
+  async completeOnboarding(data: { 
+    userId: string | undefined, 
+    organizationData: any, 
+    planId: string, 
+    whatsappConfig: any 
+  }) {
+    return apiClient('', {
+        method: 'POST',
+        body: this.getChatBody('complete_onboarding', data)
     });
   }
 

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { Routes, Route, Navigate, HashRouter } from 'react-router-dom';
@@ -55,6 +56,7 @@ import AvatarPartnerManagementPage from './pages/avatar/AvatarPartnerManagementP
 import IntegrationsPage from './pages/IntegrationsPage';
 import SupportPage from './pages/SupportPage';
 import ChatDataPage from './pages/ChatDataPage';
+import OnboardingPage from './pages/onboarding/OnboardingPage';
 
 
 // Admin Pages
@@ -258,8 +260,7 @@ const App = () => {
             {/* --- ONBOARDING & OTHER PROTECTED ROUTES --- */}
             <Route path="/onboarding" element={
               <ProtectedRoute allowedRoles={['user']}>
-                  {/* OnboardingFlow component would go here */}
-                  <ComingSoonPage /> 
+                  <OnboardingPage />
               </ProtectedRoute>
             } />
 
