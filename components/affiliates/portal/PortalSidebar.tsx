@@ -58,8 +58,8 @@ const PortalSidebar: React.FC<PortalSidebarProps> = ({ onLinkClick }) => {
                 </span>
             </div>
             <div>
-                <p className="font-semibold text-sm text-text-primary">{user?.firstName} {user?.lastName}</p>
-                <p className="text-xs text-text-secondary">{user?.email}</p>
+                <p className="font-semibold text-sm text-white">{user?.firstName} {user?.lastName}</p>
+                <p className="text-xs text-gray-400">{user?.email}</p>
             </div>
         </div>
         <button onClick={handleLogout} className="sidebar-item w-full mt-4">

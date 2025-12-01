@@ -22,7 +22,7 @@ const URLGenerator: React.FC<URLGeneratorProps> = ({ affiliateCode }) => {
     };
 
     return (
-        <Card className="h-full">
+        <Card className="h-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
             <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Generador de Enlaces</h3>
                 <div className="space-y-4">
@@ -33,10 +33,10 @@ const URLGenerator: React.FC<URLGeneratorProps> = ({ affiliateCode }) => {
                                 type="text"
                                 readOnly
                                 value={generatedUrl}
-                                className="bg-gray-100 border border-gray-300 text-gray-600 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-300"
+                                className="bg-gray-100 border border-gray-300 text-gray-600 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 pr-10 dark:bg-gray-900 dark:border-gray-600 dark:placeholder-gray-500 dark:text-gray-100 font-mono"
                             />
                             <button onClick={handleCopy} className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                <Copy className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" />
+                                <Copy className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200" />
                             </button>
                         </div>
                     </div>
@@ -55,7 +55,7 @@ const URLGenerator: React.FC<URLGeneratorProps> = ({ affiliateCode }) => {
                             <Copy className="h-4 w-4 mr-2" />
                             Copiar
                         </Button>
-                         <Button variant="outline" className="flex-1" disabled>
+                         <Button variant="outline" className="flex-1 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700" disabled>
                             <QrCode className="h-4 w-4 mr-2" />
                             Generar QR
                         </Button>

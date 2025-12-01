@@ -30,7 +30,8 @@ export const updateAffiliate = async (affiliateId: string, data: Partial<Affilia
     // NOTE: The Google Sheets API v4 with a simple API key is READ-ONLY.
     // This action should be handled by n8n.
     console.log(`INTENDED UPDATE: Updating affiliate ${affiliateId} via n8n with data:`, data);
-    toast.info('Las operaciones de escritura son manejadas por el backend (n8n).');
+    // FIX: Replaced toast.info with toast because info method does not exist in react-hot-toast.
+    toast('Las operaciones de escritura son manejadas por el backend (n8n).', { icon: 'ℹ️' });
     return new Promise(resolve => resolve({ status: 'success' }));
 };
 

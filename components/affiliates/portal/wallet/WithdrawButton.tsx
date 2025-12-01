@@ -1,6 +1,7 @@
 
 import React from 'react';
 import LoadingSpinner from '../../../ui/LoadingSpinner';
+import { AlertTriangle } from 'lucide-react';
 
 interface WithdrawButtonProps {
   balance: number;
@@ -14,9 +15,11 @@ const WithdrawButton: React.FC<WithdrawButtonProps> = ({ balance, arsAmount, isP
 
   if (balance < MIN_WITHDRAWAL_USD) {
     return (
-      <div className="bg-black/20 text-center py-4 px-6 rounded-lg opacity-80">
-        <div className="font-semibold">Mínimo para retirar: ${MIN_WITHDRAWAL_USD} USD</div>
-        <div className="text-sm">Te faltan ${(MIN_WITHDRAWAL_USD - balance).toFixed(2)} USD</div>
+      <div className="bg-blue-900/40 border border-blue-700/50 text-blue-100 text-center py-4 px-6 rounded-lg">
+        <div className="font-semibold flex items-center justify-center gap-2">
+            Mínimo para retirar: ${MIN_WITHDRAWAL_USD} USD
+        </div>
+        <div className="text-sm opacity-90 mt-1">Te faltan ${(MIN_WITHDRAWAL_USD - balance).toFixed(2)} USD</div>
       </div>
     );
   }
@@ -25,12 +28,12 @@ const WithdrawButton: React.FC<WithdrawButtonProps> = ({ balance, arsAmount, isP
     <button
       onClick={onWithdraw}
       disabled={isProcessing}
-      className="w-full bg-white text-blue-600 py-3 px-6 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100"
+      className="w-full bg-white text-blue-600 py-3 px-6 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100 shadow-lg"
     >
       {isProcessing ? (
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-          <span className="ml-3">Procesando retiro...</span>
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
+          <span>Procesando retiro...</span>
         </div>
       ) : (
         <div className="text-center">

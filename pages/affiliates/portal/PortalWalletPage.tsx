@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Wallet, PaymentConfiguration, Transaction } from '../../../types';
@@ -74,7 +73,7 @@ const PortalWalletPage: React.FC = () => {
   
   if (error) {
        return (
-          <div className="text-center text-red-500 bg-red-100 dark:bg-red-900/20 p-4 rounded-lg">
+          <div className="text-center text-red-500 bg-red-100 dark:bg-red-900/30 dark:text-red-200 p-4 rounded-lg border border-red-200 dark:border-red-800">
             {error}
           </div>
         );
@@ -83,42 +82,42 @@ const PortalWalletPage: React.FC = () => {
   return (
     <div className="space-y-8 animate-slideIn">
       {/* SALDO PRINCIPAL */}
-      <div className="bg-gradient-to-br from-blue-600 to-purple-700 rounded-xl p-6 sm:p-8 text-white shadow-2xl">
+      <div className="bg-gradient-to-br from-blue-600 to-purple-700 rounded-xl p-6 sm:p-8 text-white shadow-2xl border border-white/10">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Mi Billetera Digital</h1>
-            <p className="opacity-80 text-sm sm:text-base">Comisiones NEXUM Afiliados</p>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-white">Mi Billetera Digital</h1>
+            <p className="opacity-90 text-sm sm:text-base text-blue-100">Comisiones NEXUM Afiliados</p>
           </div>
-          <div className="text-right text-xs sm:text-sm">
+          <div className="text-right text-xs sm:text-sm text-blue-100">
             <div className="opacity-70">Actualizado</div>
             <div>{new Date().toLocaleTimeString('es-AR')}</div>
           </div>
         </div>
 
         <div className="mb-6">
-          <div className="text-4xl sm:text-5xl font-bold mb-2">
+          <div className="text-4xl sm:text-5xl font-bold mb-2 text-white">
             ${wallet?.balance_ars?.toLocaleString('es-AR')} ARS
           </div>
-          <div className="text-lg sm:text-xl opacity-90">
+          <div className="text-lg sm:text-xl opacity-90 text-blue-100">
             ${wallet?.balance_usd?.toLocaleString('en-US', {minimumFractionDigits: 2})} USD al dólar blue
           </div>
-          <div className="text-xs sm:text-sm opacity-70 mt-1">
+          <div className="text-xs sm:text-sm opacity-70 mt-1 text-blue-200">
             Cotización: ${wallet?.exchange_rate?.toLocaleString('es-AR')} ARS por USD
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-8 text-center">
+        <div className="grid grid-cols-3 gap-4 mb-8 text-center border-t border-white/20 pt-6">
           <div>
-            <div className="text-xl sm:text-2xl font-bold">{wallet?.total_referrals || 0}</div>
-            <div className="text-xs sm:text-sm opacity-70">Referidos</div>
+            <div className="text-xl sm:text-2xl font-bold text-white">{wallet?.total_referrals || 0}</div>
+            <div className="text-xs sm:text-sm opacity-80 text-blue-100">Referidos</div>
           </div>
           <div>
-            <div className="text-xl sm:text-2xl font-bold">${wallet?.total_earned_usd || 0}</div>
-            <div className="text-xs sm:text-sm opacity-70">Total Ganado</div>
+            <div className="text-xl sm:text-2xl font-bold text-white">${wallet?.total_earned_usd || 0}</div>
+            <div className="text-xs sm:text-sm opacity-80 text-blue-100">Total Ganado</div>
           </div>
           <div>
-            <div className="text-xl sm:text-2xl font-bold">{wallet?.total_payouts || 0}</div>
-            <div className="text-xs sm:text-sm opacity-70">Retiros</div>
+            <div className="text-xl sm:text-2xl font-bold text-white">{wallet?.total_payouts || 0}</div>
+            <div className="text-xs sm:text-sm opacity-80 text-blue-100">Retiros</div>
           </div>
         </div>
 

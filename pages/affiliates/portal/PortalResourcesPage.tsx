@@ -40,18 +40,18 @@ type ResourceCardProps = (typeof mockResources)[0];
 const ResourceCard: React.FC<ResourceCardProps> = ({ icon: Icon, type, title, description, link }) => {
     const navigate = useNavigate();
     return (
-        <Card className="flex flex-col p-6 hover:shadow-lg hover:border-primary-500/30 transition-all duration-300">
+        <Card className="flex flex-col p-6">
             <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-primary-100 dark:bg-primary-900/50 rounded-lg">
-                    <Icon className="h-6 w-6 text-primary-500" />
+                <div className="p-3 bg-primary/10 rounded-lg">
+                    <Icon className="h-6 w-6 text-primary" />
                 </div>
-                <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full dark:bg-blue-900/50 dark:text-blue-300">
+                <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full dark:bg-blue-900/50 dark:text-blue-200">
                     {type}
                 </span>
             </div>
             <div className="flex-grow">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+                <h3 className="text-lg font-semibold text-text-primary mb-2">{title}</h3>
+                <p className="text-sm text-text-secondary">{description}</p>
             </div>
             <Button 
                 variant="outline" 
@@ -70,8 +70,8 @@ const PortalResourcesPage: React.FC = () => {
   return (
     <div className="space-y-8 animate-slideIn">
       <div>
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Recursos para Afiliados</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Guías, tutoriales y consejos para maximizar tus ganancias.</p>
+        <h1 className="text-3xl font-bold text-text-primary">Recursos para Afiliados</h1>
+        <p className="text-text-secondary mt-1">Guías, tutoriales y consejos para maximizar tus ganancias.</p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
@@ -45,16 +46,16 @@ const mockCreatives = [
     },
 ];
 
-// FIX: Changed interface to type to correctly define props from the mockCreatives array element type.
 type CreativeCardProps = (typeof mockCreatives)[0];
 
 const CreativeCard: React.FC<CreativeCardProps> = ({ title, dimensions, imageUrl, downloadUrl, isLogo, invertLogo }) => {
     
-    const imageContainerClasses = `flex items-center justify-center h-48 rounded-t-xl p-4 ${isLogo ? 'bg-gray-200 dark:bg-gray-700' : 'bg-gray-100 dark:bg-gray-800'}`;
+    // Use darker backgrounds for image containers in dark mode for better contrast with white logos/text
+    const imageContainerClasses = `flex items-center justify-center h-48 rounded-t-xl p-4 ${isLogo ? 'bg-gray-200 dark:bg-gray-900' : 'bg-gray-100 dark:bg-gray-950'}`;
     const imageClasses = `max-h-full max-w-full object-contain ${invertLogo ? 'dark:invert' : ''}`
 
     return (
-        <Card className="flex flex-col hover:shadow-lg hover:border-primary-500/30 transition-all duration-300">
+        <Card className="flex flex-col hover:shadow-lg hover:border-primary-500/30 transition-all duration-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
             <div className={imageContainerClasses}>
                  <img src={imageUrl} alt={title} className={imageClasses} />
             </div>
@@ -64,7 +65,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ title, dimensions, imageUrl
                 <Button 
                     size="sm"
                     variant="secondary"
-                    className="mt-auto"
+                    className="mt-auto bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600"
                     onClick={() => window.open(downloadUrl, '_blank')}
                     disabled={downloadUrl === '#'}
                 >
@@ -81,7 +82,7 @@ const PortalCreativesPage: React.FC = () => {
     return (
         <div className="space-y-8 animate-slideIn">
             <div>
-                <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Material Promocional</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Material Promocional</h1>
                 <p className="text-gray-500 dark:text-gray-400 mt-1">Utiliza estos recursos para promocionar NEXUM en tu sitio web o redes sociales.</p>
             </div>
             

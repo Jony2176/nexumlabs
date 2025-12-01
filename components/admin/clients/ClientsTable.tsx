@@ -39,24 +39,6 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sor
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-        onSelectionChange(new Set(clients.map(c => c.id)));
-    } else {
-        onSelectionChange(new Set());
-    }
-  };
-
-  const handleSelectOne = (id: string) => {
-    const newSelection = new Set(selectedClients);
-    if (newSelection.has(id)) {
-        newSelection.delete(id);
-    } else {
-        newSelection.add(id);
-    }
-    onSelectionChange(newSelection);
-  };
-  
   useEffect(() => {
     setCurrentPage(1);
   }, [clients.length]);
@@ -94,7 +76,6 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sor
         <table className="w-full text-sm">
           <thead>
             <tr>
-              <th><input type="checkbox" className="theme-bg-secondary border-border-color" onChange={handleSelectAll} checked={selectedClients.size === clients.length && clients.length > 0} /></th>
               <SortableHeader tkey="empresa" label="Cliente" />
               <SortableHeader tkey="plan" label="Plan / Ingreso Mensual" />
               <th>Consumo</th>
@@ -106,8 +87,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ clients, onViewDetails, sor
           </thead>
           <tbody>
             {paginatedClients.map(client => (
-              <tr key={client.id} className={selectedClients.has(client.id) ? 'bg-blue-900/30' : ''}>
-                <td><input type="checkbox" className="theme-bg-secondary border-border-color" checked={selectedClients.has(client.id)} onChange={() => handleSelectOne(client.id)} /></td>
+              <tr key={client.id} className="">
                 <td>
                   <div className="flex items-center gap-3">
                     <img src={client.logoUrl} alt={client.empresa} className="h-8 w-8 rounded-full theme-bg-secondary" />
